@@ -31,6 +31,13 @@ button.primary{background:var(--blue);color:#fff}.secondary{background:#eaf4ff;c
 table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #edf2f7;vertical-align:top}th{background:#f7fafc;color:#486581}
 .money{font-size:31px;font-weight:900}.source{font-size:11px;color:var(--muted);margin-top:8px}.ok{color:var(--green);font-weight:800}.err{color:#b42318;font-weight:700}
 footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1px solid var(--line)}
+.sourceBtn{display:inline-block;margin-top:8px;padding:8px 11px;border-radius:10px;background:#eaf4ff;color:#075a9d;text-decoration:none;font-weight:800;font-size:12px}
+.checklist{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px}
+.checkitem{background:#f7fafc;border:1px solid var(--line);border-radius:12px;padding:12px}
+.checkitem b{display:block;margin-bottom:4px}
+.routeMeta{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.metaPill{background:#f1f7fb;border-radius:16px;padding:5px 9px;font-size:11px;color:#486581;font-weight:700}
+@media(max-width:800px){.grid,.grid3{grid-template-columns:1fr 1fr}.checklist{grid-template-columns:1fr}.hero img{max-height:390px}.brandbar{top:0}nav{top:91px}}
 @media(max-width:800px){.grid,.grid3{grid-template-columns:1fr 1fr}.hero img{max-height:390px}.brandbar{top:0}nav{top:91px}}
 @media(max-width:520px){.grid,.grid3{grid-template-columns:1fr}.hero img{max-height:300px}.brandbar img{width:50px;height:50px}}
 </style>
@@ -183,7 +190,7 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 <script>
 let rows=[];
 const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
-const DB_VERSION="Global Corridor Database V1";
+const DB_VERSION="Global Corridor Database V1 • Traveller Intelligence V11";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
  {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
@@ -192,6 +199,12 @@ const COUNTRY_LIST=[
  {name:"Mauritius",flag:"🇲🇺",currency:"MUR"},{name:"Greece",flag:"🇬🇷",currency:"EUR"},{name:"Uzbekistan",flag:"🇺🇿",currency:"UZS"},
  {name:"Maldives",flag:"🇲🇻",currency:"MVR"}
 ];
+const SOURCE_URLS={
+  "Government of India / PIB":"https://www.pib.gov.in/PressReleasePage.aspx?PRID=2291054&lang=1&reg=1",
+  "NPCI International":"https://www.npci.org.in/product/upi-global-acceptance",
+  "PIB / NPCI announcement":"https://www.pib.gov.in/PressReleasePage.aspx?PRID=2291054&lang=1&reg=1"
+};
+function sourceUrl(source){return SOURCE_URLS[source]||""}
 const UPI_HOME_COUNTRIES=["India"];
 const UPI_HOME_COUNTRY_NOTE={
   "India":"Outbound UPI merchant-payment corridors documented by NPCI / Government of India.",
@@ -257,7 +270,7 @@ rows=raw.map(r=>({
   "last verified":val(r,"last verified"),
   "source":val(r,"source"),
   "notes":val(r,"notes"),
-  "source url":""
+  "source url":sourceUrl(val(r,"source"))
 }));
 
 /*
@@ -402,7 +415,11 @@ function routeRecord(home,dest,type){
   "qr / acceptance method":"QR / compatible network-partner acceptance",
   "last verified":"21-Sep-2026",
   "source":c.source||"",
-  "notes":c.note||""
+  "source url":sourceUrl(c.source),
+  "notes":c.note||"",
+  "payment rail":c.type==="P2M"?"UPI":"UPI / documented rail",
+  "fee information":"Provider-dependent; review applicable charges before authorisation.",
+  "live since":""
  };
 }
 function findRouteRowsRaw(home,dest,type){
@@ -434,41 +451,52 @@ function findRows(name){
 function checkPayment(){
  const h=getHome("payHomeCountry"),d=$("payDestination").value,out=$("payResult");
  if(!d){out.innerHTML="<b>Select a destination.</b>";out.classList.add("show");return}
-
  const c=corridor(h,d);
  const routeRows=findRouteRows(h,d,c?.type);
- const r=routeRows[0]||findRouteRows(h,d)[0]||null;
-
+ const r=routeRows[0]||findRouteRows(h,d)[0]||routeRecord(h,d,c?.type);
  if(!c){
    out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
    <h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2>
-   <div class="warning"><b>Not yet independently verified.</b><br>
-   OMNAVIX does not assume that a payment corridor works in both directions.
-   We need an official source confirming this specific route before marking it live.</div>
+   <div class="warning"><b>Not yet independently verified.</b><br>OMNAVIX does not assume that a payment corridor works in both directions. We need an official source confirming this specific route before marking it live.</div>
    <p class="source">Route status: <b>Not Yet Verified</b></p>`;
    out.classList.add("show");return
  }
-
  const cur=val(r||{},"local currency","currency")||countryObj(d).currency;
- const partner=val(r||{},"local partner / network","partner")||(
-  c.partner||"See verified corridor source"
-);
- const badgeClass=c.status.includes("Live")||c.status.includes("Verified")?"live":"p2p";
-
- out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
+ const partner=val(r||{},"local partner / network","partner")||(c.partner||"See verified corridor source");
+ const badgeClass=(c.status||"").includes("Live")||(c.status||"").includes("Verified")?"live":"p2p";
+ const verified=val(r||{},"last verified")||"21-Sep-2026";
+ const source=val(r||{},"source url")||sourceUrl(c.source);
+ const acceptance=val(r||{},"qr / acceptance method")||"QR / compatible network-partner acceptance";
+ const coverage=val(r||{},"merchant coverage")||"Participating merchants";
+ const isP2M=c.type==="P2M";
+ const statusNote=(c.status||"").includes("Announced")
+   ?"Newly enabled / announced — verify current merchant availability before relying on the route."
+   :isP2M
+   ?"Documented merchant-payment route. Confirm the specific merchant accepts the relevant QR/network before paying."
+   :"This route is documented as non-P2M. Do not treat it as merchant QR acceptance.";
+ out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE • V11</div>
  <h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2>
- <span class="badge ${badgeClass}">${esc(c.status)}</span>
- <div class="grid">
+ <div class="routeMeta"><span class="badge ${badgeClass}">${esc(c.status)}</span><span class="metaPill">${esc(c.type||"—")}</span><span class="metaPill">${esc(cur)}</span><span class="metaPill">Verified: ${esc(verified)}</span></div>
+ <div class="grid" style="margin-top:14px">
  <div class="stat"><span class="muted">Payment type</span><strong>${esc(c.type)}</strong></div>
  <div class="stat"><span class="muted">Currency</span><strong>${esc(cur)}</strong></div>
  <div class="stat"><span class="muted">Partner / network</span><strong style="font-size:15px">${esc(partner)}</strong></div>
- <div class="stat"><span class="muted">Verification</span><strong style="font-size:15px">${esc(c.source)}</strong></div>
+ <div class="stat"><span class="muted">Acceptance</span><strong style="font-size:15px">${esc(acceptance)}</strong></div>
  </div>
- <p><b>Route information:</b> ${esc(c.note)}</p>
- ${r?`<p><b>QR / acceptance:</b> ${esc(val(r,"qr / acceptance method"))}</p>
- <p><b>Merchant coverage:</b> ${esc(val(r,"merchant coverage"))}</p>
- <p><b>Last verified:</b> ${esc(val(r,"last verified"))}</p>`:""}
- <div class="info"><b>OMNAVIX rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
+ <div class="info" style="margin-top:12px"><b>Route information:</b> ${esc(c.note)}</div>
+ <div class="grid3" style="margin-top:12px">
+ <div class="stat"><span class="muted">Merchant coverage</span><strong style="font-size:15px">${esc(coverage)}</strong></div>
+ <div class="stat"><span class="muted">Payment rail</span><strong style="font-size:15px">${esc(val(r||{},"payment rail")||"Documented digital payment rail")}</strong></div>
+ <div class="stat"><span class="muted">Verification source</span><strong style="font-size:15px">${esc(c.source)}</strong></div>
+ </div>
+ <div class="checklist">
+ <div class="checkitem"><b>1. Look</b><span class="muted">Look for the relevant QR/network acceptance sign.</span></div>
+ <div class="checkitem"><b>2. Confirm</b><span class="muted">Ask the merchant whether this specific route is accepted.</span></div>
+ <div class="checkitem"><b>3. Verify cost</b><span class="muted">Review foreign amount, INR estimate, FX rate and applicable fees.</span></div>
+ </div>
+ <div class="${isP2M?'info':'warning'}" style="margin-top:14px"><b>Traveller guidance:</b> ${esc(statusNote)}</div>
+ <div class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a class="sourceBtn" href="${esc(source)}" target="_blank" rel="noopener">View official source</a>`:""}</div>
+ <div class="info" style="margin-top:12px"><b>OMNAVIX directional rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
  out.classList.add("show");
 }
 function renderCountries(){
@@ -482,6 +510,7 @@ return `<div class="stat" style="cursor:pointer;border:1px solid var(--line)" on
 <div class="muted" style="margin-top:10px">Currency: <b>${esc(val(r,"local currency","currency"))}</b></div>
 <div class="muted">Network: ${esc(val(r,"local partner / network","partner"))}</div>
 <div class="muted">Status: <b>${esc(status)}</b></div>
+<div class="muted">Last verified: <b>${esc(val(r,"last verified")||"21-Sep-2026")}</b></div>
 </div>`;
 }).join("") || '<div class="warning" style="grid-column:1/-1">No matching country found.</div>';
 }
@@ -530,8 +559,8 @@ function renderWhere(){
    }
    out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge p2p">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="info"><b>Merchant payment:</b> No verified P2M record is displayed for this route.</div></div>`;return
  }
- const partner=val(r,"local partner / network","partner"),coverage=val(r,"merchant coverage"),qr=val(r,"qr / acceptance method"),verified=val(r,"last verified"),source=val(r,"source url");
- out.innerHTML=`<div class="card" style="margin:0"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge live">${esc(c.status)}</span></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div><div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div></div><div class="info" style="margin-top:12px"><b>Before you pay:</b> Confirm the merchant accepts this specific route and review the final amount, exchange rate and applicable fees before authorisation.</div><p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p></div>`;
+ const partner=val(r,"local partner / network","partner"),coverage=val(r,"merchant coverage"),qr=val(r,"qr / acceptance method"),verified=val(r,"last verified")||"21-Sep-2026",source=val(r,"source url")||sourceUrl(c.source);
+ out.innerHTML=`<div class="card" style="margin:0"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge live">${esc(c.status)}</span></div><div class="routeMeta"><span class="metaPill">P2M</span><span class="metaPill">${esc(val(r,"local currency","currency"))}</span><span class="metaPill">Verified: ${esc(verified)}</span></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div><div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div></div><div class="info" style="margin-top:12px"><b>Before you pay:</b> Confirm the merchant accepts this specific route and review the final amount, exchange rate and applicable fees before authorisation.</div><div class="checklist"><div class="checkitem"><b>Look</b><span class="muted">Find the compatible QR/network sign.</span></div><div class="checkitem"><b>Ask</b><span class="muted">Confirm this specific merchant accepts your route.</span></div><div class="checkitem"><b>Verify</b><span class="muted">Review the final amount and applicable charges.</span></div></div><p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a class="sourceBtn" href="${esc(source)}" target="_blank" rel="noopener">View official source</a>`:""}</p></div>`;
 }
 function populateCountryDetail(){
 const ds=destinations();
@@ -594,6 +623,7 @@ $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.
 <p><span class="ok">● Reverse-route protection:</span> active — routes are never inferred in the opposite direction</p>
 <p><span class="ok">● Branding:</span> OMNAVIX logo + banner loaded from assets/</p>
 <p><span class="ok">● FX:</span> live reference lookup enabled with secondary fallback + cache</p>
+<p><span class="ok">● Traveller intelligence:</span> route checklist, acceptance guidance, verification date and official-source links enabled</p>
 <p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
 <p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
 }
