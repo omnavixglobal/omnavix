@@ -56,7 +56,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <h2>Global Payment Intelligence</h2>
 <p>Choose your home country and destination. OMNAVIX reads the attached payment database and shows the payment route, network, currency and verification information.</p>
 <div class="grid3">
-<div><label>Home country</label><select id="homeCountry"><option>🇮🇳 India</option></select></div>
+<div><label>Home country</label><select id="homeCountry"></select></div>
 <div><label>Destination</label><select id="homeDestination"></select></div>
 <div style="align-self:end"><button class="primary" onclick="openPayment()">Check Payment Options</button></div>
 </div>
@@ -74,7 +74,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div class="card">
 <h2>Can I Pay?</h2>
 <div class="grid3">
-<div><label>Home country</label><select><option>🇮🇳 India</option></select></div>
+<div><label>Home country</label><select id="payHomeCountry"></select></div>
 <div><label>Destination</label><select id="payDestination"></select></div>
 <div style="align-self:end"><button class="primary" onclick="checkPayment()">Check</button></div>
 </div>
@@ -87,7 +87,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <h2>Currency & Cost Estimate</h2>
 <p class="muted">Understand the destination amount in your home currency before you pay. OMNAVIX uses a live reference FX rate when internet access is available.</p>
 <div class="grid3">
-<div><label>Home currency</label><select id="fxHomeCurrency"><option value="INR">🇮🇳 INR — Indian Rupee</option></select></div>
+<div><label>Home currency</label><select id="fxHomeCurrency"></select></div>
 <div><label>Destination currency</label><select id="fxCurrency"></select></div>
 <div><label>Destination amount</label><input id="fxAmount" type="number" value="100" min="0" step="0.01"></div>
 </div>
@@ -117,9 +117,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div class="grid3" style="align-items:end">
   <div>
     <label>Home country</label>
-    <select id="whereHomeCountry">
-      <option value="India">🇮🇳 India</option>
-    </select>
+    <select id="whereHomeCountry"></select>
   </div>
   <div>
     <label>Destination</label>
@@ -180,8 +178,35 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <script>
 let rows=[];
-const DB="data/OMNAVIX_Master_Payment_Database.xlsx";
+const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
 const $=id=>document.getElementById(id);
+const COUNTRY_LIST=[
+ {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
+ {name:"Nepal",flag:"🇳🇵",currency:"NPR"},{name:"Sri Lanka",flag:"🇱🇰",currency:"LKR"},{name:"Bhutan",flag:"🇧🇹",currency:"BTN"},
+ {name:"France",flag:"🇫🇷",currency:"EUR"},{name:"Qatar",flag:"🇶🇦",currency:"QAR"},{name:"Cambodia",flag:"🇰🇭",currency:"KHR"},
+ {name:"Mauritius",flag:"🇲🇺",currency:"MUR"},{name:"Greece",flag:"🇬🇷",currency:"EUR"},{name:"Uzbekistan",flag:"🇺🇿",currency:"UZS"},
+ {name:"Maldives",flag:"🇲🇻",currency:"MVR"}
+];
+let CORRIDORS={
+ "India|Singapore":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance documented for participating merchants."},
+ "India|Nepal":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via FonePay."},
+ "India|UAE":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance through listed partners."},
+ "India|Sri Lanka":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via LankaPay."},
+ "India|Bhutan":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via RMA Bhutan."},
+ "India|France":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via LYRA Network."},
+ "India|Mauritius":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via Bank of Mauritius."},
+ "India|Qatar":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via Qatar National Bank."},
+ "India|Cambodia":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"Phase 1 merchant acceptance for Indian travellers."},
+ "India|Greece":{status:"P2P Only",type:"P2P",source:"Government of India / PIB",note:"Documented as P2P, not merchant P2M in the July 2026 government table."},
+ "India|Uzbekistan":{status:"Verified / Newly Enabled",type:"P2M",source:"Government of India / PIB",note:"NIPL–NIPC agreement enables Indian travellers to pay merchants through UZQR."},
+ "India|Maldives":{status:"P2P Live; QR P2M Future",type:"P2P",source:"Government of India / PIB",note:"Favara–UPI P2P is live; QR merchant payments were described as a subsequent phase."},
+ "Nepal|India":{status:"Verified Live",type:"P2M",source:"NPCI International",note:"NPCI documents Nepali travellers using UPI One World for merchant payments in India."},
+ "Cambodia|India":{status:"Not Yet Live",type:"P2M",source:"PIB / NPCI announcement",note:"Two-way corridor was described as a subsequent phase; do not present it as live."},
+ "Maldives|India":{status:"Verified Live",type:"P2P",source:"Government of India / PIB",note:"Favara–UPI P2P transfer corridor is live."}
+};
+function countryObj(name){return COUNTRY_LIST.find(c=>c.name===name)||{name,flag:"🌍",currency:""}}
+function routeKey(home,dest){return `${home}|${dest}`}
+function corridor(home,dest){return CORRIDORS[routeKey(home,dest)]||null}
 
 function tabs(){
 document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
@@ -201,9 +226,35 @@ const res=await fetch(DB+"?v="+Date.now());
 if(!res.ok)throw new Error("Database file could not be loaded");
 const buf=await res.arrayBuffer();
 const wb=XLSX.read(buf,{type:"array"});
-const sheet=wb.Sheets["Payment Database"]||wb.Sheets[wb.SheetNames[0]];
-rows=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
+const sheet=wb.Sheets["Corridor Database"]||wb.Sheets[wb.SheetNames[0]];
+const raw=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
+rows=raw.map(r=>({
+  "home country":val(r,"home country"),
+  "destination":val(r,"destination"),
+  "use case":val(r,"use case"),
+  "status":val(r,"status"),
+  "local partner / network":val(r,"partner / institution"),
+  "partner":val(r,"partner / institution"),
+  "local currency":val(r,"local currency"),
+  "currency":val(r,"local currency"),
+  "merchant coverage":val(r,"acceptance / scope"),
+  "qr / acceptance method":val(r,"acceptance / scope"),
+  "fee information":"Provider-dependent; final applicable charges should be reviewed before authorisation.",
+  "live since":val(r,"live since"),
+  "last verified":val(r,"last verified"),
+  "source":val(r,"source"),
+  "notes":val(r,"notes"),
+  "source url":""
+}));
+const rebuilt={};
+raw.forEach(r=>{
+  const h=val(r,"home country"),d=val(r,"destination");
+  if(!h||!d)return;
+  rebuilt[`${h}|${d}`]={status:val(r,"status"),type:val(r,"use case"),source:val(r,"source"),note:val(r,"notes")};
+});
+CORRIDORS=rebuilt;
 buildSelects();
+["homeCountry","payHomeCountry","whereHomeCountry"].forEach(id=>$(id)?.addEventListener("change",()=>{const destId=id==="homeCountry"?"homeDestination":id==="payHomeCountry"?"payDestination":"whereDestination";updateDestinationOptions(id,destId)}));
 populateCountryDetail();
 $("records").textContent=rows.length;
 $("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length;
@@ -212,40 +263,38 @@ $("verified").textContent=rows[0]?val(rows[0],"last verified"):"—";
 $("dbStatus").innerHTML='<span class="ok">● Excel database loaded successfully</span> • '+DB;
 }catch(e){$("dbStatus").innerHTML='<span class="err">Database load failed: '+e.message+'</span>'}
 }
-function destinations(){
-const map=new Map();
-rows.forEach(r=>{const d=val(r,"destination");if(d&&!map.has(d))map.set(d,r)});
-return [...map.entries()].map(([name,r])=>({name,r}));
+function destinations(){return COUNTRY_LIST.map(c=>({name:c.name,r:rows.find(r=>val(r,"destination")===c.name)||{}}));}
+function buildCountryOptions(id,exclude){
+ const el=$(id); if(!el)return;
+ el.innerHTML='<option value="">Select home country</option>'+COUNTRY_LIST.filter(c=>c.name!==exclude).map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");
 }
-function buildSelects(){
-const ds=destinations();
-const opts=ds.map(x=>`<option value="${esc(x.name)}">${flag(x.name)} ${esc(x.name)}</option>`).join("");
-["homeDestination","payDestination","whereDestination"].forEach(id=>$(id).innerHTML='<option value="">Select destination</option>'+opts);
-const currencies=[...new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean))];
-$("fxCurrency").innerHTML=currencies.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+function buildAllSelectors(){
+ buildCountryOptions("homeCountry"); buildCountryOptions("payHomeCountry"); buildCountryOptions("whereHomeCountry");
+ const opts=COUNTRY_LIST.map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");
+ ["homeDestination","payDestination","whereDestination"].forEach(id=>{if($(id))$(id).innerHTML='<option value="">Select destination</option>'+opts});
+ if($("homeCountry"))$("homeCountry").value="India";
+ if($("payHomeCountry"))$("payHomeCountry").value="India";
+ if($("whereHomeCountry"))$("whereHomeCountry").value="India";
+ updateDestinationOptions("homeCountry","homeDestination"); updateDestinationOptions("payHomeCountry","payDestination"); updateDestinationOptions("whereHomeCountry","whereDestination");
+ const currencies=[...new Set(COUNTRY_LIST.map(c=>c.currency).filter(Boolean))];
+ $("fxHomeCurrency").innerHTML=COUNTRY_LIST.map(c=>`<option value="${c.currency}" data-country="${c.name}">${c.flag} ${c.currency} — ${c.name}</option>`).filter((v,i,a)=>a.findIndex(x=>x.match(/value="([^"]+)/)[1]===v.match(/value="([^"]+)/)[1])===i).join("");
+ $("fxCurrency").innerHTML=currencies.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+ $("fxHomeCurrency").value="INR";
 }
+function updateDestinationOptions(homeId,destId){const home=$(homeId),dest=$(destId);if(!home||!dest)return;const h=home.value;dest.innerHTML='<option value="">Select destination</option>'+COUNTRY_LIST.filter(c=>c.name!==h).map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");}
+function buildSelects(){buildAllSelectors();}
 function findRows(name){return rows.filter(r=>val(r,"destination")===name)}
-function openPayment(){const d=$("homeDestination").value;if(!d){alert("Select a destination.");return}$("payDestination").value=d;document.querySelector('[data-tab="pay"]').click();checkPayment()}
+function getHome(id){return $(id)?.value||"India"}
+function openPayment(){const h=getHome("homeCountry"),d=$("homeDestination").value;if(!d){alert("Select a destination.");return}$("payHomeCountry").value=h;updateDestinationOptions("payHomeCountry","payDestination");$("payDestination").value=d;document.querySelector('[data-tab="pay"]').click();checkPayment()}
 function checkPayment(){
-const d=$("payDestination").value,r=findRows(d),out=$("payResult");
-if(!d){out.innerHTML="<b>Select a destination.</b>";out.classList.add("show");return}
-const p2m=r.find(x=>val(x,"use case","payment type")==="P2M")||r[0];
-const cur=val(p2m,"local currency","currency"),partner=val(p2m,"local partner / network","partner");
-out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
-<h2>🇮🇳 India → ${flag(d)} ${esc(d)}</h2>
-<span class="badge ${val(p2m,"use case","payment type")==="P2M"?"live":"p2p"}">${esc(val(p2m,"use case","payment type"))}</span>
-<div class="grid">
-<div class="stat"><span class="muted">Currency</span><strong>${esc(cur)}</strong></div>
-<div class="stat"><span class="muted">Partner</span><strong style="font-size:15px">${esc(partner)}</strong></div>
-<div class="stat"><span class="muted">Status</span><strong style="font-size:17px">${esc(val(p2m,"status"))}</strong></div>
-<div class="stat"><span class="muted">Verified</span><strong style="font-size:17px">${esc(val(p2m,"last verified"))}</strong></div>
-</div>
-<p><b>QR / acceptance:</b> ${esc(val(p2m,"qr / acceptance method"))}</p>
-<p><b>Merchant coverage:</b> ${esc(val(p2m,"merchant coverage"))}</p>
-<p><b>Fee information:</b> ${esc(val(p2m,"fee information"))}</p>
-<div class="info"><b>OMNAVIX guidance:</b> Look for compatible acceptance signage/QR, scan using an eligible UPI-powered application, and review the final foreign amount, INR amount, exchange rate and applicable fees before authorisation.</div>
-<p class="source">Source: <a href="${esc(val(p2m,"source url"))}" target="_blank" rel="noopener">official source</a></p>`;
-out.classList.add("show");
+ const h=getHome("payHomeCountry"),d=$("payDestination").value,out=$("payResult");
+ if(!d){out.innerHTML="<b>Select a destination.</b>";out.classList.add("show");return}
+ const c=corridor(h,d), r=findRows(d).find(x=>val(x,"use case","payment type")===(c?.type||"P2M"))||findRows(d)[0];
+ if(!c){out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div><h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2><div class="warning"><b>Not yet independently verified.</b><br>OMNAVIX does not assume that a payment corridor works in both directions. We need an official source confirming this specific route before marking it live.</div><p class="source">Route status: <b>Not Yet Verified</b></p>`;out.classList.add("show");return}
+ const cur=val(r||{},"local currency","currency")||countryObj(d).currency,partner=val(r||{},"local partner / network","partner")||"See verified corridor source";
+ const badgeClass=c.status.includes("Live")||c.status.includes("Verified")?"live":"p2p";
+ out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div><h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2><span class="badge ${badgeClass}">${esc(c.status)}</span><div class="grid"><div class="stat"><span class="muted">Payment type</span><strong>${esc(c.type)}</strong></div><div class="stat"><span class="muted">Currency</span><strong>${esc(cur)}</strong></div><div class="stat"><span class="muted">Partner / network</span><strong style="font-size:15px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Verification</span><strong style="font-size:15px">${esc(c.source)}</strong></div></div><p><b>Route information:</b> ${esc(c.note)}</p>${r?`<p><b>QR / acceptance:</b> ${esc(val(r,"qr / acceptance method"))}</p><p><b>Merchant coverage:</b> ${esc(val(r,"merchant coverage"))}</p>`:""}<div class="info"><b>OMNAVIX rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
+ out.classList.add("show");
 }
 function renderCountries(){
 const q=($("search").value||"").toLowerCase();
@@ -288,35 +337,14 @@ return `<div class="card" style="margin-top:16px">
 }).join("");
 }
 function renderWhere(){
-const d=$("whereDestination").value;
-const out=$("whereResult");
-if(!d){out.innerHTML='<div class="warning">Select a destination first.</div>';return}
-const r=findRows(d).filter(x=>val(x,"use case","payment type")==="P2M");
-if(!r.length){
-out.innerHTML='<div class="warning">No P2M record is currently available for this destination in the OMNAVIX database.</div>';
-return;
-}
-out.innerHTML=r.map(x=>{
-const partner=val(x,"local partner / network","partner");
-const coverage=val(x,"merchant coverage");
-const qr=val(x,"qr / acceptance method");
-const status=val(x,"status");
-const verified=val(x,"last verified");
-const source=val(x,"source url");
-return `<div class="card" style="margin:0 0 14px 0">
-  <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
-    <h3 style="margin:0">${flag(d)} ${esc(d)}</h3>
-    <span class="badge ${status.toLowerCase()==="live"?"live":""}">${esc(status)}</span>
-  </div>
-  <div class="grid3" style="margin-top:12px">
-    <div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong><span class="muted">Documented international acceptance route.</span></div>
-    <div class="stat"><span class="muted">Where acceptance applies</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div>
-    <div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div>
-  </div>
-  <div class="info" style="margin-top:12px"><b>Before you pay:</b> Look for compatible BHIM UPI or network-partner acceptance signage/QR and confirm acceptance with the merchant.</div>
-  <p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p>
-</div>`;
-}).join("");
+ const h=getHome("whereHomeCountry"),d=$("whereDestination").value,out=$("whereResult");
+ if(!d){out.innerHTML='<div class="warning">Select a destination first.</div>';return}
+ const c=corridor(h,d);
+ if(!c){out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><div class="warning"><b>Not Yet Independently Verified</b><br>OMNAVIX has no verified merchant-acceptance record for this direction yet. This does not mean the route is unavailable.</div></div>`;return}
+ const r=findRows(d).find(x=>val(x,"use case","payment type")==="P2M");
+ if(c.type!=="P2M" || !r){out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge p2p">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="info"><b>Merchant payment:</b> No verified P2M record is displayed for this route.</div></div>`;return}
+ const partner=val(r,"local partner / network","partner"),coverage=val(r,"merchant coverage"),qr=val(r,"qr / acceptance method"),verified=val(r,"last verified"),source=val(r,"source url");
+ out.innerHTML=`<div class="card" style="margin:0"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge live">${esc(c.status)}</span></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div><div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div></div><div class="info" style="margin-top:12px"><b>Before you pay:</b> Confirm the merchant accepts this specific route and review the final amount, exchange rate and applicable fees before authorisation.</div><p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p></div>`;
 }
 function populateCountryDetail(){
 const ds=destinations();
