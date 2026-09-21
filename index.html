@@ -179,6 +179,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <script>
 let rows=[];
 const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
+const DB_VERSION="Global Corridor Database V1";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
  {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
@@ -187,7 +188,7 @@ const COUNTRY_LIST=[
  {name:"Mauritius",flag:"🇲🇺",currency:"MUR"},{name:"Greece",flag:"🇬🇷",currency:"EUR"},{name:"Uzbekistan",flag:"🇺🇿",currency:"UZS"},
  {name:"Maldives",flag:"🇲🇻",currency:"MVR"}
 ];
-let CORRIDORS={
+const VERIFIED_CORRIDORS={
  "India|Singapore":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance documented for participating merchants."},
  "India|Nepal":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via FonePay."},
  "India|UAE":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance through listed partners."},
@@ -204,6 +205,7 @@ let CORRIDORS={
  "Cambodia|India":{status:"Not Yet Live",type:"P2M",source:"PIB / NPCI announcement",note:"Two-way corridor was described as a subsequent phase; do not present it as live."},
  "Maldives|India":{status:"Verified Live",type:"P2P",source:"Government of India / PIB",note:"Favara–UPI P2P transfer corridor is live."}
 };
+let CORRIDORS={...VERIFIED_CORRIDORS};
 function countryObj(name){return COUNTRY_LIST.find(c=>c.name===name)||{name,flag:"🌍",currency:""}}
 function routeKey(home,dest){return `${home}|${dest}`}
 function corridor(home,dest){return CORRIDORS[routeKey(home,dest)]||null}
@@ -228,9 +230,11 @@ const buf=await res.arrayBuffer();
 const wb=XLSX.read(buf,{type:"array"});
 const sheet=wb.Sheets["Corridor Database"]||wb.Sheets[wb.SheetNames[0]];
 const raw=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
+
 rows=raw.map(r=>({
   "home country":val(r,"home country"),
   "destination":val(r,"destination"),
+  "payment rail":val(r,"payment rail"),
   "use case":val(r,"use case"),
   "status":val(r,"status"),
   "local partner / network":val(r,"partner / institution"),
@@ -246,22 +250,80 @@ rows=raw.map(r=>({
   "notes":val(r,"notes"),
   "source url":""
 }));
-const rebuilt={};
+
+/*
+ V3 SAFETY RULE:
+ Start with the built-in directional verification registry.
+ Excel can enrich a route that exists in the registry, or add a new
+ explicitly documented route. A missing/partial Excel row can NEVER
+ erase a verified route.
+*/
+const merged={...VERIFIED_CORRIDORS};
+
 raw.forEach(r=>{
   const h=val(r,"home country"),d=val(r,"destination");
   if(!h||!d)return;
-  rebuilt[`${h}|${d}`]={status:val(r,"status"),type:val(r,"use case"),source:val(r,"source"),note:val(r,"notes")};
+  const key=`${h}|${d}`;
+  const excelStatus=val(r,"status");
+  const excelType=val(r,"use case");
+  const excelSource=val(r,"source");
+  const excelNote=val(r,"notes");
+
+  if(merged[key]){
+    merged[key]={
+      ...merged[key],
+      ...(excelStatus?{status:excelStatus}:{}),
+      ...(excelType?{type:excelType}:{}),
+      ...(excelSource?{source:excelSource}:{}),
+      ...(excelNote?{note:excelNote}:{}),
+      dbRecord:true
+    };
+  }else{
+    // New routes are added only when the spreadsheet explicitly contains
+    // a non-empty status/use-case/source. No reverse inference is performed.
+    if(excelStatus || excelType || excelSource){
+      merged[key]={
+        status:excelStatus||"Not Yet Verified",
+        type:excelType||"—",
+        source:excelSource||"OMNAVIX database",
+        note:excelNote||"Directional route requires independent verification.",
+        dbRecord:true
+      };
+    }
+  }
 });
-CORRIDORS=rebuilt;
+CORRIDORS=merged;
+
 buildSelects();
-["homeCountry","payHomeCountry","whereHomeCountry"].forEach(id=>$(id)?.addEventListener("change",()=>{const destId=id==="homeCountry"?"homeDestination":id==="payHomeCountry"?"payDestination":"whereDestination";updateDestinationOptions(id,destId)}));
+["homeCountry","payHomeCountry","whereHomeCountry"].forEach(id=>{
+  $(id)?.addEventListener("change",()=>{
+    const destId=id==="homeCountry"?"homeDestination":id==="payHomeCountry"?"payDestination":"whereDestination";
+    updateDestinationOptions(id,destId)
+  });
+});
 populateCountryDetail();
+
 $("records").textContent=rows.length;
 $("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length;
 $("currencies").textContent=new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size;
 $("verified").textContent=rows[0]?val(rows[0],"last verified"):"—";
-$("dbStatus").innerHTML='<span class="ok">● Excel database loaded successfully</span> • '+DB;
-}catch(e){$("dbStatus").innerHTML='<span class="err">Database load failed: '+e.message+'</span>'}
+
+const verifiedCount=Object.keys(VERIFIED_CORRIDORS).length;
+const mergedCount=Object.keys(CORRIDORS).length;
+$("dbStatus").innerHTML=
+  '<span class="ok">● Excel database loaded successfully</span> • '+DB_VERSION+
+  ' • '+rows.length+' spreadsheet records'+
+  ' • '+verifiedCount+' protected directional routes'+
+  ' • '+mergedCount+' total route records';
+}catch(e){
+  // Keep the built-in verified registry alive even if Excel is unavailable.
+  CORRIDORS={...VERIFIED_CORRIDORS};
+  buildSelects();
+  populateCountryDetail();
+  $("dbStatus").innerHTML=
+    '<span class="warning">● Excel database unavailable</span> • Protected verification registry remains active'+
+    ' • '+Object.keys(VERIFIED_CORRIDORS).length+' directional routes available';
+}
 }
 function destinations(){return COUNTRY_LIST.map(c=>({name:c.name,r:rows.find(r=>val(r,"destination")===c.name)||{}}));}
 function buildCountryOptions(id,exclude){
@@ -284,16 +346,51 @@ function buildAllSelectors(){
 function updateDestinationOptions(homeId,destId){const home=$(homeId),dest=$(destId);if(!home||!dest)return;const h=home.value;dest.innerHTML='<option value="">Select destination</option>'+COUNTRY_LIST.filter(c=>c.name!==h).map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");}
 function buildSelects(){buildAllSelectors();}
 function findRows(name){return rows.filter(r=>val(r,"destination")===name)}
+function findRouteRows(home,dest,type){
+  return rows.filter(r=>
+    val(r,"home country")===home &&
+    val(r,"destination")===dest &&
+    (!type || val(r,"use case","payment type")===type)
+  );
+}
 function getHome(id){return $(id)?.value||"India"}
 function openPayment(){const h=getHome("homeCountry"),d=$("homeDestination").value;if(!d){alert("Select a destination.");return}$("payHomeCountry").value=h;updateDestinationOptions("payHomeCountry","payDestination");$("payDestination").value=d;document.querySelector('[data-tab="pay"]').click();checkPayment()}
 function checkPayment(){
  const h=getHome("payHomeCountry"),d=$("payDestination").value,out=$("payResult");
  if(!d){out.innerHTML="<b>Select a destination.</b>";out.classList.add("show");return}
- const c=corridor(h,d), r=findRows(d).find(x=>val(x,"use case","payment type")===(c?.type||"P2M"))||findRows(d)[0];
- if(!c){out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div><h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2><div class="warning"><b>Not yet independently verified.</b><br>OMNAVIX does not assume that a payment corridor works in both directions. We need an official source confirming this specific route before marking it live.</div><p class="source">Route status: <b>Not Yet Verified</b></p>`;out.classList.add("show");return}
- const cur=val(r||{},"local currency","currency")||countryObj(d).currency,partner=val(r||{},"local partner / network","partner")||"See verified corridor source";
+
+ const c=corridor(h,d);
+ const routeRows=findRouteRows(h,d,c?.type);
+ const r=routeRows[0]||findRouteRows(h,d)[0]||null;
+
+ if(!c){
+   out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
+   <h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2>
+   <div class="warning"><b>Not yet independently verified.</b><br>
+   OMNAVIX does not assume that a payment corridor works in both directions.
+   We need an official source confirming this specific route before marking it live.</div>
+   <p class="source">Route status: <b>Not Yet Verified</b></p>`;
+   out.classList.add("show");return
+ }
+
+ const cur=val(r||{},"local currency","currency")||countryObj(d).currency;
+ const partner=val(r||{},"local partner / network","partner")||"See verified corridor source";
  const badgeClass=c.status.includes("Live")||c.status.includes("Verified")?"live":"p2p";
- out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div><h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2><span class="badge ${badgeClass}">${esc(c.status)}</span><div class="grid"><div class="stat"><span class="muted">Payment type</span><strong>${esc(c.type)}</strong></div><div class="stat"><span class="muted">Currency</span><strong>${esc(cur)}</strong></div><div class="stat"><span class="muted">Partner / network</span><strong style="font-size:15px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Verification</span><strong style="font-size:15px">${esc(c.source)}</strong></div></div><p><b>Route information:</b> ${esc(c.note)}</p>${r?`<p><b>QR / acceptance:</b> ${esc(val(r,"qr / acceptance method"))}</p><p><b>Merchant coverage:</b> ${esc(val(r,"merchant coverage"))}</p>`:""}<div class="info"><b>OMNAVIX rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
+
+ out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
+ <h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2>
+ <span class="badge ${badgeClass}">${esc(c.status)}</span>
+ <div class="grid">
+ <div class="stat"><span class="muted">Payment type</span><strong>${esc(c.type)}</strong></div>
+ <div class="stat"><span class="muted">Currency</span><strong>${esc(cur)}</strong></div>
+ <div class="stat"><span class="muted">Partner / network</span><strong style="font-size:15px">${esc(partner)}</strong></div>
+ <div class="stat"><span class="muted">Verification</span><strong style="font-size:15px">${esc(c.source)}</strong></div>
+ </div>
+ <p><b>Route information:</b> ${esc(c.note)}</p>
+ ${r?`<p><b>QR / acceptance:</b> ${esc(val(r,"qr / acceptance method"))}</p>
+ <p><b>Merchant coverage:</b> ${esc(val(r,"merchant coverage"))}</p>
+ <p><b>Last verified:</b> ${esc(val(r,"last verified"))}</p>`:""}
+ <div class="info"><b>OMNAVIX rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
  out.classList.add("show");
 }
 function renderCountries(){
@@ -399,13 +496,18 @@ out.innerHTML='<div class="warning">Live FX is temporarily unavailable. OMNAVIX 
 }
 
 function renderStatus(){
+const protectedCount=Object.keys(VERIFIED_CORRIDORS).length;
+const mergedCount=Object.keys(CORRIDORS).length;
 $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.length?rows.length+" records loaded":"not loaded"}</p>
+<p><span class="ok">● Protected directional registry:</span> ${protectedCount} documented routes</p>
+<p><span class="ok">● Runtime route records:</span> ${mergedCount}</p>
+<p><span class="ok">● Reverse-route protection:</span> active — routes are never inferred in the opposite direction</p>
 <p><span class="ok">● Branding:</span> OMNAVIX logo + banner loaded from assets/</p>
 <p><span class="ok">● FX:</span> live reference lookup enabled with secondary fallback + cache</p>
 <p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
 <p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
 }
-function flag(n){return ({Singapore:"🇸🇬",Nepal:"🇳🇵","United Arab Emirates":"🇦🇪",UAE:"🇦🇪","Sri Lanka":"🇱🇰",Bhutan:"🇧🇹"})[n]||"🌍"}
+function flag(n){return countryObj(n).flag||"🌍"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 tabs();loadDB();$("whereDestination").onchange=renderWhere;
 </script>
