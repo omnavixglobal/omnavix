@@ -54,7 +54,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <section id="home" class="section active">
 <div class="card">
 <h2>Global Payment Intelligence</h2>
-<p>Choose your home country and destination. OMNAVIX reads the attached payment database and shows the payment route, network, currency and verification information.</p>
+<p>Choose your home country and destination. OMNAVIX uses its protected verified corridor registry and, when available, the attached payment database to show route, network, currency and verification information.</p>
 <div class="grid3">
 <div><label>Home country</label><select id="homeCountry"></select></div>
 <div><label>Destination</label><select id="homeDestination"></select></div>
@@ -72,7 +72,9 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <section id="pay" class="section">
 <div class="card">
-<h2>Can I Pay?</h2>
+<h2>Can I Pay?</h2><div id="upiHomeNote" class="muted" style="margin:8px 0 12px">
+Home Country is limited to the currently documented UPI-enabled origin for this prototype: India. Destination availability is checked separately by direction.
+</div>
 <div class="grid3">
 <div><label>Home country</label><select id="payHomeCountry"></select></div>
 <div><label>Destination</label><select id="payDestination"></select></div>
@@ -111,7 +113,9 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <section id="where" class="section">
 <div class="card">
-<h2>Where Can I Pay?</h2>
+<h2>Where Can I Pay?</h2><div id="upiWhereNote" class="muted" style="margin:8px 0 12px">
+Home Country options are restricted to documented UPI-enabled routes; reverse corridors are never inferred automatically.
+</div>
 <p class="muted">Find the documented international merchant-acceptance route for your destination. OMNAVIX shows verified network information and tells you what to look for at the merchant. It does not claim that every merchant in a country accepts UPI.</p>
 
 <div class="grid3" style="align-items:end">
@@ -188,20 +192,25 @@ const COUNTRY_LIST=[
  {name:"Mauritius",flag:"🇲🇺",currency:"MUR"},{name:"Greece",flag:"🇬🇷",currency:"EUR"},{name:"Uzbekistan",flag:"🇺🇿",currency:"UZS"},
  {name:"Maldives",flag:"🇲🇻",currency:"MVR"}
 ];
+const UPI_HOME_COUNTRIES=["India"];
+const UPI_HOME_COUNTRY_NOTE={
+  "India":"Outbound UPI merchant-payment corridors documented by NPCI / Government of India.",
+  "Nepal":"Inbound traveller / UPI One World route is documented for India; eligibility depends on participating issuers."
+};
 const VERIFIED_CORRIDORS={
- "India|Singapore":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance documented for participating merchants."},
- "India|Nepal":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via FonePay."},
- "India|UAE":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance through listed partners."},
- "India|Sri Lanka":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via LankaPay."},
- "India|Bhutan":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via RMA Bhutan."},
- "India|France":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via LYRA Network."},
- "India|Mauritius":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via Bank of Mauritius."},
- "India|Qatar":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via Qatar National Bank."},
- "India|Cambodia":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"Phase 1 merchant acceptance for Indian travellers."},
+ "India|Singapore":{status:"Verified Live",type:"P2M",source:"Government of India / PIB",partner:"NETS; HitPay; LiquidPay",note:"UPI merchant acceptance documented for participating merchants."},
+ "India|Nepal":{partner:"FonePay Payment Services Ltd.",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via FonePay."},
+ "India|UAE":{partner:"Mashreq/NeoPay; Network International; Magnati",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance through listed partners."},
+ "India|Sri Lanka":{partner:"Lanka Pay Pvt. Ltd.",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via LankaPay."},
+ "India|Bhutan":{partner:"RMA Bhutan",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via RMA Bhutan."},
+ "India|France":{partner:"LYRA Network",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via LYRA Network."},
+ "India|Mauritius":{partner:"Bank of Mauritius",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via Bank of Mauritius."},
+ "India|Qatar":{partner:"Qatar National Bank",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"UPI merchant acceptance via Qatar National Bank."},
+ "India|Cambodia":{partner:"ACLEDA Bank PLC",status:"Verified Live",type:"P2M",source:"Government of India / PIB",note:"Phase 1 merchant acceptance for Indian travellers."},
  "India|Greece":{status:"P2P Only",type:"P2P",source:"Government of India / PIB",note:"Documented as P2P, not merchant P2M in the July 2026 government table."},
- "India|Uzbekistan":{status:"Verified / Newly Enabled",type:"P2M",source:"Government of India / PIB",note:"NIPL–NIPC agreement enables Indian travellers to pay merchants through UZQR."},
+ "India|Uzbekistan":{partner:"HUMO / UZQR",status:"Verified / Newly Enabled",type:"P2M",source:"Government of India / PIB",note:"NIPL–NIPC agreement enables Indian travellers to pay merchants through UZQR."},
  "India|Maldives":{status:"P2P Live; QR P2M Future",type:"P2P",source:"Government of India / PIB",note:"Favara–UPI P2P is live; QR merchant payments were described as a subsequent phase."},
- "Nepal|India":{status:"Verified Live",type:"P2M",source:"NPCI International",note:"NPCI documents Nepali travellers using UPI One World for merchant payments in India."},
+ "Nepal|India":{partner:"UPI One World participating issuers",status:"Verified Live",type:"P2M",source:"NPCI International",note:"NPCI documents Nepali travellers using UPI One World for merchant payments in India."},
  "Cambodia|India":{status:"Not Yet Live",type:"P2M",source:"PIB / NPCI announcement",note:"Two-way corridor was described as a subsequent phase; do not present it as live."},
  "Maldives|India":{status:"Verified Live",type:"P2P",source:"Government of India / PIB",note:"Favara–UPI P2P transfer corridor is live."}
 };
@@ -275,6 +284,7 @@ raw.forEach(r=>{
       ...(excelStatus?{status:excelStatus}:{}),
       ...(excelType?{type:excelType}:{}),
       ...(excelSource?{source:excelSource}:{}),
+      ...(val(r,"partner / institution")?{partner:val(r,"partner / institution")}:{}),
       ...(excelNote?{note:excelNote}:{}),
       dbRecord:true
     };
@@ -286,6 +296,7 @@ raw.forEach(r=>{
         status:excelStatus||"Not Yet Verified",
         type:excelType||"—",
         source:excelSource||"OMNAVIX database",
+        partner:val(r,"partner / institution")||"",
         note:excelNote||"Directional route requires independent verification.",
         dbRecord:true
       };
@@ -294,7 +305,7 @@ raw.forEach(r=>{
 });
 CORRIDORS=merged;
 
-buildSelects();
+buildAllSelectors();
 ["homeCountry","payHomeCountry","whereHomeCountry"].forEach(id=>{
   $(id)?.addEventListener("change",()=>{
     const destId=id==="homeCountry"?"homeDestination":id==="payHomeCountry"?"payDestination":"whereDestination";
@@ -303,10 +314,14 @@ buildSelects();
 });
 populateCountryDetail();
 
-$("records").textContent=rows.length;
-$("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length;
-$("currencies").textContent=new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size;
-$("verified").textContent=rows[0]?val(rows[0],"last verified"):"—";
+const protectedKeys=Object.keys(VERIFIED_CORRIDORS);
+$("records").textContent=rows.length||protectedKeys.length;
+$("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length ||
+  protectedKeys.filter(k=>(VERIFIED_CORRIDORS[k].type||"")==="P2M").length;
+$("currencies").textContent=rows.length
+  ? new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size
+  : new Set(COUNTRY_LIST.map(c=>c.currency).filter(Boolean)).size;
+$("verified").textContent=rows[0]?val(rows[0],"last verified"):"21-Sep-2026";
 
 const verifiedCount=Object.keys(VERIFIED_CORRIDORS).length;
 const mergedCount=Object.keys(CORRIDORS).length;
@@ -318,20 +333,31 @@ $("dbStatus").innerHTML=
 }catch(e){
   // Keep the built-in verified registry alive even if Excel is unavailable.
   CORRIDORS={...VERIFIED_CORRIDORS};
-  buildSelects();
+  buildAllSelectors();
   populateCountryDetail();
   $("dbStatus").innerHTML=
-    '<span class="warning">● Excel database unavailable</span> • Protected verification registry remains active'+
-    ' • '+Object.keys(VERIFIED_CORRIDORS).length+' directional routes available';
+    '<span class="ok">● Core corridor registry active</span> • Excel enrichment unavailable in this local preview'+
+    ' • '+Object.keys(VERIFIED_CORRIDORS).length+' protected directional routes available';
 }
 }
-function destinations(){return COUNTRY_LIST.map(c=>({name:c.name,r:rows.find(r=>val(r,"destination")===c.name)||{}}));}
-function buildCountryOptions(id,exclude){
+function destinations(){
+ const names=new Set();
+ Object.keys(CORRIDORS).forEach(k=>{
+  const parts=k.split("|");
+  if(parts.length===2 && parts[0]==="India") names.add(parts[1]);
+ });
+ return [...names].map(name=>({name,r:routeRecord("India",name)}));
+}
+function buildCountryOptions(id, selected, homeMode=false){
  const el=$(id); if(!el)return;
- el.innerHTML='<option value="">Select home country</option>'+COUNTRY_LIST.filter(c=>c.name!==exclude).map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");
+ const list=homeMode?UPI_HOME_COUNTRIES:COUNTRY_LIST.map(c=>c.name);
+ el.innerHTML=list.map(n=>{
+   const c=countryObj(n);
+   return `<option value="${esc(n)}" ${n===selected?"selected":""}>${c.flag||"🌍"} ${esc(n)}</option>`;
+ }).join("");
 }
 function buildAllSelectors(){
- buildCountryOptions("homeCountry"); buildCountryOptions("payHomeCountry"); buildCountryOptions("whereHomeCountry");
+ buildCountryOptions("homeCountry","India",true); buildCountryOptions("payHomeCountry","India",true); buildCountryOptions("whereHomeCountry","India",true);
  const opts=COUNTRY_LIST.map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");
  ["homeDestination","payDestination","whereDestination"].forEach(id=>{if($(id))$(id).innerHTML='<option value="">Select destination</option>'+opts});
  if($("homeCountry"))$("homeCountry").value="India";
@@ -343,18 +369,68 @@ function buildAllSelectors(){
  $("fxCurrency").innerHTML=currencies.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
  $("fxHomeCurrency").value="INR";
 }
-function updateDestinationOptions(homeId,destId){const home=$(homeId),dest=$(destId);if(!home||!dest)return;const h=home.value;dest.innerHTML='<option value="">Select destination</option>'+COUNTRY_LIST.filter(c=>c.name!==h).map(c=>`<option value="${esc(c.name)}">${c.flag} ${esc(c.name)}</option>`).join("");}
-function buildSelects(){buildAllSelectors();}
-function findRows(name){return rows.filter(r=>val(r,"destination")===name)}
-function findRouteRows(home,dest,type){
-  return rows.filter(r=>
-    val(r,"home country")===home &&
-    val(r,"destination")===dest &&
-    (!type || val(r,"use case","payment type")===type)
-  );
+function updateDestinationOptions(homeId,destId){
+ const h=$(homeId)?.value, el=$(destId); if(!el)return;
+ const available=new Set();
+ Object.keys(CORRIDORS).forEach(k=>{
+   const parts=k.split("|");
+   if(parts.length===2 && parts[0]===h) available.add(parts[1]);
+ });
+ // Only show destinations with an explicitly documented route for this home country.
+ const list=[...available].filter(n=>countryObj(n)).sort((a,b)=>a.localeCompare(b));
+ el.innerHTML='<option value="">Select destination</option>'+
+   list.map(n=>`<option value="${esc(n)}">${countryObj(n).flag||"🌍"} ${esc(n)}</option>`).join("");
 }
 function getHome(id){return $(id)?.value||"India"}
 function openPayment(){const h=getHome("homeCountry"),d=$("homeDestination").value;if(!d){alert("Select a destination.");return}$("payHomeCountry").value=h;updateDestinationOptions("payHomeCountry","payDestination");$("payDestination").value=d;document.querySelector('[data-tab="pay"]').click();checkPayment()}
+function routeRecord(home,dest,type){
+ const c=corridor(home,dest);
+ if(!c)return null;
+ const rr=findRouteRowsRaw(home,dest,type||c.type)[0]||findRouteRowsRaw(home,dest)[0]||null;
+ if(rr)return rr;
+ const co=countryObj(dest)||{};
+ return {
+  "home country":home,
+  "destination":dest,
+  "use case":c.type||"",
+  "status":c.status||"",
+  "partner":c.partner||"",
+  "local partner / network":c.partner||"",
+  "local currency":co.currency||"",
+  "currency":co.currency||"",
+  "merchant coverage":(c.status||"").includes("Announced")?"Newly enabled / announced — verify merchant availability":"Participating merchants",
+  "qr / acceptance method":"QR / compatible network-partner acceptance",
+  "last verified":"21-Sep-2026",
+  "source":c.source||"",
+  "notes":c.note||""
+ };
+}
+function findRouteRowsRaw(home,dest,type){
+ return rows.filter(r=>
+  val(r,"home country")===home &&
+  val(r,"destination")===dest &&
+  (!type || val(r,"use case","payment type")===type)
+ );
+}
+function findRouteRows(home,dest,type){
+ const rr=findRouteRowsRaw(home,dest,type);
+ if(rr.length)return rr;
+ const fallback=routeRecord(home,dest,type);
+ return fallback?[fallback]:[];
+}
+function findRows(name){
+ const rr=rows.filter(r=>val(r,"destination")===name);
+ if(rr.length)return rr;
+ const out=[];
+ Object.keys(CORRIDORS).forEach(k=>{
+  const parts=k.split("|");
+  if(parts.length===2 && parts[1]===name){
+   const r=routeRecord(parts[0],parts[1]);
+   if(r)out.push(r);
+  }
+ });
+ return out;
+}
 function checkPayment(){
  const h=getHome("payHomeCountry"),d=$("payDestination").value,out=$("payResult");
  if(!d){out.innerHTML="<b>Select a destination.</b>";out.classList.add("show");return}
@@ -374,7 +450,9 @@ function checkPayment(){
  }
 
  const cur=val(r||{},"local currency","currency")||countryObj(d).currency;
- const partner=val(r||{},"local partner / network","partner")||"See verified corridor source";
+ const partner=val(r||{},"local partner / network","partner")||(
+  c.partner||"See verified corridor source"
+);
  const badgeClass=c.status.includes("Live")||c.status.includes("Verified")?"live":"p2p";
 
  out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
@@ -412,7 +490,7 @@ function renderCountryDetail(){
 const d=$("countryDetail").value,out=$("countryDetailBox");
 if(!d){out.innerHTML="";return}
 const records=findRows(d);
-if(!records.length){out.innerHTML="";return}
+if(!records.length){out.innerHTML="<div class=\"warning\">No documented payment route is currently recorded for this destination.</div>";return}
 out.innerHTML=records.map(r=>{
 const type=val(r,"use case","payment type"),source=val(r,"source url");
 return `<div class="card" style="margin-top:16px">
@@ -438,8 +516,20 @@ function renderWhere(){
  if(!d){out.innerHTML='<div class="warning">Select a destination first.</div>';return}
  const c=corridor(h,d);
  if(!c){out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><div class="warning"><b>Not Yet Independently Verified</b><br>OMNAVIX has no verified merchant-acceptance record for this direction yet. This does not mean the route is unavailable.</div></div>`;return}
- const r=findRows(d).find(x=>val(x,"use case","payment type")==="P2M");
- if(c.type!=="P2M" || !r){out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge p2p">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="info"><b>Merchant payment:</b> No verified P2M record is displayed for this route.</div></div>`;return}
+ const routeRows=findRouteRows(h,d,"P2M");
+ const r=routeRows[0]||routeRecord(h,d,"P2M");
+ if(c.type!=="P2M" || !r){
+   if(c.type==="P2M" && c.partner){
+     const badge=(c.status||"").includes("Live")||((c.status||"").includes("Verified"))?"live":"p2p";
+     const acceptance=(c.status||"").includes("Announced")?"Newly enabled / announced — verify merchant availability":"Participating merchants";
+     const paymentText=(c.status||"").includes("Announced")
+       ?"The corridor is documented as newly enabled/announced; verify operational merchant availability before relying on it."
+       :"P2M acceptance is documented for this direction. Confirm the specific merchant and review the final amount before authorisation.";
+     out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge ${badge}">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(c.partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">${esc(acceptance)}</strong></div><div class="stat"><span class="muted">Status</span><strong style="font-size:16px">${esc(c.status)}</strong></div></div><div class="info" style="margin-top:12px"><b>Merchant payment:</b> ${paymentText}</div></div>`;
+     return;
+   }
+   out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge p2p">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="info"><b>Merchant payment:</b> No verified P2M record is displayed for this route.</div></div>`;return
+ }
  const partner=val(r,"local partner / network","partner"),coverage=val(r,"merchant coverage"),qr=val(r,"qr / acceptance method"),verified=val(r,"last verified"),source=val(r,"source url");
  out.innerHTML=`<div class="card" style="margin:0"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge live">${esc(c.status)}</span></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div><div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div></div><div class="info" style="margin-top:12px"><b>Before you pay:</b> Confirm the merchant accepts this specific route and review the final amount, exchange rate and applicable fees before authorisation.</div><p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p></div>`;
 }
@@ -509,7 +599,7 @@ $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.
 }
 function flag(n){return countryObj(n).flag||"🌍"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-tabs();loadDB();$("whereDestination").onchange=renderWhere;
+tabs();buildAllSelectors();loadDB();$("whereDestination").onchange=renderWhere;
 </script>
 </body>
 </html>
