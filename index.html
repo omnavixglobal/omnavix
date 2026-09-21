@@ -234,23 +234,52 @@ const from=$("fxHomeCurrency").value,to=$("fxCurrency").value,amount=parseFloat(
 if(!to){out.innerHTML='<div class="warning">Select a destination currency first.</div>';return}
 if(from===to){out.innerHTML=`<div class="stat"><span class="muted">Same currency</span><div class="money">${amount.toFixed(2)} ${esc(to)} = ${amount.toFixed(2)} ${esc(from)}</div></div>`;return}
 out.innerHTML="<p>Fetching current reference rate…</p>";
-try{
-const res=await fetch(`https://api.frankfurter.app/latest?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
-if(!res.ok)throw new Error("FX service unavailable");
-const d=await res.json(),rate=d.rates[to],homeAmount=amount/rate;
-const localPerHome=rate;
+const cacheKey=`omnavix_fx_${from}_${to}`;
+function showRate(rate,date,source,label){
+const homeAmount=amount/rate;
 out.innerHTML=`<div class="grid3">
 <div class="stat"><span class="muted">Destination amount</span><div class="money">${amount.toFixed(2)} ${esc(to)}</div></div>
 <div class="stat"><span class="muted">Estimated home amount</span><div class="money">₹${homeAmount.toFixed(2)}</div></div>
-<div class="stat"><span class="muted">Reference rate (${esc(d.date)})</span><strong style="font-size:17px">1 INR = ${localPerHome.toFixed(6)} ${esc(to)}</strong><span class="muted">1 ${esc(to)} ≈ ₹${homeAmount/amount>0?(homeAmount/amount).toFixed(4):'—'}</span></div>
+<div class="stat"><span class="muted">Reference rate (${esc(date)})</span><strong style="font-size:17px">1 ${esc(from)} = ${Number(rate).toFixed(6)} ${esc(to)}</strong><span class="muted">1 ${esc(to)} ≈ ₹${homeAmount/amount>0?(homeAmount/amount).toFixed(4):'—'}</span></div>
 </div>
-<div class="source" style="margin-top:12px">Reference source: Frankfurter public FX service. Rate date: ${esc(d.date)}. This is not a provider quote.</div>`;
-}catch(e){out.innerHTML='<div class="warning">Live FX is temporarily unavailable. Please retry with an internet connection. The payment database itself is still available.</div>'}
+<div class="source" style="margin-top:12px">Reference source: ${esc(source)}. ${esc(label)}. This is not a provider quote.</div>`;
 }
+try{
+// Primary: current Frankfurter v2 rate endpoint.
+const res=await fetch(`https://api.frankfurter.dev/v2/rate/${encodeURIComponent(from)}/${encodeURIComponent(to)}`,{cache:"no-store"});
+if(!res.ok)throw new Error("Primary FX service unavailable");
+const d=await res.json(),rate=Number(d.rate);
+if(!rate)throw new Error("Primary rate unavailable");
+localStorage.setItem(cacheKey,JSON.stringify({rate,date:d.date,source:"Frankfurter"}));
+showRate(rate,d.date,"Frankfurter","Latest available reference rate");
+return;
+}catch(e){}
+try{
+// Secondary: browser-accessible open ER-API fallback.
+const res=await fetch(`https://open.er-api.com/v6/latest/${encodeURIComponent(from)}`,{cache:"no-store"});
+if(!res.ok)throw new Error("Secondary FX service unavailable");
+const d=await res.json(),rate=Number(d?.rates?.[to]);
+if(!rate)throw new Error("Secondary rate unavailable");
+const date=d.time_last_update_utc||"latest available";
+localStorage.setItem(cacheKey,JSON.stringify({rate,date,source:"Open ER-API"}));
+showRate(rate,date,"Open ER-API","Secondary reference rate");
+return;
+}catch(e){}
+try{
+const cached=JSON.parse(localStorage.getItem(cacheKey)||"null");
+if(cached&&Number(cached.rate)>0){
+showRate(Number(cached.rate),cached.date||"previous session",cached.source||"OMNAVIX cache","Cached fallback — live services were unavailable");
+out.innerHTML += '<div class="warning" style="margin-top:10px">Live FX could not be reached right now. Please review the final exchange rate and applicable charges shown by your payment provider before authorisation.</div>';
+return;
+}
+}catch(e){}
+out.innerHTML='<div class="warning">Live FX is temporarily unavailable. OMNAVIX tried two reference-rate services and has no cached rate for this currency pair. Please retry when internet access is available. The payment database itself remains available.</div>';
+}
+
 function renderStatus(){
 $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.length?rows.length+" records loaded":"not loaded"}</p>
 <p><span class="ok">● Branding:</span> OMNAVIX logo + banner loaded from assets/</p>
-<p><span class="ok">● FX:</span> live reference lookup enabled</p>
+<p><span class="ok">● FX:</span> live reference lookup enabled with secondary fallback + cache</p>
 <p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
 <p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
 }
