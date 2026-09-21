@@ -147,10 +147,16 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <section id="countries" class="section">
 <div class="card">
-<h2>OMNAVIX Country Database</h2>
-<input id="search" placeholder="Search country, partner, currency or payment type…" oninput="renderTable()">
-<div style="overflow:auto"><table><thead><tr><th>Destination</th><th>Type</th><th>Currency</th><th>Partner / Network</th><th>Status</th><th>Verified</th></tr></thead><tbody id="table"></tbody></table></div>
+<h2>Countries & Payment Networks</h2>
+<p class="muted">Explore the international payment corridors currently documented in the OMNAVIX database. Select a country to view its payment type, currency, partner/network, QR acceptance information and verification date.</p>
+<div class="grid3" style="align-items:end">
+  <div style="grid-column:span 2"><label>Search</label><input id="search" placeholder="Search country, partner, currency or payment type…" oninput="renderCountries()"></div>
+  <div><label>Country</label><select id="countryDetail" onchange="renderCountryDetail()"><option value="">Select a country</option></select></div>
 </div>
+<div id="countryCards" class="grid3" style="margin-top:16px"></div>
+</div>
+<div id="countryDetailBox"></div>
+<div class="info"><b>OMNAVIX principle:</b> “Live” means the payment corridor is documented as operational for the stated use case. It does not mean every merchant accepts the payment method. Merchant-level acceptance should be confirmed at the point of payment.</div>
 </section>
 
 <section id="data" class="section">
@@ -183,7 +189,7 @@ document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"))
 b.classList.add("active");
 document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
 $(b.dataset.tab).classList.add("active");
-if(b.dataset.tab==="countries")renderTable();
+if(b.dataset.tab==="countries"){renderCountries();populateCountryDetail();}
 if(b.dataset.tab==="data")renderStatus();
 });
 }
@@ -198,6 +204,7 @@ const wb=XLSX.read(buf,{type:"array"});
 const sheet=wb.Sheets["Payment Database"]||wb.Sheets[wb.SheetNames[0]];
 rows=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
 buildSelects();
+populateCountryDetail();
 $("records").textContent=rows.length;
 $("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length;
 $("currencies").textContent=new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size;
@@ -240,13 +247,45 @@ out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
 <p class="source">Source: <a href="${esc(val(p2m,"source url"))}" target="_blank" rel="noopener">official source</a></p>`;
 out.classList.add("show");
 }
-function renderTable(){
+function renderCountries(){
 const q=($("search").value||"").toLowerCase();
-const f=rows.filter(r=>Object.values(r).join(" ").toLowerCase().includes(q));
-$("table").innerHTML=f.map(r=>`<tr><td><b>${flag(val(r,"destination"))} ${esc(val(r,"destination"))}</b></td>
-<td><span class="badge ${val(r,"use case","payment type")==="P2M"?"live":"p2p"}">${esc(val(r,"use case","payment type"))}</span></td>
-<td>${esc(val(r,"local currency","currency"))}</td><td>${esc(val(r,"local partner / network","partner"))}</td>
-<td>${esc(val(r,"status"))}</td><td>${esc(val(r,"last verified"))}</td></tr>`).join("");
+const f=destinations().filter(x=>Object.values(x.r).join(" ").toLowerCase().includes(q));
+$("countryCards").innerHTML=f.map(x=>{
+const r=x.r,type=val(r,"use case","payment type"),status=val(r,"status");
+return `<div class="stat" style="cursor:pointer;border:1px solid var(--line)" onclick="selectCountry('${esc(x.name).replace(/'/g,"\'")}')">
+<div style="font-size:28px">${flag(x.name)}</div><span class="muted">Destination</span><strong style="font-size:20px">${esc(x.name)}</strong>
+<span class="badge ${type==="P2M"?"live":"p2p"}">${esc(type)}</span>
+<div class="muted" style="margin-top:10px">Currency: <b>${esc(val(r,"local currency","currency"))}</b></div>
+<div class="muted">Network: ${esc(val(r,"local partner / network","partner"))}</div>
+<div class="muted">Status: <b>${esc(status)}</b></div>
+</div>`;
+}).join("") || '<div class="warning" style="grid-column:1/-1">No matching country found.</div>';
+}
+function selectCountry(name){$("countryDetail").value=name;renderCountryDetail();$("countryDetailBox").scrollIntoView({behavior:"smooth",block:"start"});}
+function renderCountryDetail(){
+const d=$("countryDetail").value,out=$("countryDetailBox");
+if(!d){out.innerHTML="";return}
+const records=findRows(d);
+if(!records.length){out.innerHTML="";return}
+out.innerHTML=records.map(r=>{
+const type=val(r,"use case","payment type"),source=val(r,"source url");
+return `<div class="card" style="margin-top:16px">
+<div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><div><div class="muted">COUNTRY PAYMENT PROFILE</div><h2 style="margin:4px 0">${flag(d)} ${esc(d)}</h2></div><span class="badge ${type==="P2M"?"live":"p2p"}">${esc(type)}</span></div>
+<div class="grid" style="margin-top:14px">
+<div class="stat"><span class="muted">Currency</span><strong>${esc(val(r,"local currency","currency"))}</strong></div>
+<div class="stat"><span class="muted">Payment partner / network</span><strong style="font-size:15px">${esc(val(r,"local partner / network","partner"))}</strong></div>
+<div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:15px">${esc(val(r,"qr / acceptance method"))}</strong></div>
+<div class="stat"><span class="muted">Status</span><strong style="font-size:17px">${esc(val(r,"status"))}</strong></div>
+</div>
+<div class="grid3" style="margin-top:12px">
+<div class="stat"><span class="muted">Merchant coverage</span><strong style="font-size:16px">${esc(val(r,"merchant coverage"))}</strong></div>
+<div class="stat"><span class="muted">Fee information</span><strong style="font-size:15px">${esc(val(r,"fee information"))}</strong></div>
+<div class="stat"><span class="muted">Live since</span><strong style="font-size:16px">${esc(val(r,"live since"))}</strong></div>
+</div>
+<div class="info" style="margin-top:14px"><b>Traveller guidance:</b> Confirm that the merchant accepts the relevant QR/payment route, then review the final foreign amount, home-currency amount, exchange rate and applicable fees before authorisation.</div>
+<p class="source">Last verified: <b>${esc(val(r,"last verified"))}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p>
+</div>`;
+}).join("");
 }
 function renderWhere(){
 const d=$("whereDestination").value;
@@ -278,6 +317,10 @@ return `<div class="card" style="margin:0 0 14px 0">
   <p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p>
 </div>`;
 }).join("");
+}
+function populateCountryDetail(){
+const ds=destinations();
+$("countryDetail").innerHTML='<option value="">Select a country</option>'+ds.map(x=>`<option value="${esc(x.name)}">${flag(x.name)} ${esc(x.name)}</option>`).join("");
 }
 function setFXAmount(n){$("fxAmount").value=n;convertFX()}
 async function convertFX(){
