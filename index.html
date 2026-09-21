@@ -85,7 +85,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div id="dbStatus" class="source">Loading OMNAVIX database…</div>
 <div id="homeAssistant" class="v12Hero">
   <div class="v12Title">
-    <div><span class="v12Pill">V12</span> <h3 style="display:inline">Traveller Decision Assistant</h3></div>
+    <div><span class="v12Pill">V13</span> <h3 style="display:inline">Traveller Decision Assistant</h3></div>
     <span class="muted">Choose a route to see a traveller-ready summary.</span>
   </div>
   <div id="homeAssistantBody" class="muted" style="margin-top:10px">Select a destination to generate the route summary.</div>
@@ -107,7 +107,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
       <h2 style="margin-bottom:4px">Traveller Decision Assistant</h2>
       <p class="muted" style="margin:0">A compact route summary that brings payment availability, acceptance, currency and verification information together before you travel.</p>
     </div>
-    <span class="v12Pill">V12.4 • Decision support</span>
+    <span class="v12Pill">V13 • Dynamic database intelligence</span>
   </div>
   <div class="grid3" style="margin-top:16px">
     <div><label>Home country</label><select id="assistantHomeCountry" onchange="renderAssistant()"></select></div>
@@ -226,23 +226,23 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 <div id="statusBox"></div>
 <h3 style="margin-top:20px">How this prototype works</h3>
 <ol>
-<li>The website loads <b>data/OMNAVIX_Master_Payment_Database.xlsx</b>.</li>
-<li>JavaScript reads the “Payment Database” worksheet in the browser.</li>
+<li>The website loads <b>data/OMNAVIX_Global_Corridor_Database_V1.xlsx</b>.</li>
+<li>JavaScript reads the <b>Corridor Database</b> worksheet in the browser.</li>
 <li>Country/payment information is displayed dynamically.</li>
 <li>The currency module fetches a current reference rate when connected to the internet.</li>
-<li>You can update the Excel file and replace it in the website folder.</li>
+<li>You can update the Excel corridor records and replace the database file in the website folder; the protected registry remains as a safety floor.</li>
 </ol>
 <div class="warning"><b>Production recommendation:</b> move the master data to a controlled database/API after the research prototype. Excel is excellent for the first MVP, but it should not remain the production system of record.</div>
 </div>
 </section>
 </main>
-<footer>OMNAVIX Research & Product Prototype • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+<footer>OMNAVIX Research & Product Prototype • V13 Dynamic Global Database • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
 </div>
 
 <script>
 let rows=[];
 const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
-const DB_VERSION="Global Corridor Database V1 • Traveller Intelligence V12 • Decision Assistant";
+const DB_VERSION="Global Corridor Database V1 • V13 Dynamic Global Database";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
  {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
@@ -280,23 +280,6 @@ const VERIFIED_CORRIDORS={
  "Maldives|India":{status:"Verified Live",type:"P2P",source:"Government of India / PIB",liveSince:"2026",note:"Favara–UPI P2P transfer corridor is live."}
 };
 let CORRIDORS={...VERIFIED_CORRIDORS};
-const ROUTE_LIVE_SINCE={
- "India|Bhutan":"July 2021",
- "India|France":"February 2024",
- "India|Mauritius":"February 2024",
- "India|Nepal":"March 2024",
- "India|Qatar":"September 2025",
- "India|Singapore":"August 2021",
- "India|Sri Lanka":"February 2024",
- "India|UAE":"April 2022",
- "India|Cambodia":"June 2026",
- "India|Greece":"June 2026",
- "India|Uzbekistan":"August 2026",
- "India|Maldives":"July 2026",
- "Nepal|India":"2026",
- "Cambodia|India":"TBD"
-};
-
 function countryObj(name){return COUNTRY_LIST.find(c=>c.name===name)||{name,flag:"🌍",currency:""}}
 function routeKey(home,dest){return `${home}|${dest}`}
 function corridor(home,dest){return CORRIDORS[routeKey(home,dest)]||null}
@@ -315,14 +298,13 @@ function normalize(r){const o={};Object.keys(r).forEach(k=>o[k.trim().toLowerCas
 function val(o,...keys){for(const k of keys){if(o[k]!==undefined&&o[k]!==null&&o[k]!=="")return String(o[k])}return ""}
 async function loadDB(){
 try{
-const res=await fetch(DB+"?v="+Date.now());
-if(!res.ok)throw new Error("Database file could not be loaded");
-const buf=await res.arrayBuffer();
-const wb=XLSX.read(buf,{type:"array"});
-const sheet=wb.Sheets["Corridor Database"]||wb.Sheets[wb.SheetNames[0]];
-const raw=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
-
-rows=raw.map(r=>({
+ const res=await fetch(DB+"?v="+Date.now());
+ if(!res.ok)throw new Error("Database file could not be loaded");
+ const buf=await res.arrayBuffer();
+ const wb=XLSX.read(buf,{type:"array"});
+ const sheet=wb.Sheets["Corridor Database"]||wb.Sheets[wb.SheetNames[0]];
+ const raw=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
+ rows=raw.map(r=>({
   "home country":val(r,"home country"),
   "destination":val(r,"destination"),
   "payment rail":val(r,"payment rail"),
@@ -340,90 +322,72 @@ rows=raw.map(r=>({
   "source":val(r,"source"),
   "notes":val(r,"notes"),
   "source url":sourceUrl(val(r,"source"))
-}));
+ }));
 
-/*
- V3 SAFETY RULE:
- Start with the built-in directional verification registry.
- Excel can enrich a route that exists in the registry, or add a new
- explicitly documented route. A missing/partial Excel row can NEVER
- erase a verified route.
-*/
-const merged={...VERIFIED_CORRIDORS};
-
-raw.forEach(r=>{
+ /* V13 DATA RULE: Excel is the dynamic enrichment/source layer, while the
+    protected registry remains the safety floor. Direction is always explicit. */
+ const merged={...VERIFIED_CORRIDORS};
+ raw.forEach(r=>{
   const h=val(r,"home country"),d=val(r,"destination");
   if(!h||!d)return;
   const key=`${h}|${d}`;
-  const excelStatus=val(r,"status");
-  const excelType=val(r,"use case");
-  const excelSource=val(r,"source");
-  const excelNote=val(r,"notes");
-
+  const explicit=val(r,"status")||val(r,"use case")||val(r,"source");
+  if(!explicit)return;
+  const dbFields={
+   dbRecord:true,
+   rail:val(r,"payment rail"),
+   currency:val(r,"local currency"),
+   acceptance:val(r,"acceptance / scope"),
+   coverage:val(r,"acceptance / scope"),
+   fee:"Provider-dependent; final applicable charges should be reviewed before authorisation.",
+   liveSince:val(r,"live since"),
+   lastVerified:val(r,"last verified"),
+   sourceUrl:sourceUrl(val(r,"source"))
+  };
   if(merged[key]){
-    merged[key]={
-      ...merged[key],
-      ...(excelStatus?{status:excelStatus}:{}),
-      ...(excelType?{type:excelType}:{}),
-      ...(excelSource?{source:excelSource}:{}),
-      ...(val(r,"partner / institution")?{partner:val(r,"partner / institution")}:{}),
-      ...(excelNote?{note:excelNote}:{}),
-      dbRecord:true
-    };
+   merged[key]={...merged[key],...dbFields,
+    ...(val(r,"status")?{status:val(r,"status")}:{}),
+    ...(val(r,"use case")?{type:val(r,"use case")}:{}),
+    ...(val(r,"source")?{source:val(r,"source")}:{}),
+    ...(val(r,"partner / institution")?{partner:val(r,"partner / institution")}:{}),
+    ...(val(r,"notes")?{note:val(r,"notes")}: {})};
   }else{
-    // New routes are added only when the spreadsheet explicitly contains
-    // a non-empty status/use-case/source. No reverse inference is performed.
-    if(excelStatus || excelType || excelSource){
-      merged[key]={
-        status:excelStatus||"Not Yet Verified",
-        type:excelType||"—",
-        source:excelSource||"OMNAVIX database",
-        partner:val(r,"partner / institution")||"",
-        note:excelNote||"Directional route requires independent verification.",
-        dbRecord:true
-      };
-    }
+   merged[key]={status:val(r,"status")||"Not Yet Verified",type:val(r,"use case")||"—",source:val(r,"source")||"OMNAVIX database",partner:val(r,"partner / institution")||"",note:val(r,"notes")||"Directional route requires independent verification.",...dbFields};
   }
-});
-CORRIDORS=merged;
+ });
+ CORRIDORS=merged;
 
-buildAllSelectors();
-["homeCountry","payHomeCountry","whereHomeCountry"].forEach(id=>{
+ buildAllSelectors();
+ ["homeCountry","payHomeCountry","whereHomeCountry"].forEach(id=>{
   $(id)?.addEventListener("change",()=>{
-    const destId=id==="homeCountry"?"homeDestination":id==="payHomeCountry"?"payDestination":"whereDestination";
-    updateDestinationOptions(id,destId)
+   const destId=id==="homeCountry"?"homeDestination":id==="payHomeCountry"?"payDestination":"whereDestination";
+   updateDestinationOptions(id,destId);
   });
-});
-populateCountryDetail();
+ });
+ populateCountryDetail();
 
-const protectedKeys=Object.keys(VERIFIED_CORRIDORS);
-$("records").textContent=rows.length||protectedKeys.length;
-$("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length ||
-  protectedKeys.filter(k=>(VERIFIED_CORRIDORS[k].type||"")==="P2M").length;
-$("currencies").textContent=rows.length
-  ? new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size
-  : new Set(COUNTRY_LIST.map(c=>c.currency).filter(Boolean)).size;
-$("verified").textContent=rows[0]?val(rows[0],"last verified"):"21-Sep-2026";
+ const protectedKeys=Object.keys(VERIFIED_CORRIDORS);
+ const p2mCount=rows.filter(r=>val(r,"use case","payment type")==="P2M").length;
+ const currencyCount=new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size;
+ const verifiedDates=rows.map(r=>val(r,"last verified")).filter(Boolean);
+ $("records").textContent=rows.length||protectedKeys.length;
+ $("p2m").textContent=p2mCount||protectedKeys.filter(k=>(VERIFIED_CORRIDORS[k].type||"")==="P2M").length;
+ $("currencies").textContent=currencyCount||new Set(COUNTRY_LIST.map(c=>c.currency).filter(Boolean)).size;
+ $("verified").textContent=verifiedDates[0]||"21-Sep-2026";
 
-const verifiedCount=Object.keys(VERIFIED_CORRIDORS).length;
-const mergedCount=Object.keys(CORRIDORS).length;
-$("dbStatus").innerHTML=
-  '<span class="ok">● Excel database loaded successfully</span> • '+DB_VERSION+
-  ' • '+rows.length+' spreadsheet records'+
-  ' • '+verifiedCount+' protected directional routes'+
-  ' • '+mergedCount+' total route records';
-buildAssistantSelectors();renderAssistant();
+ const verifiedCount=Object.keys(VERIFIED_CORRIDORS).length;
+ const mergedCount=Object.keys(CORRIDORS).length;
+ $("dbStatus").innerHTML='<span class="ok">● Excel database loaded successfully</span> • '+DB_VERSION+' • '+rows.length+' spreadsheet records • '+verifiedCount+' protected directional routes • '+mergedCount+' total route records';
+ buildAssistantSelectors();renderAssistant();
 }catch(e){
-  // Keep the built-in verified registry alive even if Excel is unavailable.
-  CORRIDORS={...VERIFIED_CORRIDORS};
-  buildAllSelectors();
-  populateCountryDetail();
-  $("dbStatus").innerHTML=
-    '<span class="ok">● Core corridor registry active</span> • Excel enrichment unavailable in this local preview'+
-    ' • '+Object.keys(VERIFIED_CORRIDORS).length+' protected directional routes available';
-  buildAssistantSelectors();renderAssistant();
+ CORRIDORS={...VERIFIED_CORRIDORS};
+ buildAllSelectors();
+ populateCountryDetail();
+ $("dbStatus").innerHTML='<span class="ok">● Core corridor registry active</span> • Excel dynamic layer unavailable in this preview • '+Object.keys(VERIFIED_CORRIDORS).length+' protected directional routes available';
+ buildAssistantSelectors();renderAssistant();
 }
 }
+
 function destinations(){
  const names=new Set();
  Object.keys(CORRIDORS).forEach(k=>{
@@ -480,17 +444,17 @@ function routeRecord(home,dest,type){
   "status":c.status||"",
   "partner":c.partner||"",
   "local partner / network":c.partner||"",
-  "local currency":co.currency||"",
-  "currency":co.currency||"",
-  "merchant coverage":(c.status||"").includes("Announced")?"Newly enabled / announced — verify merchant availability":"Participating merchants",
-  "qr / acceptance method":"QR / compatible network-partner acceptance",
-  "last verified":"21-Sep-2026",
+  "local currency":c.currency||co.currency||"",
+  "currency":c.currency||co.currency||"",
+  "merchant coverage":c.coverage||((c.status||"").includes("Announced")?"Newly enabled / announced — verify merchant availability":"Participating merchants"),
+  "qr / acceptance method":c.acceptance||"QR / compatible network-partner acceptance",
+  "fee information":c.fee||"Provider-dependent; final applicable charges should be reviewed before authorisation.",
+  "live since":c.liveSince||"—",
+  "last verified":c.lastVerified||"21-Sep-2026",
   "source":c.source||"",
-  "source url":sourceUrl(c.source),
+  "source url":c.sourceUrl||sourceUrl(c.source),
   "notes":c.note||"",
-  "payment rail":c.type==="P2M"?"UPI":"UPI / documented rail",
-  "fee information":"Provider-dependent; review applicable charges before authorisation.",
-  "live since":""
+  "payment rail":c.rail||((c.type==="P2M")?"UPI":"UPI / documented rail")
  };
 }
 function findRouteRowsRaw(home,dest,type){
@@ -554,7 +518,7 @@ function assistantData(h,d){
  const acceptance=val(r||{},"qr / acceptance method")||"QR / compatible network-partner acceptance";
  const coverage=val(r||{},"merchant coverage")||"Participating merchants";
  const fee=val(r||{},"fee information")||"Provider-dependent; review applicable charges before authorisation.";
- const liveSince=ROUTE_LIVE_SINCE[routeKey(h,d)]||val(r||{},"live since")||c.liveSince||"—";
+ const liveSince=val(r||{},"live since")||c.liveSince||"—";
  return {c,r,currency,partner,verified,source,acceptance,coverage,fee,liveSince};
 }
 function renderAssistant(){
@@ -640,7 +604,7 @@ function checkPayment(){
    :isP2M
    ?"Documented merchant-payment route. Confirm the specific merchant accepts the relevant QR/network before paying."
    :"This route is documented as non-P2M. Do not treat it as merchant QR acceptance.";
- out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE • V12</div>
+ out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE • V13</div>
  <h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2>
  <div class="routeMeta"><span class="badge ${badgeClass}">${esc(c.status)}</span><span class="metaPill">${esc(c.type||"—")}</span><span class="metaPill">${esc(cur)}</span><span class="metaPill">Verified: ${esc(verified)}</span></div>
  <div class="grid" style="margin-top:14px">
@@ -784,6 +748,8 @@ function renderStatus(){
 const protectedCount=Object.keys(VERIFIED_CORRIDORS).length;
 const mergedCount=Object.keys(CORRIDORS).length;
 $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.length?rows.length+" records loaded":"not loaded"}</p>
+<p><span class="ok">● Dynamic source:</span> data/OMNAVIX_Global_Corridor_Database_V1.xlsx • Corridor Database sheet</p>
+<p><span class="ok">● Dynamic fields:</span> route direction, rail, use case, status, partner, currency, acceptance, live-since, verification date, source and notes</p>
 <p><span class="ok">● Protected directional registry:</span> ${protectedCount} documented routes</p>
 <p><span class="ok">● Runtime route records:</span> ${mergedCount}</p>
 <p><span class="ok">● Reverse-route protection:</span> active — routes are never inferred in the opposite direction</p>
