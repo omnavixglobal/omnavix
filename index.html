@@ -22,6 +22,15 @@
 .v12Pill{display:inline-block;padding:5px 9px;border-radius:999px;background:#eef6ff;color:var(--navy);font-size:12px;font-weight:700}
 .v12Pill.live{background:#e9f8f0;color:#137a49}
 .v12Pill.warn{background:#fff4df;color:#9a5b00}
+
+.intelHero{border:1px solid var(--line);border-radius:14px;padding:18px;background:linear-gradient(180deg,#f7fbff,#fff);margin-bottom:14px}
+.intelStats{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:14px 0}
+.intelStat{background:#f6faff;border:1px solid var(--line);border-radius:12px;padding:14px}.intelStat b{display:block;font-size:24px;color:var(--navy);margin-bottom:4px}.intelStat span{font-size:12px;color:var(--muted);font-weight:700}
+.intelFilters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}
+.intelFilters label{font-size:12px;font-weight:800;color:var(--muted)}.intelFilters select,.intelFilters input{width:100%;padding:10px;border:1px solid var(--line);border-radius:9px;background:#fff}
+.intelTableWrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.intelTable{width:100%;border-collapse:collapse;min-width:980px}.intelTable th,.intelTable td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.intelTable th{background:#f2f7fb;color:var(--navy);position:sticky;top:0}.intelBadge{display:inline-block;padding:4px 7px;border-radius:999px;background:#eaf7ef;color:var(--green);font-weight:800;font-size:11px}.intelMuted{color:var(--muted)}
+@media(max-width:900px){.intelStats{grid-template-columns:repeat(3,1fr)}.intelFilters{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.intelStats{grid-template-columns:1fr 1fr}.intelFilters{grid-template-columns:1fr}}
 @media(max-width:800px){.v12Grid{grid-template-columns:1fr}}
 
 .hero{position:relative;overflow:hidden;background:#fff}.hero img{width:100%;display:block;max-height:510px;object-fit:cover;object-position:center}
@@ -70,6 +79,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <button data-tab="fx">Currency</button>
 <button data-tab="where">Where Can I Pay?</button>
 <button data-tab="countries">Countries</button>
+<button data-tab="intelligence">Intelligence</button>
 <button data-tab="data">Data Status</button>
 </nav>
 <main>
@@ -220,6 +230,36 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 <div class="info"><b>OMNAVIX principle:</b> “Live” means the payment corridor is documented as operational for the stated use case. It does not mean every merchant accepts the payment method. Merchant-level acceptance should be confirmed at the point of payment.</div>
 </section>
 
+<section id="intelligence" class="section">
+<div class="intelHero">
+<h2 style="margin-top:0">Global Traveller Intelligence Dashboard</h2>
+<p class="intelMuted">A research-grade view of documented international payment corridors. The dashboard uses the live OMNAVIX runtime database and keeps each corridor directional.</p>
+<div class="intelStats">
+<div class="intelStat"><b id="isTotal">—</b><span>Total directional corridors</span></div>
+<div class="intelStat"><b id="isLive">—</b><span>Verified / live</span></div>
+<div class="intelStat"><b id="isNew">—</b><span>Newly enabled / announced</span></div>
+<div class="intelStat"><b id="isP2M">—</b><span>P2M records</span></div>
+<div class="intelStat"><b id="isP2P">—</b><span>P2P records</span></div>
+<div class="intelStat"><b id="isCurrencies">—</b><span>Currencies covered</span></div>
+</div>
+</div>
+<div class="card">
+<h3 style="margin-top:0">Explore documented corridors</h3>
+<div class="intelFilters">
+<div><label>Home country</label><select id="intelHome"><option value="">All</option></select></div>
+<div><label>Destination</label><select id="intelDest"><option value="">All</option></select></div>
+<div><label>Use case</label><select id="intelUse"><option value="">All</option></select></div>
+<div><label>Status</label><select id="intelStatus"><option value="">All</option></select></div>
+</div>
+<div style="margin-bottom:12px"><input id="intelSearch" placeholder="Search country, partner, currency, payment rail or source…" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:9px"></div>
+<div id="intelCount" class="intelMuted" style="margin-bottom:10px"></div>
+<div class="intelTableWrap"><table class="intelTable"><thead><tr><th>Direction</th><th>Payment rail</th><th>Use case</th><th>Status</th><th>Partner / network</th><th>Currency</th><th>Acceptance</th><th>Live since</th><th>Last verified</th></tr></thead><tbody id="intelBody"></tbody></table></div>
+</div>
+<div class="card" style="margin-top:14px">
+<h3 style="margin-top:0">Research interpretation</h3>
+<p class="intelMuted">OMNAVIX treats international payment availability as a <b>directional corridor</b>. A documented route in one direction does not create a route in the opposite direction. Status, use case, partner, currency and acceptance information are shown only when documented in the database or protected verification registry.</p>
+</div>
+</section>
 <section id="data" class="section">
 <div class="card">
 <h2>Live Data Status</h2>
@@ -292,6 +332,7 @@ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
 $(b.dataset.tab).classList.add("active");
 if(b.dataset.tab==="countries"){renderCountries();populateCountryDetail();}
 if(b.dataset.tab==="data")renderStatus();
+if(b.dataset.tab==="intelligence")renderIntelligence();
 });
 }
 function normalize(r){const o={};Object.keys(r).forEach(k=>o[k.trim().toLowerCase()]=r[k]);return o}
@@ -742,6 +783,47 @@ return;
 }
 }catch(e){}
 out.innerHTML='<div class="warning">Live FX is temporarily unavailable. OMNAVIX tried two reference-rate services and has no cached rate for this currency pair. Please retry when internet access is available. The payment database itself remains available.</div>';
+}
+
+function intelRuntimeRows(){
+ const out=[];
+ const seen=new Set();
+ Object.keys(CORRIDORS).forEach(k=>{
+  const parts=k.split("|"); if(parts.length!==2)return;
+  const h=parts[0],d=parts[1],c=CORRIDORS[k];
+  const base=findRouteRows(h,d,c.type)[0]||routeRecord(h,d,c.type)||{};
+  const r={...base};
+  r.home=h;r.dest=d;r.rail=val(base,"payment rail")||c.rail||"—";
+  r.use=val(base,"use case")||c.type||"—";r.status=val(base,"status")||c.status||"—";
+  r.partner=val(base,"local partner / network","partner")||c.partner||"—";
+  r.currency=val(base,"local currency","currency")||c.currency||countryObj(d).currency||"—";
+  r.accept=val(base,"merchant coverage","qr / acceptance method")||"Documented acceptance scope";
+  r.live=val(base,"live since")||c.liveSince||"—";r.verified=val(base,"last verified")||"—";
+  r.source=val(base,"source")||c.source||"—";
+  const id=h+"|"+d+"|"+r.use+"|"+r.rail; if(seen.has(id))return; seen.add(id); out.push(r);
+ });
+ return out;
+}
+function fillIntelSelect(id,values){
+ const el=$(id); if(!el)return; const current=el.value; el.innerHTML='<option value="">All</option>'+values.sort((a,b)=>a.localeCompare(b)).map(v=>`<option value="${esc(v)}">${esc(v)}</option>`).join(''); if(values.includes(current))el.value=current;
+}
+function renderIntelligence(){
+ const data=intelRuntimeRows();
+ const uniqueRoutes=new Set(data.map(r=>r.home+"|"+r.dest));
+ const live=data.filter(r=>/verified live|verified|live/i.test(r.status));
+ const newly=data.filter(r=>/announced|newly|planned/i.test(r.status));
+ const p2m=data.filter(r=>/p2m/i.test(r.use)); const p2p=data.filter(r=>/p2p/i.test(r.use));
+ const currencies=new Set(data.map(r=>r.currency).filter(x=>x&&x!=="—"));
+ $("isTotal").textContent=uniqueRoutes.size;$("isLive").textContent=live.length;$("isNew").textContent=newly.length;$("isP2M").textContent=p2m.length;$("isP2P").textContent=p2p.length;$("isCurrencies").textContent=currencies.size;
+ fillIntelSelect("intelHome",[...new Set(data.map(r=>r.home))]);fillIntelSelect("intelDest",[...new Set(data.map(r=>r.dest))]);fillIntelSelect("intelUse",[...new Set(data.map(r=>r.use))]);fillIntelSelect("intelStatus",[...new Set(data.map(r=>r.status))]);
+ ["intelHome","intelDest","intelUse","intelStatus","intelSearch"].forEach(id=>{const e=$(id);if(e&&!e.dataset.bound){e.addEventListener("input",renderIntelTable);e.addEventListener("change",renderIntelTable);e.dataset.bound="1";}});
+ renderIntelTable();
+}
+function renderIntelTable(){
+ const data=intelRuntimeRows(); const h=$("intelHome").value,d=$("intelDest").value,u=$("intelUse").value,st=$("intelStatus").value,q=($("intelSearch").value||"").toLowerCase().trim();
+ const filtered=data.filter(r=>(!h||r.home===h)&&(!d||r.dest===d)&&(!u||r.use===u)&&(!st||r.status===st)&&(!q||[r.home,r.dest,r.rail,r.use,r.status,r.partner,r.currency,r.accept,r.live,r.verified,r.source].join(" ").toLowerCase().includes(q)));
+ $("intelCount").textContent=`Showing ${filtered.length} documented record${filtered.length===1?"":"s"} from ${new Set(data.map(r=>r.home+"|"+r.dest)).size} directional corridors.`;
+ $("intelBody").innerHTML=filtered.map(r=>`<tr><td><b>${flag(r.home)} ${esc(r.home)}</b> → <b>${flag(r.dest)} ${esc(r.dest)}</b></td><td>${esc(r.rail)}</td><td>${esc(r.use)}</td><td><span class="intelBadge">${esc(r.status)}</span></td><td>${esc(r.partner)}</td><td>${esc(r.currency)}</td><td>${esc(r.accept)}</td><td>${esc(r.live)}</td><td>${esc(r.verified)}</td></tr>`).join("")||'<tr><td colspan="9" class="intelMuted">No documented corridor matches the selected filters.</td></tr>';
 }
 
 function renderStatus(){
