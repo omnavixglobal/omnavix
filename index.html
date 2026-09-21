@@ -63,6 +63,12 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 @media(max-width:800px){.grid,.grid3{grid-template-columns:1fr 1fr}.checklist{grid-template-columns:1fr}.hero img{max-height:390px}.brandbar{top:0}nav{top:91px}}
 @media(max-width:800px){.grid,.grid3{grid-template-columns:1fr 1fr}.hero img{max-height:390px}.brandbar{top:0}nav{top:91px}}
 @media(max-width:520px){.grid,.grid3{grid-template-columns:1fr}.hero img{max-height:300px}.brandbar img{width:50px;height:50px}}
+
+.verifyHero{border:1px solid var(--line);border-radius:14px;padding:18px;background:linear-gradient(180deg,#f7fbff,#fff);margin-bottom:14px}
+.verifyStats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:14px 0}.verifyStat{background:#f6faff;border:1px solid var(--line);border-radius:12px;padding:14px}.verifyStat b{display:block;font-size:24px;color:var(--navy);margin-bottom:4px}.verifyStat span{font-size:12px;color:var(--muted);font-weight:700}
+.verifyTableWrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.verifyTable{width:100%;border-collapse:collapse;min-width:1050px}.verifyTable th,.verifyTable td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.verifyTable th{background:#f2f7fb;color:var(--navy);position:sticky;top:0}.freshBadge{display:inline-block;padding:4px 7px;border-radius:999px;font-weight:800;font-size:11px}.fresh{background:#eaf7ef;color:var(--green)}.review{background:#fff4df;color:#9a5b00}.refresh{background:#fdecec;color:#b42318}.nodate{background:#eef2f6;color:#627d98}
+.verifyTools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.verifyTools input,.verifyTools select{margin:0;min-width:180px}.verifyNote{background:#f4faff;border-left:4px solid var(--blue);padding:13px;border-radius:10px;line-height:1.55;font-size:13px}
+@media(max-width:900px){.verifyStats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.verifyStats{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -80,6 +86,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <button data-tab="where">Where Can I Pay?</button>
 <button data-tab="countries">Countries</button>
 <button data-tab="intelligence">Intelligence</button>
+<button data-tab="verification">Verification</button>
 <button data-tab="data">Data Status</button>
 </nav>
 <main>
@@ -260,6 +267,31 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 <p class="intelMuted">OMNAVIX treats international payment availability as a <b>directional corridor</b>. A documented route in one direction does not create a route in the opposite direction. Status, use case, partner, currency and acceptance information are shown only when documented in the database or protected verification registry.</p>
 </div>
 </section>
+<section id="verification" class="section">
+<div class="verifyHero">
+<h2 style="margin-top:0">Corridor Verification Center</h2>
+<p class="intelMuted">OMNAVIX V15 adds a data-governance layer that shows verification freshness for each documented directional corridor. Freshness is a research aid, not a guarantee that a payment will work at a particular merchant.</p>
+<div class="verifyStats">
+<div class="verifyStat"><b id="vsFresh">—</b><span>Recently verified</span></div>
+<div class="verifyStat"><b id="vsReview">—</b><span>Review soon</span></div>
+<div class="verifyStat"><b id="vsRefresh">—</b><span>Refresh needed</span></div>
+<div class="verifyStat"><b id="vsMissing">—</b><span>Verification date missing</span></div>
+</div>
+</div>
+<div class="card">
+<h3 style="margin-top:0">Verification and source register</h3>
+<div class="verifyTools">
+<input id="verifySearch" placeholder="Search route, partner, currency or source…">
+<select id="verifyFreshFilter"><option value="">All freshness states</option><option value="fresh">Recently verified</option><option value="review">Review soon</option><option value="refresh">Refresh needed</option><option value="nodate">Verification date missing</option></select>
+<button class="secondary" onclick="exportVerificationCSV()">Export CSV</button>
+</div>
+<div id="verifyCount" class="intelMuted" style="margin-bottom:10px"></div>
+<div class="verifyTableWrap"><table class="verifyTable"><thead><tr><th>Direction</th><th>Status</th><th>Payment rail</th><th>Use case</th><th>Partner / network</th><th>Currency</th><th>Last verified</th><th>Freshness</th><th>Source</th></tr></thead><tbody id="verifyBody"></tbody></table></div>
+</div>
+<div class="card" style="margin-top:14px">
+<div class="verifyNote"><b>Verification rule:</b> OMNAVIX does not convert a stale or missing verification date into a payment-availability claim. Travellers should confirm the current merchant/network acceptance, final exchange rate and applicable charges before authorisation.</div>
+</div>
+</section>
 <section id="data" class="section">
 <div class="card">
 <h2>Live Data Status</h2>
@@ -276,13 +308,13 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 </div>
 </section>
 </main>
-<footer>OMNAVIX Research & Product Prototype • V13 Dynamic Global Database • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+<footer>OMNAVIX Research & Product Prototype • V15 Verification Center • Dynamic Global Database • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
 </div>
 
 <script>
 let rows=[];
 const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
-const DB_VERSION="Global Corridor Database V1 • V13 Dynamic Global Database";
+const DB_VERSION="Global Corridor Database V1 • V15 Verification Center • Dynamic Global Database";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
  {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
@@ -333,6 +365,7 @@ $(b.dataset.tab).classList.add("active");
 if(b.dataset.tab==="countries"){renderCountries();populateCountryDetail();}
 if(b.dataset.tab==="data")renderStatus();
 if(b.dataset.tab==="intelligence")renderIntelligence();
+if(b.dataset.tab==="verification")renderVerification();
 });
 }
 function normalize(r){const o={};Object.keys(r).forEach(k=>o[k.trim().toLowerCase()]=r[k]);return o}
@@ -824,6 +857,42 @@ function renderIntelTable(){
  const filtered=data.filter(r=>(!h||r.home===h)&&(!d||r.dest===d)&&(!u||r.use===u)&&(!st||r.status===st)&&(!q||[r.home,r.dest,r.rail,r.use,r.status,r.partner,r.currency,r.accept,r.live,r.verified,r.source].join(" ").toLowerCase().includes(q)));
  $("intelCount").textContent=`Showing ${filtered.length} documented record${filtered.length===1?"":"s"} from ${new Set(data.map(r=>r.home+"|"+r.dest)).size} directional corridors.`;
  $("intelBody").innerHTML=filtered.map(r=>`<tr><td><b>${flag(r.home)} ${esc(r.home)}</b> → <b>${flag(r.dest)} ${esc(r.dest)}</b></td><td>${esc(r.rail)}</td><td>${esc(r.use)}</td><td><span class="intelBadge">${esc(r.status)}</span></td><td>${esc(r.partner)}</td><td>${esc(r.currency)}</td><td>${esc(r.accept)}</td><td>${esc(r.live)}</td><td>${esc(r.verified)}</td></tr>`).join("")||'<tr><td colspan="9" class="intelMuted">No documented corridor matches the selected filters.</td></tr>';
+}
+
+function parseVerificationDate(v){
+ const s=String(v||"").trim(); if(!s)return null;
+ const m=s.match(/^(\d{1,2})[-\/ ]([A-Za-z]{3,9})[-\/ ](\d{4})$/);
+ if(m){const months={jan:0,feb:1,mar:2,apr:3,may:4,jun:5,jul:6,aug:7,sep:8,oct:9,nov:10,dec:11};const key=m[2].slice(0,3).toLowerCase();if(months[key]!==undefined)return new Date(Number(m[3]),months[key],Number(m[1]));}
+ const d=new Date(s); return isNaN(d.getTime())?null:d;
+}
+function verificationState(v){
+ const d=parseVerificationDate(v); if(!d)return {key:"nodate",label:"Verification date missing",days:null};
+ const today=new Date(2026,8,22); const days=Math.max(0,Math.floor((today-d)/(86400000)));
+ if(days<=30)return {key:"fresh",label:"Recently verified",days};
+ if(days<=90)return {key:"review",label:"Review soon",days};
+ return {key:"refresh",label:"Refresh needed",days};
+}
+function verificationRows(){
+ return intelRuntimeRows().map(r=>({...r, freshness:verificationState(r.verified)}));
+}
+function renderVerification(){
+ const data=verificationRows();
+ const counts={fresh:0,review:0,refresh:0,nodate:0}; data.forEach(r=>counts[r.freshness.key]++);
+ $("vsFresh").textContent=counts.fresh;$("vsReview").textContent=counts.review;$("vsRefresh").textContent=counts.refresh;$("vsMissing").textContent=counts.nodate;
+ ["verifySearch","verifyFreshFilter"].forEach(id=>{const e=$(id);if(e&&!e.dataset.bound){e.addEventListener("input",renderVerificationTable);e.addEventListener("change",renderVerificationTable);e.dataset.bound="1";}});
+ renderVerificationTable();
+}
+function renderVerificationTable(){
+ const data=verificationRows(); const q=($("verifySearch").value||"").toLowerCase().trim(); const f=$("verifyFreshFilter").value;
+ const filtered=data.filter(r=>(!f||r.freshness.key===f)&&(!q||[r.home,r.dest,r.status,r.rail,r.use,r.partner,r.currency,r.verified,r.source].join(" ").toLowerCase().includes(q)));
+ $("verifyCount").textContent=`Showing ${filtered.length} verification record${filtered.length===1?"":"s"}. Freshness is calculated from the recorded last-verified date.`;
+ $("verifyBody").innerHTML=filtered.map(r=>{const x=r.freshness;const age=x.days===null?"—":x.days+" day"+(x.days===1?"":"s")+" ago";return `<tr><td><b>${flag(r.home)} ${esc(r.home)}</b> → <b>${flag(r.dest)} ${esc(r.dest)}</b></td><td>${esc(r.status)}</td><td>${esc(r.rail)}</td><td>${esc(r.use)}</td><td>${esc(r.partner)}</td><td>${esc(r.currency)}</td><td>${esc(r.verified||"—")}</td><td><span class="freshBadge ${x.key}">${esc(x.label)}</span><div class="intelMuted" style="margin-top:4px">${age}</div></td><td>${esc(r.source)}</td></tr>`}).join("")||'<tr><td colspan="9" class="intelMuted">No verification records match the selected filters.</td></tr>';
+}
+function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
+function exportVerificationCSV(){
+ const data=verificationRows(); const header=["Home Country","Destination","Status","Payment Rail","Use Case","Partner / Network","Currency","Last Verified","Freshness","Source"];
+ const lines=[header.map(csvCell).join(",")]; data.forEach(r=>lines.push([r.home,r.dest,r.status,r.rail,r.use,r.partner,r.currency,r.verified,r.freshness.label,r.source].map(csvCell).join(",")));
+ const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="OMNAVIX_Corridor_Verification_Register.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
 function renderStatus(){
