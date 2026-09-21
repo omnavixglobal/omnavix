@@ -112,11 +112,37 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <section id="where" class="section">
 <div class="card">
 <h2>Where Can I Pay?</h2>
-<p>OMNAVIX currently displays documented merchant-acceptance coverage from the payment database. It does not claim that every merchant in a country accepts UPI.</p>
-<select id="whereDestination"></select>
-<div id="whereResult" style="margin-top:15px"></div>
+<p class="muted">Find the documented international merchant-acceptance route for your destination. OMNAVIX shows verified network information and tells you what to look for at the merchant. It does not claim that every merchant in a country accepts UPI.</p>
+
+<div class="grid3" style="align-items:end">
+  <div>
+    <label>Home country</label>
+    <select id="whereHomeCountry">
+      <option value="India">🇮🇳 India</option>
+    </select>
+  </div>
+  <div>
+    <label>Destination</label>
+    <select id="whereDestination"></select>
+  </div>
+  <div>
+    <button class="primary" id="whereCheckBtn" onclick="renderWhere()">Check Where to Pay</button>
+  </div>
 </div>
-<div class="info"><b>Future V2:</b> connect merchant/acquirer feeds or a verified merchant directory and add map-based discovery.</div>
+
+<div id="whereResult" style="margin-top:18px"></div>
+</div>
+
+<div class="card" style="margin-top:15px">
+<h3>Traveller payment checklist</h3>
+<div class="grid3">
+  <div class="stat"><span class="muted">1. Look</span><strong style="font-size:17px">QR / network sign</strong><span class="muted">Look for BHIM UPI or compatible network-partner acceptance signage.</span></div>
+  <div class="stat"><span class="muted">2. Ask</span><strong style="font-size:17px">Confirm acceptance</strong><span class="muted">Ask the merchant whether the displayed QR accepts your eligible UPI app.</span></div>
+  <div class="stat"><span class="muted">3. Verify</span><strong style="font-size:17px">Review final cost</strong><span class="muted">Check foreign amount, INR amount, exchange rate and applicable fees before authorisation.</span></div>
+</div>
+</div>
+
+<div class="info"><b>OMNAVIX roadmap:</b> The next stage can connect verified merchant/acquirer feeds and map services to show nearby participating locations. Until those feeds are integrated, OMNAVIX deliberately displays network-level and documented merchant-coverage information rather than inventing individual merchant locations.</div>
 </section>
 
 <section id="countries" class="section">
@@ -224,9 +250,34 @@ $("table").innerHTML=f.map(r=>`<tr><td><b>${flag(val(r,"destination"))} ${esc(va
 }
 function renderWhere(){
 const d=$("whereDestination").value;
-if(!d){$("whereResult").innerHTML="";return}
+const out=$("whereResult");
+if(!d){out.innerHTML='<div class="warning">Select a destination first.</div>';return}
 const r=findRows(d).filter(x=>val(x,"use case","payment type")==="P2M");
-$("whereResult").innerHTML=r.map(x=>`<div class="card" style="margin:0 0 10px 0"><h3>${flag(d)} ${esc(d)}</h3><p><b>Network/Partner:</b> ${esc(val(x,"local partner / network"))}</p><p><b>Acceptance:</b> ${esc(val(x,"merchant coverage"))}</p><p><b>QR:</b> ${esc(val(x,"qr / acceptance method"))}</p><p class="source">Last verified: ${esc(val(x,"last verified"))}</p></div>`).join("")||"<p>No P2M record in the current Excel database.</p>";
+if(!r.length){
+out.innerHTML='<div class="warning">No P2M record is currently available for this destination in the OMNAVIX database.</div>';
+return;
+}
+out.innerHTML=r.map(x=>{
+const partner=val(x,"local partner / network","partner");
+const coverage=val(x,"merchant coverage");
+const qr=val(x,"qr / acceptance method");
+const status=val(x,"status");
+const verified=val(x,"last verified");
+const source=val(x,"source url");
+return `<div class="card" style="margin:0 0 14px 0">
+  <div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap">
+    <h3 style="margin:0">${flag(d)} ${esc(d)}</h3>
+    <span class="badge ${status.toLowerCase()==="live"?"live":""}">${esc(status)}</span>
+  </div>
+  <div class="grid3" style="margin-top:12px">
+    <div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong><span class="muted">Documented international acceptance route.</span></div>
+    <div class="stat"><span class="muted">Where acceptance applies</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div>
+    <div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div>
+  </div>
+  <div class="info" style="margin-top:12px"><b>Before you pay:</b> Look for compatible BHIM UPI or network-partner acceptance signage/QR and confirm acceptance with the merchant.</div>
+  <p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a href="${esc(source)}" target="_blank" rel="noopener">Official source</a>`:""}</p>
+</div>`;
+}).join("");
 }
 function setFXAmount(n){$("fxAmount").value=n;convertFX()}
 async function convertFX(){
