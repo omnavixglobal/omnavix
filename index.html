@@ -1,0 +1,262 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>OMNAVIX | Know. Navigate. Go.</title>
+<meta name="description" content="OMNAVIX global payment intelligence prototype">
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+<style>
+:root{--blue:#0878d1;--navy:#092f63;--teal:#0aa79d;--green:#15945b;--orange:#f58a18;--bg:#f3f8fd;--ink:#102a43;--muted:#627d98;--line:#d9e2ec;--white:#fff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Arial,Helvetica,sans-serif;color:var(--ink)}
+.app{max-width:1250px;margin:auto;background:#fff;min-height:100vh}
+.hero{position:relative;overflow:hidden;background:#fff}.hero img{width:100%;display:block;max-height:510px;object-fit:cover;object-position:center}
+.brandbar{display:flex;align-items:center;gap:15px;padding:14px 22px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:0;z-index:20}
+.brandbar img{width:62px;height:62px;object-fit:cover;border-radius:12px}.brand{font-size:26px;font-weight:900;letter-spacing:1px;color:#0a3670}.tag{font-size:13px;color:#168c73;margin-top:3px}
+nav{display:flex;gap:8px;flex-wrap:wrap;padding:11px 18px;border-bottom:1px solid var(--line);background:#fff;position:sticky;top:91px;z-index:19}
+nav button{border:0;background:#edf6ff;color:#075a9d;padding:10px 14px;border-radius:22px;font-weight:800;cursor:pointer}
+nav button.active{background:var(--blue);color:#fff}
+main{padding:24px}.section{display:none}.section.active{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:20px;margin-bottom:18px;box-shadow:0 5px 18px rgba(16,42,67,.05)}
+h1,h2,h3{margin-top:0}h2{font-size:25px}h3{font-size:18px}
+.grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stat{background:#f7fafc;border-radius:14px;padding:15px}.stat strong{font-size:25px;display:block;margin:4px 0}.muted{font-size:13px;color:var(--muted)}
+label{font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+select,input{width:100%;padding:13px;border:1px solid #bcccdc;border-radius:12px;background:#fff;font-size:15px;margin:7px 0 13px}
+button.primary,button.secondary{border:0;border-radius:12px;padding:13px 17px;font-weight:800;cursor:pointer}
+button.primary{background:var(--blue);color:#fff}.secondary{background:#eaf4ff;color:#075a9d}
+.result{display:none}.result.show{display:block}.badge{display:inline-block;padding:5px 9px;border-radius:18px;font-size:11px;font-weight:800}.live{background:#e5f8ee;color:var(--green)}.p2p{background:#eeeafe;color:#5d47a8}
+.info{background:#f4faff;border-left:4px solid var(--blue);padding:13px;border-radius:10px;line-height:1.55;font-size:13px}
+.warning{background:#fff8e7;border-left:4px solid #e0a100;padding:13px;border-radius:10px;line-height:1.55;font-size:13px}
+table{width:100%;border-collapse:collapse;font-size:13px}th,td{text-align:left;padding:11px 8px;border-bottom:1px solid #edf2f7;vertical-align:top}th{background:#f7fafc;color:#486581}
+.money{font-size:31px;font-weight:900}.source{font-size:11px;color:var(--muted);margin-top:8px}.ok{color:var(--green);font-weight:800}.err{color:#b42318;font-weight:700}
+footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1px solid var(--line)}
+@media(max-width:800px){.grid,.grid3{grid-template-columns:1fr 1fr}.hero img{max-height:390px}.brandbar{top:0}nav{top:91px}}
+@media(max-width:520px){.grid,.grid3{grid-template-columns:1fr}.hero img{max-height:300px}.brandbar img{width:50px;height:50px}}
+</style>
+</head>
+<body>
+<div class="app">
+<div class="hero"><img src="assets/omnavix-banner.jpg" alt="OMNAVIX global travel and payment banner"></div>
+<div class="brandbar">
+<img src="assets/omnavix-logo.jpg" alt="OMNAVIX logo">
+<div><div class="brand">OMNAVIX</div><div class="tag">Know. Navigate. Go.</div></div>
+</div>
+<nav>
+<button class="active" data-tab="home">Home</button>
+<button data-tab="pay">Can I Pay?</button>
+<button data-tab="fx">Currency</button>
+<button data-tab="where">Where Can I Pay?</button>
+<button data-tab="countries">Countries</button>
+<button data-tab="data">Data Status</button>
+</nav>
+<main>
+<section id="home" class="section active">
+<div class="card">
+<h2>Global Payment Intelligence</h2>
+<p>Choose your home country and destination. OMNAVIX reads the attached payment database and shows the payment route, network, currency and verification information.</p>
+<div class="grid3">
+<div><label>Home country</label><select id="homeCountry"><option>🇮🇳 India</option></select></div>
+<div><label>Destination</label><select id="homeDestination"></select></div>
+<div style="align-self:end"><button class="primary" onclick="openPayment()">Check Payment Options</button></div>
+</div>
+<div id="dbStatus" class="source">Loading OMNAVIX database…</div>
+</div>
+<div class="grid">
+<div class="stat"><span class="muted">Database records</span><strong id="records">—</strong></div>
+<div class="stat"><span class="muted">P2M records</span><strong id="p2m">—</strong></div>
+<div class="stat"><span class="muted">Currencies</span><strong id="currencies">—</strong></div>
+<div class="stat"><span class="muted">Last verified</span><strong id="verified" style="font-size:17px">—</strong></div>
+</div>
+</section>
+
+<section id="pay" class="section">
+<div class="card">
+<h2>Can I Pay?</h2>
+<div class="grid3">
+<div><label>Home country</label><select><option>🇮🇳 India</option></select></div>
+<div><label>Destination</label><select id="payDestination"></select></div>
+<div style="align-self:end"><button class="primary" onclick="checkPayment()">Check</button></div>
+</div>
+</div>
+<div id="payResult" class="card result"></div>
+</section>
+
+<section id="fx" class="section">
+<div class="card">
+<h2>Currency & Cost Estimate</h2>
+<p class="muted">Understand the destination amount in your home currency before you pay. OMNAVIX uses a live reference FX rate when internet access is available.</p>
+<div class="grid3">
+<div><label>Home currency</label><select id="fxHomeCurrency"><option value="INR">🇮🇳 INR — Indian Rupee</option></select></div>
+<div><label>Destination currency</label><select id="fxCurrency"></select></div>
+<div><label>Destination amount</label><input id="fxAmount" type="number" value="100" min="0" step="0.01"></div>
+</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px">
+<button class="secondary" onclick="setFXAmount(10)">10</button><button class="secondary" onclick="setFXAmount(25)">25</button><button class="secondary" onclick="setFXAmount(50)">50</button><button class="secondary" onclick="setFXAmount(100)">100</button><button class="secondary" onclick="setFXAmount(250)">250</button>
+</div>
+<button class="primary" onclick="convertFX()">Get Live Reference Rate</button>
+<div id="fxResult" style="margin-top:16px"></div>
+<div class="info"><b>OMNAVIX cost intelligence:</b> The displayed INR value is an estimated conversion using the reference FX rate. Your bank, UPI app or regulated payment provider may apply a different exchange rate and/or applicable charges.</div>
+<div class="warning" style="margin-top:12px"><b>Important:</b> This is not a payment quote. Always review the final foreign amount, INR amount, exchange rate and applicable fees shown by the payment provider before authorisation.</div>
+</div>
+<div class="card">
+<h3>How OMNAVIX helps</h3>
+<div class="grid3">
+<div class="stat"><span class="muted">1. Know</span><strong style="font-size:18px">Local amount</strong><span class="muted">See what the merchant is asking.</span></div>
+<div class="stat"><span class="muted">2. Convert</span><strong style="font-size:18px">Home currency</strong><span class="muted">Estimate the INR equivalent.</span></div>
+<div class="stat"><span class="muted">3. Verify</span><strong style="font-size:18px">Final cost</strong><span class="muted">Confirm the provider's final amount.</span></div>
+</div>
+</div>
+</section>
+
+<section id="where" class="section">
+<div class="card">
+<h2>Where Can I Pay?</h2>
+<p>OMNAVIX currently displays documented merchant-acceptance coverage from the payment database. It does not claim that every merchant in a country accepts UPI.</p>
+<select id="whereDestination"></select>
+<div id="whereResult" style="margin-top:15px"></div>
+</div>
+<div class="info"><b>Future V2:</b> connect merchant/acquirer feeds or a verified merchant directory and add map-based discovery.</div>
+</section>
+
+<section id="countries" class="section">
+<div class="card">
+<h2>OMNAVIX Country Database</h2>
+<input id="search" placeholder="Search country, partner, currency or payment type…" oninput="renderTable()">
+<div style="overflow:auto"><table><thead><tr><th>Destination</th><th>Type</th><th>Currency</th><th>Partner / Network</th><th>Status</th><th>Verified</th></tr></thead><tbody id="table"></tbody></table></div>
+</div>
+</section>
+
+<section id="data" class="section">
+<div class="card">
+<h2>Live Data Status</h2>
+<div id="statusBox"></div>
+<h3 style="margin-top:20px">How this prototype works</h3>
+<ol>
+<li>The website loads <b>data/OMNAVIX_Master_Payment_Database.xlsx</b>.</li>
+<li>JavaScript reads the “Payment Database” worksheet in the browser.</li>
+<li>Country/payment information is displayed dynamically.</li>
+<li>The currency module fetches a current reference rate when connected to the internet.</li>
+<li>You can update the Excel file and replace it in the website folder.</li>
+</ol>
+<div class="warning"><b>Production recommendation:</b> move the master data to a controlled database/API after the research prototype. Excel is excellent for the first MVP, but it should not remain the production system of record.</div>
+</div>
+</section>
+</main>
+<footer>OMNAVIX Research & Product Prototype • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+</div>
+
+<script>
+let rows=[];
+const DB="data/OMNAVIX_Master_Payment_Database.xlsx";
+const $=id=>document.getElementById(id);
+
+function tabs(){
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
+b.classList.add("active");
+document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
+$(b.dataset.tab).classList.add("active");
+if(b.dataset.tab==="countries")renderTable();
+if(b.dataset.tab==="data")renderStatus();
+});
+}
+function normalize(r){const o={};Object.keys(r).forEach(k=>o[k.trim().toLowerCase()]=r[k]);return o}
+function val(o,...keys){for(const k of keys){if(o[k]!==undefined&&o[k]!==null&&o[k]!=="")return String(o[k])}return ""}
+async function loadDB(){
+try{
+const res=await fetch(DB+"?v="+Date.now());
+if(!res.ok)throw new Error("Database file could not be loaded");
+const buf=await res.arrayBuffer();
+const wb=XLSX.read(buf,{type:"array"});
+const sheet=wb.Sheets["Payment Database"]||wb.Sheets[wb.SheetNames[0]];
+rows=XLSX.utils.sheet_to_json(sheet,{defval:""}).map(normalize);
+buildSelects();
+$("records").textContent=rows.length;
+$("p2m").textContent=rows.filter(r=>val(r,"use case","payment type")==="P2M").length;
+$("currencies").textContent=new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean)).size;
+$("verified").textContent=rows[0]?val(rows[0],"last verified"):"—";
+$("dbStatus").innerHTML='<span class="ok">● Excel database loaded successfully</span> • '+DB;
+}catch(e){$("dbStatus").innerHTML='<span class="err">Database load failed: '+e.message+'</span>'}
+}
+function destinations(){
+const map=new Map();
+rows.forEach(r=>{const d=val(r,"destination");if(d&&!map.has(d))map.set(d,r)});
+return [...map.entries()].map(([name,r])=>({name,r}));
+}
+function buildSelects(){
+const ds=destinations();
+const opts=ds.map(x=>`<option value="${esc(x.name)}">${flag(x.name)} ${esc(x.name)}</option>`).join("");
+["homeDestination","payDestination","whereDestination"].forEach(id=>$(id).innerHTML='<option value="">Select destination</option>'+opts);
+const currencies=[...new Set(rows.map(r=>val(r,"local currency","currency")).filter(Boolean))];
+$("fxCurrency").innerHTML=currencies.map(c=>`<option value="${esc(c)}">${esc(c)}</option>`).join("");
+}
+function findRows(name){return rows.filter(r=>val(r,"destination")===name)}
+function openPayment(){const d=$("homeDestination").value;if(!d){alert("Select a destination.");return}$("payDestination").value=d;document.querySelector('[data-tab="pay"]').click();checkPayment()}
+function checkPayment(){
+const d=$("payDestination").value,r=findRows(d),out=$("payResult");
+if(!d){out.innerHTML="<b>Select a destination.</b>";out.classList.add("show");return}
+const p2m=r.find(x=>val(x,"use case","payment type")==="P2M")||r[0];
+const cur=val(p2m,"local currency","currency"),partner=val(p2m,"local partner / network","partner");
+out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
+<h2>🇮🇳 India → ${flag(d)} ${esc(d)}</h2>
+<span class="badge ${val(p2m,"use case","payment type")==="P2M"?"live":"p2p"}">${esc(val(p2m,"use case","payment type"))}</span>
+<div class="grid">
+<div class="stat"><span class="muted">Currency</span><strong>${esc(cur)}</strong></div>
+<div class="stat"><span class="muted">Partner</span><strong style="font-size:15px">${esc(partner)}</strong></div>
+<div class="stat"><span class="muted">Status</span><strong style="font-size:17px">${esc(val(p2m,"status"))}</strong></div>
+<div class="stat"><span class="muted">Verified</span><strong style="font-size:17px">${esc(val(p2m,"last verified"))}</strong></div>
+</div>
+<p><b>QR / acceptance:</b> ${esc(val(p2m,"qr / acceptance method"))}</p>
+<p><b>Merchant coverage:</b> ${esc(val(p2m,"merchant coverage"))}</p>
+<p><b>Fee information:</b> ${esc(val(p2m,"fee information"))}</p>
+<div class="info"><b>OMNAVIX guidance:</b> Look for compatible acceptance signage/QR, scan using an eligible UPI-powered application, and review the final foreign amount, INR amount, exchange rate and applicable fees before authorisation.</div>
+<p class="source">Source: <a href="${esc(val(p2m,"source url"))}" target="_blank" rel="noopener">official source</a></p>`;
+out.classList.add("show");
+}
+function renderTable(){
+const q=($("search").value||"").toLowerCase();
+const f=rows.filter(r=>Object.values(r).join(" ").toLowerCase().includes(q));
+$("table").innerHTML=f.map(r=>`<tr><td><b>${flag(val(r,"destination"))} ${esc(val(r,"destination"))}</b></td>
+<td><span class="badge ${val(r,"use case","payment type")==="P2M"?"live":"p2p"}">${esc(val(r,"use case","payment type"))}</span></td>
+<td>${esc(val(r,"local currency","currency"))}</td><td>${esc(val(r,"local partner / network","partner"))}</td>
+<td>${esc(val(r,"status"))}</td><td>${esc(val(r,"last verified"))}</td></tr>`).join("");
+}
+function renderWhere(){
+const d=$("whereDestination").value;
+if(!d){$("whereResult").innerHTML="";return}
+const r=findRows(d).filter(x=>val(x,"use case","payment type")==="P2M");
+$("whereResult").innerHTML=r.map(x=>`<div class="card" style="margin:0 0 10px 0"><h3>${flag(d)} ${esc(d)}</h3><p><b>Network/Partner:</b> ${esc(val(x,"local partner / network"))}</p><p><b>Acceptance:</b> ${esc(val(x,"merchant coverage"))}</p><p><b>QR:</b> ${esc(val(x,"qr / acceptance method"))}</p><p class="source">Last verified: ${esc(val(x,"last verified"))}</p></div>`).join("")||"<p>No P2M record in the current Excel database.</p>";
+}
+function setFXAmount(n){$("fxAmount").value=n;convertFX()}
+async function convertFX(){
+const from=$("fxHomeCurrency").value,to=$("fxCurrency").value,amount=parseFloat($("fxAmount").value)||0,out=$("fxResult");
+if(!to){out.innerHTML='<div class="warning">Select a destination currency first.</div>';return}
+if(from===to){out.innerHTML=`<div class="stat"><span class="muted">Same currency</span><div class="money">${amount.toFixed(2)} ${esc(to)} = ${amount.toFixed(2)} ${esc(from)}</div></div>`;return}
+out.innerHTML="<p>Fetching current reference rate…</p>";
+try{
+const res=await fetch(`https://api.frankfurter.app/latest?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`);
+if(!res.ok)throw new Error("FX service unavailable");
+const d=await res.json(),rate=d.rates[to],homeAmount=amount/rate;
+const localPerHome=rate;
+out.innerHTML=`<div class="grid3">
+<div class="stat"><span class="muted">Destination amount</span><div class="money">${amount.toFixed(2)} ${esc(to)}</div></div>
+<div class="stat"><span class="muted">Estimated home amount</span><div class="money">₹${homeAmount.toFixed(2)}</div></div>
+<div class="stat"><span class="muted">Reference rate (${esc(d.date)})</span><strong style="font-size:17px">1 INR = ${localPerHome.toFixed(6)} ${esc(to)}</strong><span class="muted">1 ${esc(to)} ≈ ₹${homeAmount/amount>0?(homeAmount/amount).toFixed(4):'—'}</span></div>
+</div>
+<div class="source" style="margin-top:12px">Reference source: Frankfurter public FX service. Rate date: ${esc(d.date)}. This is not a provider quote.</div>`;
+}catch(e){out.innerHTML='<div class="warning">Live FX is temporarily unavailable. Please retry with an internet connection. The payment database itself is still available.</div>'}
+}
+function renderStatus(){
+$("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.length?rows.length+" records loaded":"not loaded"}</p>
+<p><span class="ok">● Branding:</span> OMNAVIX logo + banner loaded from assets/</p>
+<p><span class="ok">● FX:</span> live reference lookup enabled</p>
+<p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
+<p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
+}
+function flag(n){return ({Singapore:"🇸🇬",Nepal:"🇳🇵","United Arab Emirates":"🇦🇪",UAE:"🇦🇪","Sri Lanka":"🇱🇰",Bhutan:"🇧🇹"})[n]||"🌍"}
+function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
+tabs();loadDB();$("whereDestination").onchange=renderWhere;
+</script>
+</body>
+</html>
