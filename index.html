@@ -69,6 +69,16 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 .verifyTableWrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.verifyTable{width:100%;border-collapse:collapse;min-width:1050px}.verifyTable th,.verifyTable td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.verifyTable th{background:#f2f7fb;color:var(--navy);position:sticky;top:0}.freshBadge{display:inline-block;padding:4px 7px;border-radius:999px;font-weight:800;font-size:11px}.fresh{background:#eaf7ef;color:var(--green)}.review{background:#fff4df;color:#9a5b00}.refresh{background:#fdecec;color:#b42318}.nodate{background:#eef2f6;color:#627d98}
 .verifyTools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.verifyTools input,.verifyTools select{margin:0;min-width:180px}.verifyNote{background:#f4faff;border-left:4px solid var(--blue);padding:13px;border-radius:10px;line-height:1.55;font-size:13px}
 @media(max-width:900px){.verifyStats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.verifyStats{grid-template-columns:1fr}}
+
+.homeWelcome{background:linear-gradient(180deg,#f4faff,#fff)}
+.homeWelcome h2{font-size:30px;margin-bottom:6px}
+.guideHero{border:1px solid var(--line);border-radius:14px;padding:16px;background:linear-gradient(180deg,#f7fbff,#fff)}
+.attractionGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:14px}
+.attractionCard{border:1px solid var(--line);border-radius:14px;padding:15px;background:#fff}
+.attractionCard .placeIcon{font-size:28px}
+.timing{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.timing span{background:#f1f7fb;border-radius:16px;padding:5px 9px;font-size:11px;font-weight:700;color:#486581}
+@media(max-width:700px){.attractionGrid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -80,30 +90,35 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 <nav>
 <button class="active" data-tab="home">Home</button>
-<button data-tab="pay">Pay &amp; Where Pay &amp; Where Can I Pay?</button>
-<button data-tab="assistant">Trip Assistant</button>
-<button data-tab="fx">Currency</button>
-<button data-tab="countries">Countries</button>
+<button data-tab="pay">💳 Pay with QR</button>
+<button data-tab="fx">💱 Currency</button>
+<button data-tab="countries">🌍 Countries</button>
+<button data-tab="explore">⭐ Explore</button>
+<button data-tab="scan">📷 Scan QR</button>
 <button data-tab="data">Data Status</button>
 </nav>
 <main>
 <section id="home" class="section active">
-<div class="card">
-<h2>Global Travel &amp; Payment Intelligence</h2>
-<p>Choose your home country and destination. SAFARQR uses its protected verified corridor registry and, when available, the attached payment database to show route, network, currency and verification information.</p>
-<div class="grid3">
+<div class="card homeWelcome">
+<h2>Global QR &amp; Payment Decision Assistant</h2>
+<p class="muted">Check your payment route before you pay. Select your home country and destination, then SAFARQR guides you from supported UPI/QR through currency, QR identification, merchant details and charges.</p>
+<div class="grid3" style="margin-top:18px">
+<div class="stat"><span class="muted">STEP 1</span><strong style="font-size:18px">🏠 Home Country</strong><span class="muted">Where your payment account is based.</span></div>
+<div class="stat"><span class="muted">STEP 2</span><strong style="font-size:18px">🌍 Destination</strong><span class="muted">Where you want to make the payment.</span></div>
+<div class="stat"><span class="muted">STEP 3</span><strong style="font-size:18px">💳 Supported UPI / QR</strong><span class="muted">See the documented route and payment network.</span></div>
+</div>
+<div class="grid3" style="margin-top:12px">
 <div><label>Home country</label><select id="homeCountry" onchange="buildAssistantSelectors();renderAssistant()"></select></div>
-<div><label>Destination</label><select id="homeDestination" onchange="renderAssistant()"></select></div>
-<div style="align-self:end"><button class="primary" onclick="openPayment()">Check Payment Options</button></div>
+<div><label>Destination country</label><select id="homeDestination" onchange="renderAssistant()"></select></div>
+<div style="align-self:end"><button class="primary" onclick="openPayment()">Start Payment Check →</button></div>
 </div>
+<div class="info" style="margin-top:14px"><b>Payment journey:</b> Home Country → Destination → Supported UPI/QR → Currency → Scan QR → Identify Merchant → App → Charges → Open Payment App.</div>
 <div id="dbStatus" class="source">Loading SAFARQR database…</div>
-<div id="homeAssistant" class="v12Hero">
-  <div class="v12Title">
-    <div><span class="v12Pill">V13</span> <h3 style="display:inline">Traveller Decision Assistant</h3></div>
-    <span class="muted">Choose a route to see a traveller-ready summary.</span>
-  </div>
-  <div id="homeAssistantBody" class="muted" style="margin-top:10px">Select a destination to generate the route summary.</div>
 </div>
+<div class="card">
+<h3>🌍 Travel Discovery</h3>
+<p class="muted">Payment and tourism are kept separate. Explore attractions, opening hours, recommended visit time and official information for your destination.</p>
+<button class="secondary" onclick="showTab('explore')">Explore Destination →</button>
 </div>
 <div class="grid">
 <div class="stat"><span class="muted">Database records</span><strong id="records">—</strong></div>
@@ -216,6 +231,34 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 <div id="countryDetailBox"></div>
 <div class="info"><b>SAFARQR principle:</b> “Live” means the payment corridor is documented as operational for the stated use case. It does not mean every merchant accepts the payment method. Merchant-level acceptance should be confirmed at the point of payment.</div>
+</section>
+
+<section id="explore" class="section">
+<div class="card">
+<h2>🌍 Explore Destination</h2>
+<p class="muted">Short traveller guides with main attractions, opening hours, recommended visit duration and official information. Timings should be checked again before travel because they can change.</p>
+<div class="grid3" style="align-items:end">
+<div><label>Country</label><select id="exploreCountry" onchange="renderExplore()"></select></div>
+<div><label>Type</label><select id="exploreType" onchange="renderExplore()"><option value="all">All places</option><option value="attraction">Main attractions</option><option value="culture">Culture / heritage</option><option value="nature">Nature / outdoors</option></select></div>
+<div><button class="secondary" onclick="renderExplore()">Refresh Guide</button></div>
+</div>
+<div id="exploreGuide" style="margin-top:18px"></div>
+</div>
+</section>
+
+<section id="scan" class="section">
+<div class="card">
+<h2>📷 Scan Merchant QR</h2>
+<p class="muted">Scan the merchant QR directly. No home-country or destination selection is required before scanning. SAFARQR reads the QR content first, then shows the merchant/payment information that can be identified.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="primary" onclick="startQRScanner()">📷 Start Camera Scanner</button><button class="secondary" onclick="stopQRScanner()">Stop Camera</button></div>
+<div id="scannerBox" class="card" style="margin-top:15px;text-align:center;background:#f7fbff">
+<video id="qrVideo" playsinline style="width:100%;max-width:520px;border-radius:14px;display:none"></video>
+<canvas id="qrCanvas" style="display:none"></canvas>
+<div id="scanMessage" class="muted" style="padding:20px">Your camera will be used only after you press Start Camera Scanner.</div>
+</div>
+<div id="qrResult" style="margin-top:15px"></div>
+</div>
+<div class="warning"><b>Important:</b> A QR scan identifies information encoded in the QR where technically possible. It does not itself authorise or execute a payment. The final payment remains inside the eligible regulated payment/UPI app.</div>
 </section>
 
 <section id="data" class="section">
@@ -891,6 +934,114 @@ function exportVerificationCSV(){
  const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="SAFARQR_Corridor_Verification_Register.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
+const COUNTRY_GUIDES={
+"India":{flag:"🇮🇳",intro:"Heritage, culture, nature, food and major city experiences.",currency:"INR",places:[
+{name:"Gateway of India",type:"attraction",icon:"🏛️",hours:"Open public area; access may vary",visit:"1–2 hours",best:"Morning / evening",note:"Mumbai waterfront landmark near Colaba."},
+{name:"Taj Mahal",type:"culture",icon:"🕌",hours:"Typically sunrise–sunset; closed Friday",visit:"2–3 hours",best:"Early morning",note:"Check official ticketing and entry rules before visiting."},
+{name:"Jaipur City Palace",type:"culture",icon:"🏰",hours:"Typically daytime; check official schedule",visit:"2–3 hours",best:"Morning / afternoon",note:"Historic palace complex in Jaipur."},
+{name:"Kerala Backwaters",type:"nature",icon:"🛶",hours:"Daylight / operator schedule",visit:"Half day–full day",best:"Morning / sunset",note:"Houseboat and backwater experiences vary by operator."},
+{name:"Goa Beaches",type:"nature",icon:"🏖️",hours:"Public beaches; access may vary",visit:"2–4 hours",best:"Morning / sunset",note:"Check local conditions and beach safety guidance."}]},
+"Singapore":{flag:"🇸🇬",intro:"Modern city, gardens, food, culture and family attractions.",currency:"SGD",places:[
+{name:"Gardens by the Bay",type:"nature",icon:"🌳",hours:"Outdoor gardens generally daily; conservatory hours vary",visit:"2–4 hours",best:"Late afternoon / evening",note:"Check official ticketed attraction hours."},
+{name:"Marina Bay",type:"attraction",icon:"🌆",hours:"Open public area",visit:"1–3 hours",best:"Evening",note:"Waterfront skyline and nearby attractions."},
+{name:"Sentosa",type:"attraction",icon:"🏝️",hours:"Attraction hours vary",visit:"Half day–full day",best:"Morning onward",note:"Check each attraction separately."},
+{name:"Chinatown",type:"culture",icon:"🏮",hours:"District open; venues vary",visit:"2–3 hours",best:"Late afternoon / evening",note:"Heritage streets, food and cultural attractions."},
+{name:"Singapore Botanic Gardens",type:"nature",icon:"🌺",hours:"05:00–00:00",visit:"2–3 hours",best:"Morning / late afternoon",note:"Check official notices for closures or special facilities."}]},
+"UAE":{flag:"🇦🇪",intro:"Modern landmarks, heritage, museums, shopping and desert experiences.",currency:"AED",places:[
+{name:"Burj Khalifa",type:"attraction",icon:"🏙️",hours:"Opening hours vary by ticket/session",visit:"2–3 hours",best:"Late afternoon / evening",note:"Book an observation-deck time slot and check the official schedule."},
+{name:"Sheikh Zayed Grand Mosque",type:"culture",icon:"🕌",hours:"Visitor hours vary by day",visit:"1–2 hours",best:"Late afternoon",note:"Dress and visitor-entry rules apply."},
+{name:"Louvre Abu Dhabi",type:"culture",icon:"🎨",hours:"Days/hours vary",visit:"2–3 hours",best:"Morning / afternoon",note:"Check the official museum schedule."},
+{name:"Dubai Creek / Al Fahidi",type:"culture",icon:"🛶",hours:"Outdoor district; venues vary",visit:"2–3 hours",best:"Morning / evening",note:"Historic Dubai, souks and creek-side areas."},
+{name:"Yas Island",type:"attraction",icon:"🎢",hours:"Attraction-specific",visit:"Half day–full day",best:"Morning onward",note:"Check each park or attraction for current hours."}]},
+"Nepal":{flag:"🇳🇵",intro:"Himalayan destinations, heritage, nature and adventure.",currency:"NPR",places:[
+{name:"Kathmandu Durbar Square",type:"culture",icon:"🏛️",hours:"Approx. 08:00–19:00; verify locally",visit:"1–2 hours",best:"Morning / late afternoon",note:"Historic palace-square area in Kathmandu."},
+{name:"Boudhanath Stupa",type:"culture",icon:"🛕",hours:"Generally accessible daily",visit:"1–2 hours",best:"Morning / evening",note:"Major Buddhist heritage site."},
+{name:"Pashupatinath Temple",type:"culture",icon:"🛕",hours:"Temple access varies",visit:"1–2 hours",best:"Morning / evening",note:"Important Hindu pilgrimage site; access rules apply."},
+{name:"Pokhara / Phewa Lake",type:"nature",icon:"🏔️",hours:"Outdoor area; daylight recommended",visit:"2–4 hours",best:"Morning / sunset",note:"Boating, lake views and Himalayan scenery."},
+{name:"Chitwan National Park",type:"nature",icon:"🐘",hours:"Park/operator schedules",visit:"Half day–full day",best:"Morning",note:"Safari and nature activities; use authorised operators."}]},
+"Sri Lanka":{flag:"🇱🇰",intro:"Beaches, wildlife, heritage, tea country and cultural sites.",currency:"LKR",places:[
+{name:"Sigiriya Rock Fortress",type:"culture",icon:"🪨",hours:"Typically daytime; verify official schedule",visit:"3–4 hours",best:"Early morning",note:"Historic rock fortress; allow time for the climb."},
+{name:"Temple of the Tooth",type:"culture",icon:"🛕",hours:"Prayer/visitor times vary",visit:"1–2 hours",best:"Morning / evening",note:"Religious site in Kandy; dress respectfully."},
+{name:"Galle Fort",type:"culture",icon:"🏰",hours:"Outdoor fort; venues vary",visit:"2–4 hours",best:"Late afternoon",note:"Historic coastal fort and old town."},
+{name:"Yala National Park",type:"nature",icon:"🐆",hours:"Safari/operator schedule",visit:"Half day–full day",best:"Early morning",note:"Wildlife safari requires an authorised operator."},
+{name:"Ella",type:"nature",icon:"🌄",hours:"Outdoor attractions; daylight",visit:"1–2 days",best:"Morning",note:"Hill-country scenery, hikes and viewpoints."}]},
+"Bhutan":{flag:"🇧🇹",intro:"Himalayan monasteries, valleys, mountain scenery and culture.",currency:"BTN",places:[
+{name:"Tiger's Nest Monastery",type:"culture",icon:"⛰️",hours:"Daytime; entry conditions vary",visit:"4–6 hours",best:"Early morning",note:"Allow several hours for the hike and visit."},
+{name:"Punakha Dzong",type:"culture",icon:"🏯",hours:"Visitor hours vary",visit:"1–2 hours",best:"Morning / afternoon",note:"Historic dzong at the river confluence."},
+{name:"Thimphu",type:"attraction",icon:"🏔️",hours:"City attractions vary",visit:"1–2 days",best:"Daytime",note:"Capital city with markets, museums and cultural sites."},
+{name:"Dochula Pass",type:"nature",icon:"🏔️",hours:"Outdoor viewpoint; weather dependent",visit:"1–2 hours",best:"Morning",note:"Mountain pass with Himalayan views when weather permits."}]},
+"France":{flag:"🇫🇷",intro:"Art, architecture, food, history and world-famous cities.",currency:"EUR",places:[
+{name:"Eiffel Tower",type:"attraction",icon:"🗼",hours:"Ticket/session dependent",visit:"2–3 hours",best:"Late afternoon / evening",note:"Book official tickets and check current opening times."},
+{name:"Louvre Museum",type:"culture",icon:"🎨",hours:"Typically daytime; weekly closure applies",visit:"3–5 hours",best:"Morning",note:"Check official museum calendar before visiting."},
+{name:"Notre-Dame de Paris",type:"culture",icon:"⛪",hours:"Visitor access varies",visit:"1–2 hours",best:"Morning / afternoon",note:"Check current visitor arrangements and worship restrictions."},
+{name:"Mont Saint-Michel",type:"culture",icon:"🏰",hours:"Tides and venue hours vary",visit:"3–5 hours",best:"Check tide times",note:"Plan around tide and transport schedules."}]},
+"Qatar":{flag:"🇶🇦",intro:"Modern Doha, museums, souqs, waterfronts and desert experiences.",currency:"QAR",places:[
+{name:"Museum of Islamic Art",type:"culture",icon:"🏛️",hours:"Museum schedule varies",visit:"2–3 hours",best:"Morning / afternoon",note:"Check official opening days and hours."},
+{name:"Souq Waqif",type:"culture",icon:"🕌",hours:"Shops/venues vary; evenings popular",visit:"2–3 hours",best:"Evening",note:"Traditional market, dining and cultural atmosphere."},
+{name:"National Museum of Qatar",type:"culture",icon:"🏛️",hours:"Museum schedule varies",visit:"2–3 hours",best:"Morning / afternoon",note:"Check official schedule before visiting."},
+{name:"The Pearl-Qatar",type:"attraction",icon:"🌴",hours:"Open district; venues vary",visit:"2–4 hours",best:"Evening",note:"Waterfront dining, shopping and leisure."},
+{name:"Khor Al Adaid",type:"nature",icon:"🏜️",hours:"Daylight / tour schedule",visit:"Half day–full day",best:"Late afternoon",note:"Desert sea experience; use an authorised tour operator."}]},
+"Cambodia":{flag:"🇰🇭",intro:"Ancient temples, heritage, riverside cities and tropical nature.",currency:"KHR",places:[
+{name:"Angkor Wat",type:"culture",icon:"🛕",hours:"Early morning–late afternoon; verify ticket rules",visit:"3–5 hours",best:"Sunrise / morning",note:"Major temple complex near Siem Reap."},
+{name:"Bayon Temple",type:"culture",icon:"🗿",hours:"Daytime; park schedule",visit:"1–2 hours",best:"Morning",note:"Known for its large carved faces."},
+{name:"Ta Prohm",type:"culture",icon:"🌳",hours:"Daytime; park schedule",visit:"1–2 hours",best:"Morning",note:"Temple ruins integrated with trees and vegetation."},
+{name:"Royal Palace Phnom Penh",type:"culture",icon:"🏯",hours:"Visitor hours vary",visit:"1–2 hours",best:"Morning",note:"Check current access and dress rules."}]},
+"Mauritius":{flag:"🇲🇺",intro:"Beaches, lagoons, mountains, wildlife and island culture.",currency:"MUR",places:[
+{name:"Le Morne Brabant",type:"nature",icon:"⛰️",hours:"Outdoor area; hike conditions vary",visit:"3–5 hours",best:"Early morning",note:"Mountain and peninsula with panoramic views."},
+{name:"Black River Gorges",type:"nature",icon:"🌿",hours:"Daylight; trail conditions vary",visit:"2–5 hours",best:"Morning",note:"National park with forest trails and viewpoints."},
+{name:"Chamarel Seven Coloured Earth",type:"nature",icon:"🌈",hours:"Typically daytime; verify current schedule",visit:"1–2 hours",best:"Morning / afternoon",note:"Geological attraction with nearby viewpoints."},
+{name:"Port Louis / Central Market",type:"culture",icon:"🛍️",hours:"Market hours vary",visit:"1–3 hours",best:"Morning",note:"City, market, food and cultural experience."}]},
+"Greece":{flag:"🇬🇷",intro:"Ancient heritage, islands, beaches and Mediterranean culture.",currency:"EUR",places:[
+{name:"Acropolis of Athens",type:"culture",icon:"🏛️",hours:"Seasonal hours; verify official ticketing",visit:"2–3 hours",best:"Early morning / late afternoon",note:"Major ancient landmark in Athens."},
+{name:"Acropolis Museum",type:"culture",icon:"🏛️",hours:"Schedule varies by season",visit:"2–3 hours",best:"Morning",note:"Check official museum calendar."},
+{name:"Santorini",type:"attraction",icon:"🌋",hours:"Outdoor destination; venues vary",visit:"1–3 days",best:"Sunset",note:"Plan transport and accommodation ahead in peak season."},
+{name:"Delphi",type:"culture",icon:"🏺",hours:"Seasonal archaeological-site hours",visit:"2–4 hours",best:"Morning",note:"Check official archaeological-site schedule."}]},
+"Uzbekistan":{flag:"🇺🇿",intro:"Silk Road cities, Islamic architecture, bazaars and desert landscapes.",currency:"UZS",places:[
+{name:"Registan Square",type:"culture",icon:"🏛️",hours:"Visitor access varies",visit:"1–2 hours",best:"Morning / evening",note:"Samarkand's famous architectural ensemble."},
+{name:"Bibi-Khanym Mosque",type:"culture",icon:"🕌",hours:"Daytime; verify local schedule",visit:"1 hour",best:"Morning / afternoon",note:"Historic Samarkand monument."},
+{name:"Ark of Bukhara",type:"culture",icon:"🏰",hours:"Museum/site hours vary",visit:"1–2 hours",best:"Morning",note:"Historic fortress complex in Bukhara."},
+{name:"Khiva Old Town",type:"culture",icon:"🏘️",hours:"District open; monuments vary",visit:"Half day–full day",best:"Morning / evening",note:"Walled Silk Road heritage area."}]},
+"Maldives":{flag:"🇲🇻",intro:"Tropical islands, beaches, lagoons, diving and resort experiences.",currency:"MVR",places:[
+{name:"Malé",type:"culture",icon:"🏙️",hours:"City venues vary",visit:"2–4 hours",best:"Morning / evening",note:"Capital with markets, mosques and waterfront sights."},
+{name:"Hulhumalé Beach",type:"nature",icon:"🏖️",hours:"Open public beach; conditions vary",visit:"2–4 hours",best:"Morning / sunset",note:"Beach and lagoon activities depend on weather."},
+{name:"Maldives Atolls",type:"nature",icon:"🏝️",hours:"Operator/resort schedule",visit:"1–7 days",best:"Weather dependent",note:"Snorkelling, diving and island excursions vary by resort/operator."},
+{name:"National Museum",type:"culture",icon:"🏛️",hours:"Museum schedule varies",visit:"1–2 hours",best:"Morning / afternoon",note:"Check current opening schedule before visiting."}]}
+};
+function initExplore(){
+ const names=COUNTRY_LIST.map(x=>x.name);
+ const e=$("exploreCountry");
+ if(e)e.innerHTML='<option value="">Select destination</option>'+names.map(n=>`<option value="${esc(n)}">${countryObj(n).flag} ${esc(n)}</option>`).join('');
+}
+function renderExplore(){
+ const country=$("exploreCountry")?.value,type=$("exploreType")?.value||"all",out=$("exploreGuide");if(!out)return;
+ if(!country){out.innerHTML='<div class="info">Select a destination to view its short traveller guide.</div>';return;}
+ const g=COUNTRY_GUIDES[country];
+ if(!g){out.innerHTML=`<div class="guideHero"><h3>${flag(country)} ${esc(country)}</h3><p class="muted">Short traveller information is being prepared for this destination.</p><div class="routeMeta"><span class="metaPill">Currency: ${esc(countryObj(country).currency||"—")}</span></div></div><div class="info" style="margin-top:14px"><b>Traveller tip:</b> Check the official national tourism website for attractions and current opening hours.</div>`;return;}
+ const places=g.places.filter(p=>type==='all'||p.type===type);
+ out.innerHTML=`<div class="guideHero"><h3 style="margin-bottom:4px">${g.flag} ${esc(country)}</h3><p class="muted">${esc(g.intro)}</p><div class="routeMeta"><span class="metaPill">Currency: ${esc(g.currency)}</span><span class="metaPill">${places.length} guide places shown</span></div></div><div class="attractionGrid">${places.map(p=>`<div class="attractionCard"><div class="placeIcon">${p.icon}</div><h3 style="margin:7px 0 5px">${esc(p.name)}</h3><div class="timing"><span>🕐 ${esc(p.hours)}</span><span>⏱️ ${esc(p.visit)}</span><span>🌅 ${esc(p.best)}</span></div><p class="muted" style="margin-top:10px">${esc(p.note)}</p></div>`).join('')}</div><div class="info" style="margin-top:14px"><b>Traveller tip:</b> Opening hours can change for holidays, maintenance, religious observances and special events. Verify the attraction's official website before visiting.</div>`;
+}
+async function startQRScanner(){
+ const video=$("qrVideo"),msg=$("scanMessage"),out=$("qrResult"); if(!video)return;
+ try{
+  if(!('BarcodeDetector' in window))throw new Error('QR detection is not supported by this browser.');
+  const detector=new BarcodeDetector({formats:['qr_code']});
+  const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});
+  video.srcObject=stream;video.style.display='block';await video.play();msg.textContent='Point the camera at the merchant QR. SAFARQR is looking for a QR code…';
+  const scan=async()=>{if(video.readyState<2){requestAnimationFrame(scan);return;}try{const codes=await detector.detect(video);if(codes.length){const raw=codes[0].rawValue||'';stream.getTracks().forEach(t=>t.stop());video.style.display='none';renderQRDecision(raw);return;}}catch(e){}requestAnimationFrame(scan)};scan();
+ }catch(e){msg.textContent='Camera/QR scanning is unavailable in this browser. You can use a QR-capable phone browser or upload/enter the QR information manually.';out.innerHTML=`<div class="warning"><b>Scanner unavailable:</b> ${esc(e.message||'Camera permission or QR detection is unavailable.')}</div>`;}
+}
+function stopQRScanner(){const v=$("qrVideo");if(v&&v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());v.srcObject=null;}if(v)v.style.display='none';const m=$("scanMessage");if(m)m.textContent='Scanner stopped. Press Start Camera Scanner to scan another merchant QR.';}
+function renderQRDecision(raw){
+ const out=$("qrResult");let merchant='',app='',network='',amount='',currency='',upiId='',transactionRef='',merchantCode='';
+ try{
+  const u=new URL(raw); merchant=u.searchParams.get('pn')||u.searchParams.get('merchant')||'';amount=u.searchParams.get('am')||'';currency=u.searchParams.get('cu')||'';upiId=u.searchParams.get('pa')||'';transactionRef=u.searchParams.get('tr')||'';merchantCode=u.searchParams.get('mc')||'';app=u.protocol==='upi:'?'UPI payment link':'';network=u.protocol.replace(':','').toUpperCase();
+ }catch(e){network=/^upi:/i.test(raw)?'UPI':'QR content';}
+ const isUPI=/^upi:/i.test(raw),safeRaw=esc(raw);
+ const openAction=isUPI?`<button class="primary" style="margin-top:14px" onclick="openScannedUPI(${JSON.stringify(raw)})">Open UPI App →</button>`:'';
+ out.innerHTML=`<div class="card" style="border-left:4px solid var(--teal)"><h3>🔎 Merchant QR Identified</h3><div class="grid3"><div class="stat"><span class="muted">QR / network</span><strong style="font-size:16px">${esc(network||'Detected')}</strong><span class="muted">${isUPI?'UPI QR / payment link detected':'QR content detected'}</span></div><div class="stat"><span class="muted">Merchant name</span><strong style="font-size:16px">${esc(merchant||'Not encoded')}</strong></div><div class="stat"><span class="muted">Amount</span><strong style="font-size:16px">${esc(amount?(amount+' '+currency):'Not encoded')}</strong></div></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">UPI ID / payee</span><strong style="font-size:15px">${esc(upiId||'Not encoded')}</strong></div><div class="stat"><span class="muted">Merchant code</span><strong style="font-size:15px">${esc(merchantCode||'Not encoded')}</strong></div><div class="stat"><span class="muted">Reference</span><strong style="font-size:15px">${esc(transactionRef||'Not encoded')}</strong></div></div><div class="info" style="margin-top:12px"><b>Payment decision:</b> ${isUPI?'This QR contains a UPI payment address. SAFARQR can identify the QR details, but the final eligibility, FX rate and charges must be confirmed inside the payment app.':'The QR was detected, but SAFARQR could not establish a UPI payment address from the encoded content.'}</div><div class="checklist"><div class="checkitem"><b>1. Merchant</b><span class="muted">${esc(merchant||'Confirm the merchant name in your payment app.')}</span></div><div class="checkitem"><b>2. Payment app</b><span class="muted">${esc(app||'Payment app/network not encoded in a recognisable form.')}</span></div><div class="checkitem"><b>3. Charges</b><span class="muted">Check destination amount, FX conversion, provider fee, cross-border fee and any other applicable charge before authorising.</span></div></div>${openAction}<div class="source" style="margin-top:10px">Detected QR content: ${safeRaw}</div></div>`;
+}
+function openScannedUPI(raw){try{window.location.href=raw;}catch(e){alert('Your device could not open the UPI payment link. Please use the payment app manually.');}}
+
 function renderStatus(){
 const protectedCount=Object.keys(VERIFIED_CORRIDORS).length;
 const mergedCount=Object.keys(CORRIDORS).length;
@@ -907,9 +1058,10 @@ $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.
 <p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
 <p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
 }
+function showTab(id){const b=document.querySelector(`nav button[data-tab="${id}"]`);if(b)b.click()}
 function flag(n){return countryObj(n).flag||"🌍"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-tabs();buildAllSelectors();buildAssistantSelectors();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();
+tabs();buildAllSelectors();buildAssistantSelectors();initExplore();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();
 </script>
 
 
