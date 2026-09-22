@@ -1,36 +1,17 @@
-Absolutely. Now that SAFARQR V16.1 is working, here is a clean professional README.md you can put in the GitHub repository.
-
 SAFARQR — Global Travel & Payment Intelligence
-
 Know. Pay. Relax. Go.
-
 SAFARQR is a global travel and payment intelligence platform designed to help travellers understand how, where and through which payment networks they may be able to pay while travelling internationally.
-
 The platform combines payment-corridor intelligence, QR/payment-network information, currency reference tools, traveller guidance and verification information in a single traveller-friendly interface.
-
-
----
-
 🌍 What is SAFARQR?
-
 International travellers often face questions such as:
-
 Can I use my home-country payment app abroad?
-
 Can I pay using QR?
-
 Which payment network is supported?
-
 Where can I pay?
-
 Which partner or acquirer enables the transaction?
-
 What currency will I be charged in?
-
 What exchange rate or additional charges may apply?
-
 Is the payment corridor actually documented and verified?
-
 
 SAFARQR brings this information together before the traveller reaches the payment point.
 
