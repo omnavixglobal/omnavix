@@ -257,8 +257,17 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div id="scanMessage" class="muted" style="padding:20px">Your camera will be used only after you press Start Camera Scanner.</div>
 </div>
 <div id="qrResult" style="margin-top:15px"></div>
+<div class="card" style="margin-top:15px;background:#fbfdff">
+<h3>🔎 Check a Merchant UPI ID</h3>
+<p class="muted">If you cannot scan the QR, enter the merchant's UPI ID exactly as displayed. SAFARQR can validate the format and identify a recognisable payment handle, but it cannot independently prove merchant ownership from the ID alone.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:end">
+<div style="flex:1;min-width:240px"><label>Merchant UPI ID</label><input id="manualUpiId" placeholder="merchant@upi" autocomplete="off"></div>
+<button class="primary" onclick="checkManualUPI()">Check UPI ID</button>
 </div>
-<div class="warning"><b>Important:</b> A QR scan identifies information encoded in the QR where technically possible. It does not itself authorise or execute a payment. The final payment remains inside the eligible regulated payment/UPI app.</div>
+<div id="manualUpiResult" style="margin-top:12px"></div>
+</div>
+</div>
+<div class="warning"><b>Important:</b> A QR/UPI check identifies information encoded or entered. It does not itself prove merchant ownership, authorise or execute a payment. Always confirm the payee name shown inside your UPI app before paying.</div>
 </section>
 
 <section id="data" class="section">
@@ -1040,6 +1049,37 @@ function renderQRDecision(raw){
  const openAction=isUPI?`<button class="primary" style="margin-top:14px" onclick="openScannedUPI(${JSON.stringify(raw)})">Open UPI App →</button>`:'';
  out.innerHTML=`<div class="card" style="border-left:4px solid var(--teal)"><h3>🔎 Merchant QR Identified</h3><div class="grid3"><div class="stat"><span class="muted">QR / network</span><strong style="font-size:16px">${esc(network||'Detected')}</strong><span class="muted">${isUPI?'UPI QR / payment link detected':'QR content detected'}</span></div><div class="stat"><span class="muted">Merchant name</span><strong style="font-size:16px">${esc(merchant||'Not encoded')}</strong></div><div class="stat"><span class="muted">Amount</span><strong style="font-size:16px">${esc(amount?(amount+' '+currency):'Not encoded')}</strong></div></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">UPI ID / payee</span><strong style="font-size:15px">${esc(upiId||'Not encoded')}</strong></div><div class="stat"><span class="muted">Merchant code</span><strong style="font-size:15px">${esc(merchantCode||'Not encoded')}</strong></div><div class="stat"><span class="muted">Reference</span><strong style="font-size:15px">${esc(transactionRef||'Not encoded')}</strong></div></div><div class="info" style="margin-top:12px"><b>Payment decision:</b> ${isUPI?'This QR contains a UPI payment address. SAFARQR can identify the QR details, but the final eligibility, FX rate and charges must be confirmed inside the payment app.':'The QR was detected, but SAFARQR could not establish a UPI payment address from the encoded content.'}</div><div class="checklist"><div class="checkitem"><b>1. Merchant</b><span class="muted">${esc(merchant||'Confirm the merchant name in your payment app.')}</span></div><div class="checkitem"><b>2. Payment app</b><span class="muted">${esc(app||'Payment app/network not encoded in a recognisable form.')}</span></div><div class="checkitem"><b>3. Charges</b><span class="muted">Check destination amount, FX conversion, provider fee, cross-border fee and any other applicable charge before authorising.</span></div></div>${openAction}<div class="source" style="margin-top:10px">Detected QR content: ${safeRaw}</div></div>`;
 }
+function recogniseUPIHandle(id){
+ const handle=(id.split('@')[1]||'').toLowerCase();
+ const map={
+  'upi':'UPI handle', 'ybl':'PhonePe / Yes Bank handle', 'ibl':'PhonePe / ICICI Bank handle',
+  'axl':'PhonePe / Axis Bank handle', 'paytm':'Paytm handle', 'ptyes':'Paytm / Yes Bank handle',
+  'oksbi':'Google Pay / SBI handle', 'okaxis':'Google Pay / Axis Bank handle', 'okicici':'Google Pay / ICICI Bank handle',
+  'okhdfcbank':'Google Pay / HDFC Bank handle', 'sbi':'SBI handle', 'hdfcbank':'HDFC Bank handle',
+  'icici':'ICICI Bank handle', 'axisbank':'Axis Bank handle', 'kotak':'Kotak handle',
+  'barodampay':'Bank of Baroda handle', 'boi':'Bank of India handle', 'indianbank':'Indian Bank handle'
+ };
+ return map[handle]||'Payment handle: '+handle;
+}
+function checkManualUPI(){
+ const input=$("manualUpiId"),out=$("manualUpiResult"); if(!input||!out)return;
+ const id=(input.value||'').trim();
+ const valid=/^[A-Za-z0-9._-]{2,256}@[A-Za-z0-9.-]{2,64}$/.test(id);
+ if(!valid){out.innerHTML='<div class="warning"><b>Invalid UPI ID format.</b><br>Enter the ID exactly as displayed, for example <b>merchant@upi</b>.</div>';return;}
+ const provider=recogniseUPIHandle(id);
+ out.innerHTML=`<div class="card" style="margin:0;border-left:4px solid var(--teal)">
+ <h3>🔎 UPI ID Identified</h3>
+ <div class="grid3">
+ <div class="stat"><span class="muted">UPI ID</span><strong style="font-size:16px">${esc(id)}</strong></div>
+ <div class="stat"><span class="muted">Recognised handle</span><strong style="font-size:16px">${esc(provider)}</strong></div>
+ <div class="stat"><span class="muted">Format check</span><strong style="font-size:16px;color:var(--green)">Valid format</strong></div>
+ </div>
+ <div class="warning" style="margin-top:12px"><b>Merchant verification:</b> This confirms the UPI ID has a valid-looking format and may identify its payment handle. It does <b>not</b> independently verify that the ID belongs to the merchant. Confirm the payee name displayed by your UPI app before authorising.</div>
+ <button class="primary" style="margin-top:12px" onclick="openManualUPI(${JSON.stringify(id)})">Open UPI App →</button>
+ </div>`;
+}
+function openManualUPI(id){try{window.location.href='upi://pay?pa='+encodeURIComponent(id);}catch(e){alert('Your device could not open the UPI payment app. Please open your UPI app manually and enter the merchant ID.');}}
+
 function openScannedUPI(raw){try{window.location.href=raw;}catch(e){alert('Your device could not open the UPI payment link. Please use the payment app manually.');}}
 
 function renderStatus(){
