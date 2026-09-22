@@ -1,10 +1,11 @@
-<!doctype html>
+<!DOCTYPE html>
+
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="utf-8"/>
+<meta content="width=device-width,initial-scale=1" name="viewport"/>
 <title>OMNAVIX | Know. Navigate. Go.</title>
-<meta name="description" content="OMNAVIX global payment intelligence prototype">
+<meta content="OMNAVIX global payment intelligence prototype" name="description"/>
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--blue:#0878d1;--navy:#092f63;--teal:#0aa79d;--green:#15945b;--orange:#f58a18;--bg:#f3f8fd;--ink:#102a43;--muted:#627d98;--line:#d9e2ec;--white:#fff}
@@ -69,28 +70,30 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 .verifyTableWrap{overflow:auto;border:1px solid var(--line);border-radius:12px}.verifyTable{width:100%;border-collapse:collapse;min-width:1050px}.verifyTable th,.verifyTable td{padding:10px;border-bottom:1px solid var(--line);text-align:left;font-size:12px}.verifyTable th{background:#f2f7fb;color:var(--navy);position:sticky;top:0}.freshBadge{display:inline-block;padding:4px 7px;border-radius:999px;font-weight:800;font-size:11px}.fresh{background:#eaf7ef;color:var(--green)}.review{background:#fff4df;color:#9a5b00}.refresh{background:#fdecec;color:#b42318}.nodate{background:#eef2f6;color:#627d98}
 .verifyTools{display:flex;gap:8px;flex-wrap:wrap;margin:12px 0}.verifyTools input,.verifyTools select{margin:0;min-width:180px}.verifyNote{background:#f4faff;border-left:4px solid var(--blue);padding:13px;border-radius:10px;line-height:1.55;font-size:13px}
 @media(max-width:900px){.verifyStats{grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.verifyStats{grid-template-columns:1fr}}
+
+.sectionDivider{margin:22px 0 14px;padding:9px 12px;border-left:4px solid var(--blue);background:#f5f9fd;font-weight:700;color:var(--navy);letter-spacing:.4px;border-radius:6px}
 </style>
 </head>
 <body>
 <div class="app">
-<div class="hero"><img src="assets/omnavix-banner.jpg" alt="OMNAVIX global travel and payment banner"></div>
+<div class="hero"><img alt="OMNAVIX global travel and payment banner" src="assets/omnavix-banner.jpg"/></div>
 <div class="brandbar">
-<img src="assets/omnavix-logo.jpg" alt="OMNAVIX logo">
+<img alt="OMNAVIX logo" src="assets/omnavix-logo.jpg"/>
 <div><div class="brand">OMNAVIX</div><div class="tag">Know. Navigate. Go.</div></div>
 </div>
 <nav>
 <button class="active" data-tab="home">Home</button>
-<button data-tab="pay">Can I Pay?</button>
+<button data-tab="pay">Payments</button>
 <button data-tab="assistant">Trip Assistant</button>
 <button data-tab="fx">Currency</button>
-<button data-tab="where">Where Can I Pay?</button>
+
 <button data-tab="countries">Countries</button>
-<button data-tab="intelligence">Intelligence</button>
-<button data-tab="verification">Verification</button>
+<button data-tab="insights">Insights</button>
+
 <button data-tab="data">Data Status</button>
 </nav>
 <main>
-<section id="home" class="section active">
+<section class="section active" id="home">
 <div class="card">
 <h2>Global Payment Intelligence</h2>
 <p>Choose your home country and destination. OMNAVIX uses its protected verified corridor registry and, when available, the attached payment database to show route, network, currency and verification information.</p>
@@ -99,13 +102,13 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div><label>Destination</label><select id="homeDestination" onchange="renderAssistant()"></select></div>
 <div style="align-self:end"><button class="primary" onclick="openPayment()">Check Payment Options</button></div>
 </div>
-<div id="dbStatus" class="source">Loading OMNAVIX database…</div>
-<div id="homeAssistant" class="v12Hero">
-  <div class="v12Title">
-    <div><span class="v12Pill">V13</span> <h3 style="display:inline">Traveller Decision Assistant</h3></div>
-    <span class="muted">Choose a route to see a traveller-ready summary.</span>
-  </div>
-  <div id="homeAssistantBody" class="muted" style="margin-top:10px">Select a destination to generate the route summary.</div>
+<div class="source" id="dbStatus">Loading OMNAVIX database…</div>
+<div class="v12Hero" id="homeAssistant">
+<div class="v12Title">
+<div><span class="v12Pill">V13</span> <h3 style="display:inline">Traveller Decision Assistant</h3></div>
+<span class="muted">Choose a route to see a traveller-ready summary.</span>
+</div>
+<div class="muted" id="homeAssistantBody" style="margin-top:10px">Select a destination to generate the route summary.</div>
 </div>
 </div>
 <div class="grid">
@@ -115,40 +118,37 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div class="stat"><span class="muted">Last verified</span><strong id="verified" style="font-size:17px">—</strong></div>
 </div>
 </section>
-
-
-<section id="assistant" class="section">
+<section class="section" id="assistant">
 <div class="card">
-  <div class="v12Title">
-    <div>
-      <h2 style="margin-bottom:4px">Traveller Decision Assistant</h2>
-      <p class="muted" style="margin:0">A compact route summary that brings payment availability, acceptance, currency and verification information together before you travel.</p>
-    </div>
-    <span class="v12Pill">V13 • Dynamic database intelligence</span>
-  </div>
-  <div class="grid3" style="margin-top:16px">
-    <div><label>Home country</label><select id="assistantHomeCountry" onchange="renderAssistant()"></select></div>
-    <div><label>Destination</label><select id="assistantDestination" onchange="renderAssistant()"></select></div>
-    <div style="align-self:end"><button class="primary" onclick="renderAssistant()">Build travel summary</button></div>
-  </div>
-  <div id="assistantResult" style="margin-top:18px"></div>
+<div class="v12Title">
+<div>
+<h2 style="margin-bottom:4px">Traveller Decision Assistant</h2>
+<p class="muted" style="margin:0">A compact route summary that brings payment availability, acceptance, currency and verification information together before you travel.</p>
+</div>
+<span class="v12Pill">V13 • Dynamic database intelligence</span>
+</div>
+<div class="grid3" style="margin-top:16px">
+<div><label>Home country</label><select id="assistantHomeCountry" onchange="renderAssistant()"></select></div>
+<div><label>Destination</label><select id="assistantDestination" onchange="renderAssistant()"></select></div>
+<div style="align-self:end"><button class="primary" onclick="renderAssistant()">Build travel summary</button></div>
+</div>
+<div id="assistantResult" style="margin-top:18px"></div>
 </div>
 <div class="card" style="margin-top:15px">
-  <h3>How to use the OMNAVIX decision summary</h3>
-  <div class="v12Grid">
-    <div class="v12Step"><div class="num">Step 1</div><strong>Check the route</strong><span>Confirm that the selected home-to-destination direction is documented by OMNAVIX.</span></div>
-    <div class="v12Step"><div class="num">Step 2</div><strong>Confirm acceptance</strong><span>Look for the relevant QR/network sign and confirm the specific merchant accepts the route.</span></div>
-    <div class="v12Step"><div class="num">Step 3</div><strong>Verify the cost</strong><span>Review the destination amount, home-currency estimate, exchange rate and applicable provider charges.</span></div>
-  </div>
+<h3>How to use the OMNAVIX decision summary</h3>
+<div class="v12Grid">
+<div class="v12Step"><div class="num">Step 1</div><strong>Check the route</strong><span>Confirm that the selected home-to-destination direction is documented by OMNAVIX.</span></div>
+<div class="v12Step"><div class="num">Step 2</div><strong>Confirm acceptance</strong><span>Look for the relevant QR/network sign and confirm the specific merchant accepts the route.</span></div>
+<div class="v12Step"><div class="num">Step 3</div><strong>Verify the cost</strong><span>Review the destination amount, home-currency estimate, exchange rate and applicable provider charges.</span></div>
+</div>
 </div>
 <div class="warning" style="margin-top:15px">
-  <b>Important:</b> OMNAVIX is an information and traveller-support prototype. A documented corridor does not guarantee acceptance at every merchant, and the assistant is not a payment authorisation or price quote.
+<b>Important:</b> OMNAVIX is an information and traveller-support prototype. A documented corridor does not guarantee acceptance at every merchant, and the assistant is not a payment authorisation or price quote.
 </div>
 </section>
-
-<section id="pay" class="section">
+<section class="section" id="pay">
 <div class="card">
-<h2>Can I Pay?</h2><div id="upiHomeNote" class="muted" style="margin:8px 0 12px">
+<h2>Can I Pay?</h2><div class="muted" id="upiHomeNote" style="margin:8px 0 12px">
 Home Country is limited to the currently documented UPI-enabled origin for this prototype: India. Destination availability is checked separately by direction.
 </div>
 <div class="grid3">
@@ -157,17 +157,47 @@ Home Country is limited to the currently documented UPI-enabled origin for this 
 <div style="align-self:end"><button class="primary" onclick="checkPayment()">Check</button></div>
 </div>
 </div>
-<div id="payResult" class="card result"></div>
-</section>
-
-<section id="fx" class="section">
+<div class="card result" id="payResult"></div>
+<div class="sectionDivider">WHERE CAN I PAY?</div>
 <div class="card">
-<h2>Currency & Cost Estimate</h2>
+<h2>Where Can I Pay?</h2><div class="muted" id="upiWhereNote" style="margin:8px 0 12px">
+Home Country options are restricted to documented UPI-enabled routes; reverse corridors are never inferred automatically.
+</div>
+<p class="muted">Find the documented international merchant-acceptance route for your destination. OMNAVIX shows verified network information and tells you what to look for at the merchant. It does not claim that every merchant in a country accepts UPI.</p>
+<div class="grid3" style="align-items:end">
+<div>
+<label>Home country</label>
+<select id="whereHomeCountry"></select>
+</div>
+<div>
+<label>Destination</label>
+<select id="whereDestination"></select>
+</div>
+<div>
+<button class="primary" id="whereCheckBtn" onclick="renderWhere()">Check Where to Pay</button>
+</div>
+</div>
+<div id="whereResult" style="margin-top:18px"></div>
+</div>
+<div class="card" style="margin-top:15px">
+<h3>Traveller payment checklist</h3>
+<div class="grid3">
+<div class="stat"><span class="muted">1. Look</span><strong style="font-size:17px">QR / network sign</strong><span class="muted">Look for BHIM UPI or compatible network-partner acceptance signage.</span></div>
+<div class="stat"><span class="muted">2. Ask</span><strong style="font-size:17px">Confirm acceptance</strong><span class="muted">Ask the merchant whether the displayed QR accepts your eligible UPI app.</span></div>
+<div class="stat"><span class="muted">3. Verify</span><strong style="font-size:17px">Review final cost</strong><span class="muted">Check foreign amount, INR amount, exchange rate and applicable fees before authorisation.</span></div>
+</div>
+</div>
+<div id="merchantIntelligence" style="margin-top:16px"></div>
+<div class="info"><b>OMNAVIX roadmap:</b> The next stage can connect verified merchant/acquirer feeds and map services to show nearby participating locations. Until those feeds are integrated, OMNAVIX deliberately displays network-level and documented merchant-coverage information rather than inventing individual merchant locations.</div>
+</section>
+<section class="section" id="fx">
+<div class="card">
+<h2>Currency &amp; Cost Estimate</h2>
 <p class="muted">Understand the destination amount in your home currency before you pay. OMNAVIX uses a live reference FX rate when internet access is available.</p>
 <div class="grid3">
 <div><label>Home currency</label><select id="fxHomeCurrency"></select></div>
 <div><label>Destination currency</label><select id="fxCurrency"></select></div>
-<div><label>Destination amount</label><input id="fxAmount" type="number" value="100" min="0" step="0.01"></div>
+<div><label>Destination amount</label><input id="fxAmount" min="0" step="0.01" type="number" value="100"/></div>
 </div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 14px">
 <button class="secondary" onclick="setFXAmount(10)">10</button><button class="secondary" onclick="setFXAmount(25)">25</button><button class="secondary" onclick="setFXAmount(50)">50</button><button class="secondary" onclick="setFXAmount(100)">100</button><button class="secondary" onclick="setFXAmount(250)">250</button>
@@ -187,57 +217,19 @@ Home Country is limited to the currently documented UPI-enabled origin for this 
 </div>
 </section>
 
-<section id="where" class="section">
+<section class="section" id="countries">
 <div class="card">
-<h2>Where Can I Pay?</h2><div id="upiWhereNote" class="muted" style="margin:8px 0 12px">
-Home Country options are restricted to documented UPI-enabled routes; reverse corridors are never inferred automatically.
-</div>
-<p class="muted">Find the documented international merchant-acceptance route for your destination. OMNAVIX shows verified network information and tells you what to look for at the merchant. It does not claim that every merchant in a country accepts UPI.</p>
-
-<div class="grid3" style="align-items:end">
-  <div>
-    <label>Home country</label>
-    <select id="whereHomeCountry"></select>
-  </div>
-  <div>
-    <label>Destination</label>
-    <select id="whereDestination"></select>
-  </div>
-  <div>
-    <button class="primary" id="whereCheckBtn" onclick="renderWhere()">Check Where to Pay</button>
-  </div>
-</div>
-
-<div id="whereResult" style="margin-top:18px"></div>
-</div>
-
-<div class="card" style="margin-top:15px">
-<h3>Traveller payment checklist</h3>
-<div class="grid3">
-  <div class="stat"><span class="muted">1. Look</span><strong style="font-size:17px">QR / network sign</strong><span class="muted">Look for BHIM UPI or compatible network-partner acceptance signage.</span></div>
-  <div class="stat"><span class="muted">2. Ask</span><strong style="font-size:17px">Confirm acceptance</strong><span class="muted">Ask the merchant whether the displayed QR accepts your eligible UPI app.</span></div>
-  <div class="stat"><span class="muted">3. Verify</span><strong style="font-size:17px">Review final cost</strong><span class="muted">Check foreign amount, INR amount, exchange rate and applicable fees before authorisation.</span></div>
-</div>
-</div>
-
-<div class="info"><b>OMNAVIX roadmap:</b> The next stage can connect verified merchant/acquirer feeds and map services to show nearby participating locations. Until those feeds are integrated, OMNAVIX deliberately displays network-level and documented merchant-coverage information rather than inventing individual merchant locations.</div>
-</section>
-
-<section id="countries" class="section">
-<div class="card">
-<h2>Countries & Payment Networks</h2>
+<h2>Countries &amp; Payment Networks</h2>
 <p class="muted">Explore the international payment corridors currently documented in the OMNAVIX database. Select a country to view its payment type, currency, partner/network, QR acceptance information and verification date.</p>
 <div class="grid3" style="align-items:end">
-  <div style="grid-column:span 2"><label>Search</label><input id="search" placeholder="Search country, partner, currency or payment type…" oninput="renderCountries()"></div>
-  <div><label>Country</label><select id="countryDetail" onchange="renderCountryDetail()"><option value="">Select a country</option></select></div>
+<div style="grid-column:span 2"><label>Search</label><input id="search" oninput="renderCountries()" placeholder="Search country, partner, currency or payment type…"/></div>
+<div><label>Country</label><select id="countryDetail" onchange="renderCountryDetail()"><option value="">Select a country</option></select></div>
 </div>
-<div id="countryCards" class="grid3" style="margin-top:16px"></div>
+<div class="grid3" id="countryCards" style="margin-top:16px"></div>
 </div>
 <div id="countryDetailBox"></div>
 <div class="info"><b>OMNAVIX principle:</b> “Live” means the payment corridor is documented as operational for the stated use case. It does not mean every merchant accepts the payment method. Merchant-level acceptance should be confirmed at the point of payment.</div>
-</section>
-
-<section id="intelligence" class="section">
+</section><section class="section" id="insights">
 <div class="intelHero">
 <h2 style="margin-top:0">Global Traveller Intelligence Dashboard</h2>
 <p class="intelMuted">A research-grade view of documented international payment corridors. The dashboard uses the live OMNAVIX runtime database and keeps each corridor directional.</p>
@@ -258,16 +250,15 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 <div><label>Use case</label><select id="intelUse"><option value="">All</option></select></div>
 <div><label>Status</label><select id="intelStatus"><option value="">All</option></select></div>
 </div>
-<div style="margin-bottom:12px"><input id="intelSearch" placeholder="Search country, partner, currency, payment rail or source…" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:9px"></div>
-<div id="intelCount" class="intelMuted" style="margin-bottom:10px"></div>
+<div style="margin-bottom:12px"><input id="intelSearch" placeholder="Search country, partner, currency, payment rail or source…" style="width:100%;padding:11px;border:1px solid var(--line);border-radius:9px"/></div>
+<div class="intelMuted" id="intelCount" style="margin-bottom:10px"></div>
 <div class="intelTableWrap"><table class="intelTable"><thead><tr><th>Direction</th><th>Payment rail</th><th>Use case</th><th>Status</th><th>Partner / network</th><th>Currency</th><th>Acceptance</th><th>Live since</th><th>Last verified</th></tr></thead><tbody id="intelBody"></tbody></table></div>
 </div>
 <div class="card" style="margin-top:14px">
 <h3 style="margin-top:0">Research interpretation</h3>
 <p class="intelMuted">OMNAVIX treats international payment availability as a <b>directional corridor</b>. A documented route in one direction does not create a route in the opposite direction. Status, use case, partner, currency and acceptance information are shown only when documented in the database or protected verification registry.</p>
 </div>
-</section>
-<section id="verification" class="section">
+<div class="sectionDivider">VERIFICATION</div>
 <div class="verifyHero">
 <h2 style="margin-top:0">Corridor Verification Center</h2>
 <p class="intelMuted">OMNAVIX V15 adds a data-governance layer that shows verification freshness for each documented directional corridor. Freshness is a research aid, not a guarantee that a payment will work at a particular merchant.</p>
@@ -281,18 +272,20 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 <div class="card">
 <h3 style="margin-top:0">Verification and source register</h3>
 <div class="verifyTools">
-<input id="verifySearch" placeholder="Search route, partner, currency or source…">
+<input id="verifySearch" placeholder="Search route, partner, currency or source…"/>
 <select id="verifyFreshFilter"><option value="">All freshness states</option><option value="fresh">Recently verified</option><option value="review">Review soon</option><option value="refresh">Refresh needed</option><option value="nodate">Verification date missing</option></select>
 <button class="secondary" onclick="exportVerificationCSV()">Export CSV</button>
 </div>
-<div id="verifyCount" class="intelMuted" style="margin-bottom:10px"></div>
+<div class="intelMuted" id="verifyCount" style="margin-bottom:10px"></div>
 <div class="verifyTableWrap"><table class="verifyTable"><thead><tr><th>Direction</th><th>Status</th><th>Payment rail</th><th>Use case</th><th>Partner / network</th><th>Currency</th><th>Last verified</th><th>Freshness</th><th>Source</th></tr></thead><tbody id="verifyBody"></tbody></table></div>
 </div>
 <div class="card" style="margin-top:14px">
 <div class="verifyNote"><b>Verification rule:</b> OMNAVIX does not convert a stale or missing verification date into a payment-availability claim. Travellers should confirm the current merchant/network acceptance, final exchange rate and applicable charges before authorisation.</div>
 </div>
 </section>
-<section id="data" class="section">
+
+
+<section class="section" id="data">
 <div class="card">
 <h2>Live Data Status</h2>
 <div id="statusBox"></div>
@@ -308,9 +301,8 @@ Home Country options are restricted to documented UPI-enabled routes; reverse co
 </div>
 </section>
 </main>
-<footer>OMNAVIX Research & Product Prototype • V15 Verification Center • Dynamic Global Database • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+<footer>OMNAVIX Research &amp; Product Prototype • Global Database • Merchant Intelligence • Verification • Know. Navigate. Go. • Payment availability and merchant acceptance must be independently verified before a real transaction.</footer>
 </div>
-
 <script>
 let rows=[];
 const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
@@ -364,8 +356,7 @@ document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
 $(b.dataset.tab).classList.add("active");
 if(b.dataset.tab==="countries"){renderCountries();populateCountryDetail();}
 if(b.dataset.tab==="data")renderStatus();
-if(b.dataset.tab==="intelligence")renderIntelligence();
-if(b.dataset.tab==="verification")renderVerification();
+if(b.dataset.tab==="insights"){renderIntelligence();renderVerification();}
 });
 }
 function normalize(r){const o={};Object.keys(r).forEach(k=>o[k.trim().toLowerCase()]=r[k]);return o}
@@ -744,6 +735,76 @@ return `<div class="card" style="margin-top:16px">
 </div>`;
 }).join("");
 }
+
+const MERCHANT_INTELLIGENCE={
+ "India|Singapore":{verifiedCategories:[
+  {icon:"🍽️",name:"Restaurants & Dining",detail:"NETS documents BHIM acceptance for selected merchants and specifically references shopping and dining."},
+  {icon:"🛍️",name:"Retail & Shopping",detail:"Selected retail merchants and shopping locations using participating NETS/SGQR acceptance."},
+  {icon:"🍜",name:"Food Courts & Hawker Centres",detail:"NETS acceptance infrastructure includes food courts and hawker centres; BHIM remains merchant-specific."},
+  {icon:"🏪",name:"Convenience Stores & Supermarkets",detail:"NETS lists these among acceptance points; confirm the BHIM/UPI acceptance sign."}],namedExamples:[],note:"BHIM/UPI acceptance is only at participating merchants that have enabled the relevant acceptance.",source:"https://www.nets.com.sg/nets/for-business/accept-overseas-wallets-foreign-cards",sourceLabel:"NETS official merchant acceptance information"},
+ "India|Nepal":{verifiedCategories:[
+  {icon:"🏨",name:"Hospitality",detail:"Fonepay states UPI is live across hospitality merchants."},
+  {icon:"🍽️",name:"Restaurants & Dining",detail:"Fonepay specifically identifies restaurants as a UPI-enabled merchant sector."},
+  {icon:"🛍️",name:"Retail & Shopping",detail:"Fonepay identifies retail and local markets as UPI-enabled merchant contexts."},
+  {icon:"🧳",name:"Travel Services",detail:"Fonepay identifies travel services as a UPI-enabled sector."}],namedExamples:[],note:"Fonepay says UPI works at Fonepay-affiliated merchant QR locations. OMNAVIX does not name individual shops unless an official source identifies them.",source:"https://www.fonepay.com/blogs/upi-in-nepal",sourceLabel:"Fonepay official UPI information"},
+ "India|UAE":{verifiedCategories:[
+  {icon:"🛍️",name:"Retail & Shopping",detail:"Network International says UPI rollout covers retail stores and its wider merchant network."},
+  {icon:"🍽️",name:"Dining",detail:"Network International specifically describes dining outlets within the rollout."},
+  {icon:"🏨",name:"Hospitality",detail:"Network International identifies hospitality merchants in its UPI-enabled network."},
+  {icon:"🚕",name:"Transport",detail:"Network International lists transport among sectors in its merchant network."},
+  {icon:"🛒",name:"Supermarkets",detail:"Supermarkets are specifically included among sectors served by Network International."},
+  {icon:"🎟️",name:"Tourist & Leisure Attractions",detail:"Network International says rollout includes tourist and leisure attractions."}],namedExamples:[
+  {name:"Dubai Mall",category:"Retail / Tourism",detail:"Named by Network International as an example of a tourist/leisure location in the rollout."},
+  {name:"Mall of the Emirates",category:"Retail / Tourism",detail:"Named by Network International as an example of a tourist/leisure location in the rollout."}],note:"UPI is available through participating merchant/acquirer infrastructure; the presence of a merchant in a network does not guarantee every terminal or outlet is enabled.",source:"https://www.network.ae/en/about-us/press-and-media/news/network-international-partners-with-npci-international-to-enable-upi-qr-payment-acceptance-across-its-merchants-in-the-uae",sourceLabel:"Network International official announcement"},
+ "India|Sri Lanka":{verifiedCategories:[
+  {icon:"🛒",name:"Groceries & Everyday Shopping",detail:"LankaPay describes LankaQR for buying groceries at participating merchants."},
+  {icon:"🍽️",name:"Dining",detail:"LankaPay explicitly describes dining at participating LankaQR merchants."},
+  {icon:"🛍️",name:"Shopping",detail:"LankaPay states LankaQR can be used for shopping at participating merchants."}],namedExamples:[],note:"UPI/BHIM-enabled apps can scan participating LankaQR merchant locations. Individual merchant acceptance must be confirmed at the point of payment.",source:"https://www.lankapay.net/en/npci-international",sourceLabel:"LankaPay official NPCI International page"},
+ "India|Bhutan":{verifiedCategories:[
+  {icon:"🏪",name:"Participating Bhutanese Merchants",detail:"RMA states UPI Global QR enables Indian tourists to make merchant payments through UPI-powered apps."},
+  {icon:"🧾",name:"QR Merchant Payments",detail:"The RMA system connects India's UPI ecosystem with Bhutan's national QR ecosystem for merchant payments."}],namedExamples:[],note:"The official RMA source confirms merchant payment capability but does not provide a public named-merchant directory. Look for the supported UPI/QR acceptance indication.",source:"https://www.rma.org.bt/rpSystem/",sourceLabel:"Royal Monetary Authority of Bhutan"},
+ "India|France":{verifiedCategories:[
+  {icon:"🛍️",name:"Retail",detail:"Lyra identifies retail as a major Indian-visitor spending sector where BHIM-UPI can be offered."},
+  {icon:"💻",name:"Electronics",detail:"Lyra identifies electronics as a major spending sector for Indian visitors."},
+  {icon:"🎟️",name:"Tourism & Ticketing",detail:"Lyra documents tourism, ticket reservations and hotels among relevant sectors."},
+  {icon:"🚇",name:"Transport",detail:"Lyra identifies metro, bus and taxi among relevant sectors."},
+  {icon:"🍽️",name:"Restaurants & Food",detail:"Lyra explicitly identifies restaurants and food."},
+  {icon:"🎓",name:"Student Services",detail:"Lyra identifies student residences and student services as relevant sectors."}],namedExamples:[
+  {name:"Eiffel Tower",category:"Tourism / Tickets",detail:"Officially documented as the first French merchant location to accept UPI through Lyra."},
+  {name:"Galeries Lafayette Haussmann",category:"Retail",detail:"The Embassy of India in France documented UPI going live at the flagship Paris store in July 2024."}],note:"These named examples are documented launch locations, not a guarantee that every outlet or terminal currently accepts UPI.",source:"https://www.lyra.com/in/base/bhim-upi/",sourceLabel:"Lyra official BHIM-UPI information"},
+ "India|Mauritius":{verifiedCategories:[{icon:"🏪",name:"Participating Merchants",detail:"The Bank of Mauritius confirms Indian users can make UPI QR transactions at participating merchants in Mauritius."}],namedExamples:[],note:"The official central-bank source confirms participating-merchant acceptance but does not provide a public named merchant directory. OMNAVIX should not invent individual locations.",source:"https://www.bom.mu/media/media-releases/media-release-mauritius-and-india-launch-rupay-and-unified-payments-interface-linkage",sourceLabel:"Bank of Mauritius official media release"},
+ "India|Qatar":{verifiedCategories:[
+  {icon:"✈️",name:"Airport / Duty-Free",detail:"QNB states UPI acceptance covers airport-related merchant locations; Qatar Duty Free was the first live merchant."},
+  {icon:"🏨",name:"Hotels",detail:"QNB identifies hotels within the merchant ecosystem covered by UPI acceptance."},
+  {icon:"🎟️",name:"Tourist Attractions",detail:"QNB states Indian travellers can use UPI at major tourist attractions."},
+  {icon:"🍽️",name:"Restaurants",detail:"QNB explicitly includes restaurants among covered merchant sectors."},
+  {icon:"🛍️",name:"Retail",detail:"QNB identifies retail outlets as part of the UPI merchant ecosystem."}],namedExamples:[{name:"Qatar Duty Free",category:"Duty-Free / Airport Retail",detail:"QNB identified Qatar Duty Free as the first live UPI merchant in Qatar in September 2025."}],note:"QNB describes acceptance across its merchant ecosystem; individual outlets should still be checked for the current UPI acceptance indication.",source:"https://qnb.com/sites/qnb/qnbglobal/en/news09222025ennews",sourceLabel:"QNB official UPI merchant announcement"},
+ "India|Cambodia":{verifiedCategories:[
+  {icon:"🎟️",name:"Tourist Attractions",detail:"NPCI/PIB states Indian travellers can pay at tourist attractions using KHQR."},
+  {icon:"🍽️",name:"Restaurants",detail:"NPCI/PIB specifically includes restaurants among the merchant outlets covered."},
+  {icon:"🛍️",name:"Retail Stores",detail:"NPCI/PIB specifically includes retail stores."},
+  {icon:"🏪",name:"Other Merchant Establishments",detail:"The launch covers more than 4.5 million Cambodian merchant outlets through KHQR."}],namedExamples:[],note:"Phase 1 enables Indian travellers to pay Cambodian merchants through KHQR. No individual merchant directory is being asserted by OMNAVIX.",source:"https://www.pib.gov.in/PressReleasePage.aspx?PRID=2268591&lang=2&reg=3",sourceLabel:"PIB / NPCI official Cambodia launch"},
+ "India|Uzbekistan":{verifiedCategories:[{icon:"🏪",name:"Merchant Payments Across Uzbekistan",detail:"PIB states Indian travellers can make instant merchant payments across the country by scanning UZQR."}],namedExamples:[],note:"The official August 2026 announcement confirms nationwide merchant-payment capability through UZQR, but does not provide a named merchant directory.",source:"https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2304967&lang=2&reg=48",sourceLabel:"PIB / NPCI official Uzbekistan announcement"}
+};
+function merchantIntelligenceHtml(h,d){
+ const key=`${h}|${d}`,m=MERCHANT_INTELLIGENCE[key];
+ if(!m)return '';
+ const examples=(m.namedExamples||[]).length
+   ? `<div style="margin-top:14px"><h4 style="margin:0 0 8px">📍 Named examples from published sources</h4><div class="grid3">${m.namedExamples.map(x=>`<div class="stat"><strong style="font-size:16px">${esc(x.name)}</strong><span class="muted">${esc(x.category)}</span><span class="muted">${esc(x.detail)}</span></div>`).join('')}</div><p class="muted" style="margin:8px 0 0">Named examples are evidence of published acceptance/launch information, not a guarantee of current acceptance at every outlet.</p></div>`
+   : `<div class="info" style="margin-top:14px"><b>Named merchant list:</b> No public named-merchant directory was identified in the official source used for this corridor. OMNAVIX therefore does not invent individual merchant names.</div>`;
+ return `<div class="card" style="margin-top:15px;border-left:4px solid var(--teal)">
+ <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">📍 Where can I use UPI? — ${flag(d)} ${esc(d)}</h3><span class="badge live">Merchant information</span></div>
+ <p class="muted" style="margin-top:7px">Documented merchant contexts for the selected corridor. Acceptance is <b>not universal</b> and must be confirmed at the individual merchant.</p>
+ <div class="grid3" style="margin-top:12px">${m.verifiedCategories.map(x=>`<div class="stat"><div style="font-size:24px">${x.icon}</div><strong style="font-size:16px">${esc(x.name)}</strong><span class="muted">${esc(x.detail)}</span></div>`).join('')}</div>
+ ${examples}
+ <div class="warning" style="margin-top:12px"><b>Traveller check:</b> ${esc(m.note)}</div>
+ <p class="source">Source: <a class="sourceBtn" href="${esc(m.source)}" target="_blank" rel="noopener">${esc(m.sourceLabel)}</a></p>
+ </div>`;
+}
+function renderMerchantIntelligence(h,d){
+ const box=$("merchantIntelligence"); if(!box)return;
+ box.innerHTML=merchantIntelligenceHtml(h,d);
+}
 function renderWhere(){
  const h=getHome("whereHomeCountry"),d=$("whereDestination").value,out=$("whereResult");
  if(!d){out.innerHTML='<div class="warning">Select a destination first.</div>';return}
@@ -758,13 +819,13 @@ function renderWhere(){
      const paymentText=(c.status||"").includes("Announced")
        ?"The corridor is documented as newly enabled/announced; verify operational merchant availability before relying on it."
        :"P2M acceptance is documented for this direction. Confirm the specific merchant and review the final amount before authorisation.";
-     out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge ${badge}">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(c.partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">${esc(acceptance)}</strong></div><div class="stat"><span class="muted">Status</span><strong style="font-size:16px">${esc(c.status)}</strong></div></div><div class="info" style="margin-top:12px"><b>Merchant payment:</b> ${paymentText}</div></div>`;
+     out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge ${badge}">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(c.partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">${esc(acceptance)}</strong></div><div class="stat"><span class="muted">Status</span><strong style="font-size:16px">${esc(c.status)}</strong></div></div><div class="info" style="margin-top:12px"><b>Merchant payment:</b> ${paymentText}</div>${merchantIntelligenceHtml(h,d)}</div>`;
      return;
    }
    out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge p2p">${esc(c.status)}</span><p>${esc(c.note)}</p><div class="info"><b>Merchant payment:</b> No verified P2M record is displayed for this route.</div></div>`;return
  }
  const partner=val(r,"local partner / network","partner"),coverage=val(r,"merchant coverage"),qr=val(r,"qr / acceptance method"),verified=val(r,"last verified")||"21-Sep-2026",source=val(r,"source url")||sourceUrl(c.source);
- out.innerHTML=`<div class="card" style="margin:0"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge live">${esc(c.status)}</span></div><div class="routeMeta"><span class="metaPill">P2M</span><span class="metaPill">${esc(val(r,"local currency","currency"))}</span><span class="metaPill">Verified: ${esc(verified)}</span></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div><div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div></div><div class="info" style="margin-top:12px"><b>Before you pay:</b> Confirm the merchant accepts this specific route and review the final amount, exchange rate and applicable fees before authorisation.</div><div class="checklist"><div class="checkitem"><b>Look</b><span class="muted">Find the compatible QR/network sign.</span></div><div class="checkitem"><b>Ask</b><span class="muted">Confirm this specific merchant accepts your route.</span></div><div class="checkitem"><b>Verify</b><span class="muted">Review the final amount and applicable charges.</span></div></div><p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a class="sourceBtn" href="${esc(source)}" target="_blank" rel="noopener">View official source</a>`:""}</p></div>`;
+ out.innerHTML=`<div class="card" style="margin:0"><div style="display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><span class="badge live">${esc(c.status)}</span></div><div class="routeMeta"><span class="metaPill">P2M</span><span class="metaPill">${esc(val(r,"local currency","currency"))}</span><span class="metaPill">Verified: ${esc(verified)}</span></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">Payment network / partner</span><strong style="font-size:16px">${esc(partner)}</strong></div><div class="stat"><span class="muted">Acceptance</span><strong style="font-size:16px">Participating merchants</strong><span class="muted">${esc(coverage)}</span></div><div class="stat"><span class="muted">QR / acceptance</span><strong style="font-size:16px">QR-based</strong><span class="muted">${esc(qr)}</span></div></div><div class="info" style="margin-top:12px"><b>Before you pay:</b> Confirm the merchant accepts this specific route and review the final amount, exchange rate and applicable fees before authorisation.</div><div class="checklist"><div class="checkitem"><b>Look</b><span class="muted">Find the compatible QR/network sign.</span></div><div class="checkitem"><b>Ask</b><span class="muted">Confirm this specific merchant accepts your route.</span></div><div class="checkitem"><b>Verify</b><span class="muted">Review the final amount and applicable charges.</span></div></div><p class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a class="sourceBtn" href="${esc(source)}" target="_blank" rel="noopener">View official source</a>`:""}</p>${merchantIntelligenceHtml(h,d)}</div>`;
 }
 function populateCountryDetail(){
 const ds=destinations();
@@ -915,8 +976,5 @@ function flag(n){return countryObj(n).flag||"🌍"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
 tabs();buildAllSelectors();buildAssistantSelectors();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();
 </script>
-
-
-
 </body>
 </html>
