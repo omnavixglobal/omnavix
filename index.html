@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>OMNAVIX | Know. Navigate. Go.</title>
-<meta name="description" content="OMNAVIX global payment intelligence prototype">
+<title>SAFARQR | Know. Pay. Relax. Go.</title>
+<meta name="description" content="SAFARQR global travel and payment intelligence platform">
 <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 <style>
 :root{--blue:#0878d1;--navy:#092f63;--teal:#0aa79d;--green:#15945b;--orange:#f58a18;--bg:#f3f8fd;--ink:#102a43;--muted:#627d98;--line:#d9e2ec;--white:#fff}
@@ -73,14 +73,14 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </head>
 <body>
 <div class="app">
-<div class="hero"><img src="assets/omnavix-banner.jpg" alt="OMNAVIX global travel and payment banner"></div>
+<div class="hero"><img src="assets/safarqr-banner.png" alt="SAFARQR global travel and payment banner"></div>
 <div class="brandbar">
-<img src="assets/omnavix-logo.jpg" alt="OMNAVIX logo">
-<div><div class="brand">OMNAVIX</div><div class="tag">Know. Navigate. Go.</div></div>
+<img src="assets/safarqr-logo.png" alt="SAFARQR logo">
+<div><div class="brand">SAFARQR</div><div class="tag">Know. Pay. Relax. Go.</div></div>
 </div>
 <nav>
 <button class="active" data-tab="home">Home</button>
-<button data-tab="pay">Pay &amp; Where Can I Pay?</button>
+<button data-tab="pay">Pay &amp; Where Pay &amp; Where Can I Pay?</button>
 <button data-tab="assistant">Trip Assistant</button>
 <button data-tab="fx">Currency</button>
 <button data-tab="countries">Countries</button>
@@ -89,14 +89,14 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <main>
 <section id="home" class="section active">
 <div class="card">
-<h2>Global Payment Intelligence</h2>
-<p>Choose your home country and destination. OMNAVIX uses its protected verified corridor registry and, when available, the attached payment database to show route, network, currency and verification information.</p>
+<h2>Global Travel &amp; Payment Intelligence</h2>
+<p>Choose your home country and destination. SAFARQR uses its protected verified corridor registry and, when available, the attached payment database to show route, network, currency and verification information.</p>
 <div class="grid3">
 <div><label>Home country</label><select id="homeCountry" onchange="buildAssistantSelectors();renderAssistant()"></select></div>
 <div><label>Destination</label><select id="homeDestination" onchange="renderAssistant()"></select></div>
 <div style="align-self:end"><button class="primary" onclick="openPayment()">Check Payment Options</button></div>
 </div>
-<div id="dbStatus" class="source">Loading OMNAVIX database…</div>
+<div id="dbStatus" class="source">Loading SAFARQR database…</div>
 <div id="homeAssistant" class="v12Hero">
   <div class="v12Title">
     <div><span class="v12Pill">V13</span> <h3 style="display:inline">Traveller Decision Assistant</h3></div>
@@ -131,22 +131,22 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
   <div id="assistantResult" style="margin-top:18px"></div>
 </div>
 <div class="card" style="margin-top:15px">
-  <h3>How to use the OMNAVIX decision summary</h3>
+  <h3>How to use the SAFARQR decision summary</h3>
   <div class="v12Grid">
-    <div class="v12Step"><div class="num">Step 1</div><strong>Check the route</strong><span>Confirm that the selected home-to-destination direction is documented by OMNAVIX.</span></div>
+    <div class="v12Step"><div class="num">Step 1</div><strong>Check the route</strong><span>Confirm that the selected home-to-destination direction is documented by SAFARQR.</span></div>
     <div class="v12Step"><div class="num">Step 2</div><strong>Confirm acceptance</strong><span>Look for the relevant QR/network sign and confirm the specific merchant accepts the route.</span></div>
     <div class="v12Step"><div class="num">Step 3</div><strong>Verify the cost</strong><span>Review the destination amount, home-currency estimate, exchange rate and applicable provider charges.</span></div>
   </div>
 </div>
 <div class="warning" style="margin-top:15px">
-  <b>Important:</b> OMNAVIX is an information and traveller-support prototype. A documented corridor does not guarantee acceptance at every merchant, and the assistant is not a payment authorisation or price quote.
+  <b>Important:</b> SAFARQR is an information and traveller-support prototype. A documented corridor does not guarantee acceptance at every merchant, and the assistant is not a payment authorisation or price quote.
 </div>
 </section>
 
 <section id="pay" class="section">
 <div class="card">
 <h2>Pay &amp; Where Can I Pay?</h2>
-<p class="muted">Check whether your route is documented and where the payment network can be used. OMNAVIX combines payment availability, merchant acceptance and verification information in one place.</p>
+<p class="muted">Check whether your route is documented and where the payment network can be used. SAFARQR combines payment availability, merchant acceptance and verification information in one place.</p>
 <div class="grid3">
 <div><label>Home country</label><select id="payHomeCountry"></select></div>
 <div><label>Destination</label><select id="payDestination"></select></div>
@@ -157,7 +157,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <div class="card" style="margin-top:15px">
 <h3>Where can I pay?</h3>
-<p class="muted">Find the documented merchant-acceptance route. OMNAVIX shows network-level information and does not assume that every merchant accepts the payment method.</p>
+<p class="muted">Find the documented merchant-acceptance route. SAFARQR shows network-level information and does not assume that every merchant accepts the payment method.</p>
 <div class="grid3" style="align-items:end">
 <div><label>Home country</label><select id="whereHomeCountry"></select></div>
 <div><label>Destination</label><select id="whereDestination"></select></div>
@@ -173,14 +173,14 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div class="stat"><span class="muted">2. Look</span><strong style="font-size:17px">QR / network</strong><span class="muted">Confirm the specific merchant accepts the compatible payment network.</span></div>
 <div class="stat"><span class="muted">3. Verify</span><strong style="font-size:17px">Final cost</strong><span class="muted">Review the foreign amount, exchange rate and applicable charges.</span></div>
 </div>
-<div class="info" style="margin-top:12px"><b>Verification:</b> OMNAVIX displays the recorded status and last-verified information when available. A documented corridor does not guarantee acceptance at every merchant.</div>
+<div class="info" style="margin-top:12px"><b>Verification:</b> SAFARQR displays the recorded status and last-verified information when available. A documented corridor does not guarantee acceptance at every merchant.</div>
 </div>
 </section>
 
 <section id="fx" class="section">
 <div class="card">
 <h2>Currency & Cost Estimate</h2>
-<p class="muted">Understand the destination amount in your home currency before you pay. OMNAVIX uses a live reference FX rate when internet access is available.</p>
+<p class="muted">Understand the destination amount in your home currency before you pay. SAFARQR uses a live reference FX rate when internet access is available.</p>
 <div class="grid3">
 <div><label>Home currency</label><select id="fxHomeCurrency"></select></div>
 <div><label>Destination currency</label><select id="fxCurrency"></select></div>
@@ -191,11 +191,11 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 <button class="primary" onclick="convertFX()">Get Live Reference Rate</button>
 <div id="fxResult" style="margin-top:16px"></div>
-<div class="info"><b>OMNAVIX cost intelligence:</b> The displayed INR value is an estimated conversion using the reference FX rate. Your bank, UPI app or regulated payment provider may apply a different exchange rate and/or applicable charges.</div>
+<div class="info"><b>SAFARQR cost intelligence:</b> The displayed INR value is an estimated conversion using the reference FX rate. Your bank, UPI app or regulated payment provider may apply a different exchange rate and/or applicable charges.</div>
 <div class="warning" style="margin-top:12px"><b>Important:</b> This is not a payment quote. Always review the final foreign amount, INR amount, exchange rate and applicable fees shown by the payment provider before authorisation.</div>
 </div>
 <div class="card">
-<h3>How OMNAVIX helps</h3>
+<h3>How SAFARQR helps</h3>
 <div class="grid3">
 <div class="stat"><span class="muted">1. Know</span><strong style="font-size:18px">Local amount</strong><span class="muted">See what the merchant is asking.</span></div>
 <div class="stat"><span class="muted">2. Convert</span><strong style="font-size:18px">Home currency</strong><span class="muted">Estimate the INR equivalent.</span></div>
@@ -207,7 +207,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <section id="countries" class="section">
 <div class="card">
 <h2>Countries & Payment Networks</h2>
-<p class="muted">Explore the international payment corridors currently documented in the OMNAVIX database. Select a country to view its payment type, currency, partner/network, QR acceptance information and verification date.</p>
+<p class="muted">Explore the international payment corridors currently documented in the SAFARQR database. Select a country to view its payment type, currency, partner/network, QR acceptance information and verification date.</p>
 <div class="grid3" style="align-items:end">
   <div style="grid-column:span 2"><label>Search</label><input id="search" placeholder="Search country, partner, currency or payment type…" oninput="renderCountries()"></div>
   <div><label>Country</label><select id="countryDetail" onchange="renderCountryDetail()"><option value="">Select a country</option></select></div>
@@ -215,7 +215,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div id="countryCards" class="grid3" style="margin-top:16px"></div>
 </div>
 <div id="countryDetailBox"></div>
-<div class="info"><b>OMNAVIX principle:</b> “Live” means the payment corridor is documented as operational for the stated use case. It does not mean every merchant accepts the payment method. Merchant-level acceptance should be confirmed at the point of payment.</div>
+<div class="info"><b>SAFARQR principle:</b> “Live” means the payment corridor is documented as operational for the stated use case. It does not mean every merchant accepts the payment method. Merchant-level acceptance should be confirmed at the point of payment.</div>
 </section>
 
 <section id="data" class="section">
@@ -224,7 +224,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div id="statusBox"></div>
 <h3 style="margin-top:20px">How this prototype works</h3>
 <ol>
-<li>The website loads <b>data/OMNAVIX_Global_Corridor_Database_V1.xlsx</b>.</li>
+<li>The website loads <b>data/SAFARQR_Global_Corridor_Database_V1.xlsx</b>.</li>
 <li>JavaScript reads the <b>Corridor Database</b> worksheet in the browser.</li>
 <li>Country/payment information is displayed dynamically.</li>
 <li>The currency module fetches a current reference rate when connected to the internet.</li>
@@ -234,12 +234,12 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 </section>
 </main>
-<footer>OMNAVIX Research & Product Prototype • V16 Simplified Traveller Edition • Dynamic Global Database • Know. Navigate. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+<footer>SAFARQR Research & Product Prototype • V16 Simplified Traveller Edition • Dynamic Global Database • Know. Pay. Relax. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
 </div>
 
 <script>
 let rows=[];
-const DB="data/OMNAVIX_Global_Corridor_Database_V1.xlsx";
+const DB="data/SAFARQR_Global_Corridor_Database_V1.xlsx";
 const DB_VERSION="Global Corridor Database V1 • V16 Simplified Traveller Edition • Dynamic Global Database";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
@@ -352,7 +352,7 @@ try{
     ...(val(r,"partner / institution")?{partner:val(r,"partner / institution")}:{}),
     ...(val(r,"notes")?{note:val(r,"notes")}: {})};
   }else{
-   merged[key]={status:val(r,"status")||"Not Yet Verified",type:val(r,"use case")||"—",source:val(r,"source")||"OMNAVIX database",partner:val(r,"partner / institution")||"",note:val(r,"notes")||"Directional route requires independent verification.",...dbFields};
+   merged[key]={status:val(r,"status")||"Not Yet Verified",type:val(r,"use case")||"—",source:val(r,"source")||"SAFARQR database",partner:val(r,"partner / institution")||"",note:val(r,"notes")||"Directional route requires independent verification.",...dbFields};
   }
  });
  CORRIDORS=merged;
@@ -532,7 +532,7 @@ function renderAssistant(){
  }
  const data=assistantData(h,d);
  if(!data){
-   const msg=`<div class="warning"><b>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</b><br>No independently verified corridor is currently recorded for this direction. OMNAVIX does not infer the reverse route.</div>`;
+   const msg=`<div class="warning"><b>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</b><br>No independently verified corridor is currently recorded for this direction. SAFARQR does not infer the reverse route.</div>`;
    out.innerHTML=msg;if(homeOut)homeOut.innerHTML=msg;return;
  }
  const {c,currency,partner,verified,source,acceptance,coverage,fee,liveSince}=data;
@@ -568,11 +568,11 @@ function renderAssistant(){
      <div class="v12Step"><div class="num">3 • Go</div><strong>Review final cost</strong><span>Check the foreign amount, reference FX, provider charges and final amount before authorisation.</span></div>
    </div>
    <div class="v12Actions">
-     <button class="secondary" onclick="document.querySelector('[data-tab=&quot;pay&quot;]').click();checkPayment()">Check Can I Pay?</button>
-     <button class="secondary" onclick="document.querySelector('[data-tab=&quot;where&quot;]').click();renderWhere()">Where Can I Pay?</button>
+     <button class="secondary" onclick="document.querySelector('[data-tab=&quot;pay&quot;]').click();checkPayment()">Check Pay &amp; Where Can I Pay?</button>
+     <button class="secondary" onclick="document.querySelector('[data-tab=&quot;where&quot;]').click();renderWhere()">Where Pay &amp; Where Can I Pay?</button>
      <button class="secondary" onclick="document.querySelector('[data-tab=&quot;fx&quot;]').click()">Check Currency</button>
    </div>
-   <p class="source" style="margin-bottom:0">Verification: <b>${esc(c.source||"OMNAVIX registry")}</b> · Last verified: <b>${esc(verified)}</b> ${sourceLink}</p>
+   <p class="source" style="margin-bottom:0">Verification: <b>${esc(c.source||"SAFARQR registry")}</b> · Last verified: <b>${esc(verified)}</b> ${sourceLink}</p>
  </div>`;
  out.innerHTML=card;
  if(homeOut)homeOut.innerHTML=card;
@@ -587,7 +587,7 @@ function checkPayment(){
  if(!c){
    out.innerHTML=`<div class="muted">PAYMENT INTELLIGENCE</div>
    <h2>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h2>
-   <div class="warning"><b>Not yet independently verified.</b><br>OMNAVIX does not assume that a payment corridor works in both directions. We need an official source confirming this specific route before marking it live.</div>
+   <div class="warning"><b>Not yet independently verified.</b><br>SAFARQR does not assume that a payment corridor works in both directions. We need an official source confirming this specific route before marking it live.</div>
    <p class="source">Route status: <b>Not Yet Verified</b></p>`;
    out.classList.add("show");return
  }
@@ -626,7 +626,7 @@ function checkPayment(){
  </div>
  <div class="${isP2M?'info':'warning'}" style="margin-top:14px"><b>Traveller guidance:</b> ${esc(statusNote)}</div>
  <div class="source">Last verified: <b>${esc(verified)}</b>${source?` · <a class="sourceBtn" href="${esc(source)}" target="_blank" rel="noopener">View official source</a>`:""}</div>
- <div class="info" style="margin-top:12px"><b>OMNAVIX directional rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
+ <div class="info" style="margin-top:12px"><b>SAFARQR directional rule:</b> A reverse corridor is shown separately and is never inferred from the opposite direction.</div>`;
  out.classList.add("show");
 }
 function renderCountries(){
@@ -681,7 +681,7 @@ const MERCHANT_INTELLIGENCE={
   {icon:"🏨",name:"Hospitality",detail:"Fonepay states UPI is live across hospitality merchants."},
   {icon:"🍽️",name:"Restaurants & Dining",detail:"Fonepay specifically identifies restaurants as a UPI-enabled merchant sector."},
   {icon:"🛍️",name:"Retail & Shopping",detail:"Fonepay identifies retail and local markets as UPI-enabled merchant contexts."},
-  {icon:"🧳",name:"Travel Services",detail:"Fonepay identifies travel services as a UPI-enabled sector."}],namedExamples:[],note:"Fonepay says UPI works at Fonepay-affiliated merchant QR locations. OMNAVIX does not name individual shops unless an official source identifies them.",source:"https://www.fonepay.com/blogs/upi-in-nepal",sourceLabel:"Fonepay official UPI information"},
+  {icon:"🧳",name:"Travel Services",detail:"Fonepay identifies travel services as a UPI-enabled sector."}],namedExamples:[],note:"Fonepay says UPI works at Fonepay-affiliated merchant QR locations. SAFARQR does not name individual shops unless an official source identifies them.",source:"https://www.fonepay.com/blogs/upi-in-nepal",sourceLabel:"Fonepay official UPI information"},
  "India|UAE":{verifiedCategories:[
   {icon:"🛍️",name:"Retail & Shopping",detail:"Network International says UPI rollout covers retail stores and its wider merchant network."},
   {icon:"🍽️",name:"Dining",detail:"Network International specifically describes dining outlets within the rollout."},
@@ -707,7 +707,7 @@ const MERCHANT_INTELLIGENCE={
   {icon:"🎓",name:"Student Services",detail:"Lyra identifies student residences and student services as relevant sectors."}],namedExamples:[
   {name:"Eiffel Tower",category:"Tourism / Tickets",detail:"Officially documented as the first French merchant location to accept UPI through Lyra."},
   {name:"Galeries Lafayette Haussmann",category:"Retail",detail:"The Embassy of India in France documented UPI going live at the flagship Paris store in July 2024."}],note:"These named examples are documented launch locations, not a guarantee that every outlet or terminal currently accepts UPI.",source:"https://www.lyra.com/in/base/bhim-upi/",sourceLabel:"Lyra official BHIM-UPI information"},
- "India|Mauritius":{verifiedCategories:[{icon:"🏪",name:"Participating Merchants",detail:"The Bank of Mauritius confirms Indian users can make UPI QR transactions at participating merchants in Mauritius."}],namedExamples:[],note:"The official central-bank source confirms participating-merchant acceptance but does not provide a public named merchant directory. OMNAVIX should not invent individual locations.",source:"https://www.bom.mu/media/media-releases/media-release-mauritius-and-india-launch-rupay-and-unified-payments-interface-linkage",sourceLabel:"Bank of Mauritius official media release"},
+ "India|Mauritius":{verifiedCategories:[{icon:"🏪",name:"Participating Merchants",detail:"The Bank of Mauritius confirms Indian users can make UPI QR transactions at participating merchants in Mauritius."}],namedExamples:[],note:"The official central-bank source confirms participating-merchant acceptance but does not provide a public named merchant directory. SAFARQR should not invent individual locations.",source:"https://www.bom.mu/media/media-releases/media-release-mauritius-and-india-launch-rupay-and-unified-payments-interface-linkage",sourceLabel:"Bank of Mauritius official media release"},
  "India|Qatar":{verifiedCategories:[
   {icon:"✈️",name:"Airport / Duty-Free",detail:"QNB states UPI acceptance covers airport-related merchant locations; Qatar Duty Free was the first live merchant."},
   {icon:"🏨",name:"Hotels",detail:"QNB identifies hotels within the merchant ecosystem covered by UPI acceptance."},
@@ -718,7 +718,7 @@ const MERCHANT_INTELLIGENCE={
   {icon:"🎟️",name:"Tourist Attractions",detail:"NPCI/PIB states Indian travellers can pay at tourist attractions using KHQR."},
   {icon:"🍽️",name:"Restaurants",detail:"NPCI/PIB specifically includes restaurants among the merchant outlets covered."},
   {icon:"🛍️",name:"Retail Stores",detail:"NPCI/PIB specifically includes retail stores."},
-  {icon:"🏪",name:"Other Merchant Establishments",detail:"The launch covers more than 4.5 million Cambodian merchant outlets through KHQR."}],namedExamples:[],note:"Phase 1 enables Indian travellers to pay Cambodian merchants through KHQR. No individual merchant directory is being asserted by OMNAVIX.",source:"https://www.pib.gov.in/PressReleasePage.aspx?PRID=2268591&lang=2&reg=3",sourceLabel:"PIB / NPCI official Cambodia launch"},
+  {icon:"🏪",name:"Other Merchant Establishments",detail:"The launch covers more than 4.5 million Cambodian merchant outlets through KHQR."}],namedExamples:[],note:"Phase 1 enables Indian travellers to pay Cambodian merchants through KHQR. No individual merchant directory is being asserted by SAFARQR.",source:"https://www.pib.gov.in/PressReleasePage.aspx?PRID=2268591&lang=2&reg=3",sourceLabel:"PIB / NPCI official Cambodia launch"},
  "India|Uzbekistan":{verifiedCategories:[{icon:"🏪",name:"Merchant Payments Across Uzbekistan",detail:"PIB states Indian travellers can make instant merchant payments across the country by scanning UZQR."}],namedExamples:[],note:"The official August 2026 announcement confirms nationwide merchant-payment capability through UZQR, but does not provide a named merchant directory.",source:"https://www.pib.gov.in/PressReleaseIframePage.aspx?PRID=2304967&lang=2&reg=48",sourceLabel:"PIB / NPCI official Uzbekistan announcement"}
 };
 function merchantIntelligenceHtml(h,d){
@@ -726,7 +726,7 @@ function merchantIntelligenceHtml(h,d){
  if(!m)return '';
  const examples=(m.namedExamples||[]).length
    ? `<div style="margin-top:14px"><h4 style="margin:0 0 8px">📍 Named examples from published sources</h4><div class="grid3">${m.namedExamples.map(x=>`<div class="stat"><strong style="font-size:16px">${esc(x.name)}</strong><span class="muted">${esc(x.category)}</span><span class="muted">${esc(x.detail)}</span></div>`).join('')}</div><p class="muted" style="margin:8px 0 0">Named examples are evidence of published acceptance/launch information, not a guarantee of current acceptance at every outlet.</p></div>`
-   : `<div class="info" style="margin-top:14px"><b>Named merchant list:</b> No public named-merchant directory was identified in the official source used for this corridor. OMNAVIX therefore does not invent individual merchant names.</div>`;
+   : `<div class="info" style="margin-top:14px"><b>Named merchant list:</b> No public named-merchant directory was identified in the official source used for this corridor. SAFARQR therefore does not invent individual merchant names.</div>`;
  return `<div class="card" style="margin-top:15px;border-left:4px solid var(--teal)">
  <div style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap"><h3 style="margin:0">📍 Where can I use UPI? — ${flag(d)} ${esc(d)}</h3><span class="badge live">Merchant information</span></div>
  <p class="muted" style="margin-top:7px">Documented merchant contexts for the selected corridor. Acceptance is <b>not universal</b> and must be confirmed at the individual merchant.</p>
@@ -744,7 +744,7 @@ function renderWhere(){
  const h=getHome("whereHomeCountry"),d=$("whereDestination").value,out=$("whereResult");
  if(!d){out.innerHTML='<div class="warning">Select a destination first.</div>';return}
  const c=corridor(h,d);
- if(!c){out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><div class="warning"><b>Not Yet Independently Verified</b><br>OMNAVIX has no verified merchant-acceptance record for this direction yet. This does not mean the route is unavailable.</div></div>`;return}
+ if(!c){out.innerHTML=`<div class="card" style="margin:0"><h3>${flag(h)} ${esc(h)} → ${flag(d)} ${esc(d)}</h3><div class="warning"><b>Not Yet Independently Verified</b><br>SAFARQR has no verified merchant-acceptance record for this direction yet. This does not mean the route is unavailable.</div></div>`;return}
  const routeRows=findRouteRows(h,d,"P2M");
  const r=routeRows[0]||routeRecord(h,d,"P2M");
  if(c.type!=="P2M" || !r){
@@ -772,7 +772,7 @@ const from=$("fxHomeCurrency").value,to=$("fxCurrency").value,amount=parseFloat(
 if(!to){out.innerHTML='<div class="warning">Select a destination currency first.</div>';return}
 if(from===to){out.innerHTML=`<div class="stat"><span class="muted">Same currency</span><div class="money">${amount.toFixed(2)} ${esc(to)} = ${amount.toFixed(2)} ${esc(from)}</div></div>`;return}
 out.innerHTML="<p>Fetching current reference rate…</p>";
-const cacheKey=`omnavix_fx_${from}_${to}`;
+const cacheKey=`safarqr_fx_${from}_${to}`;
 function showRate(rate,date,source,label){
 const homeAmount=amount/rate;
 out.innerHTML=`<div class="grid3">
@@ -806,12 +806,12 @@ return;
 try{
 const cached=JSON.parse(localStorage.getItem(cacheKey)||"null");
 if(cached&&Number(cached.rate)>0){
-showRate(Number(cached.rate),cached.date||"previous session",cached.source||"OMNAVIX cache","Cached fallback — live services were unavailable");
+showRate(Number(cached.rate),cached.date||"previous session",cached.source||"SAFARQR cache","Cached fallback — live services were unavailable");
 out.innerHTML += '<div class="warning" style="margin-top:10px">Live FX could not be reached right now. Please review the final exchange rate and applicable charges shown by your payment provider before authorisation.</div>';
 return;
 }
 }catch(e){}
-out.innerHTML='<div class="warning">Live FX is temporarily unavailable. OMNAVIX tried two reference-rate services and has no cached rate for this currency pair. Please retry when internet access is available. The payment database itself remains available.</div>';
+out.innerHTML='<div class="warning">Live FX is temporarily unavailable. SAFARQR tried two reference-rate services and has no cached rate for this currency pair. Please retry when internet access is available. The payment database itself remains available.</div>';
 }
 
 function intelRuntimeRows(){
@@ -888,19 +888,19 @@ function csvCell(v){return '"'+String(v??"").replace(/"/g,'""')+'"'}
 function exportVerificationCSV(){
  const data=verificationRows(); const header=["Home Country","Destination","Status","Payment Rail","Use Case","Partner / Network","Currency","Last Verified","Freshness","Source"];
  const lines=[header.map(csvCell).join(",")]; data.forEach(r=>lines.push([r.home,r.dest,r.status,r.rail,r.use,r.partner,r.currency,r.verified,r.freshness.label,r.source].map(csvCell).join(",")));
- const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="OMNAVIX_Corridor_Verification_Register.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
+ const blob=new Blob([lines.join("\n")],{type:"text/csv;charset=utf-8"}); const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download="SAFARQR_Corridor_Verification_Register.csv";a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
 }
 
 function renderStatus(){
 const protectedCount=Object.keys(VERIFIED_CORRIDORS).length;
 const mergedCount=Object.keys(CORRIDORS).length;
 $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.length?rows.length+" records loaded":"not loaded"}</p>
-<p><span class="ok">● Dynamic source:</span> data/OMNAVIX_Global_Corridor_Database_V1.xlsx • Corridor Database sheet</p>
+<p><span class="ok">● Dynamic source:</span> data/SAFARQR_Global_Corridor_Database_V1.xlsx • Corridor Database sheet</p>
 <p><span class="ok">● Dynamic fields:</span> route direction, rail, use case, status, partner, currency, acceptance, live-since, verification date, source and notes</p>
 <p><span class="ok">● Protected directional registry:</span> ${protectedCount} documented routes</p>
 <p><span class="ok">● Runtime route records:</span> ${mergedCount}</p>
 <p><span class="ok">● Reverse-route protection:</span> active — routes are never inferred in the opposite direction</p>
-<p><span class="ok">● Branding:</span> OMNAVIX logo + banner loaded from assets/</p>
+<p><span class="ok">● Branding:</span> SAFARQR logo + banner loaded from assets/</p>
 <p><span class="ok">● FX:</span> live reference lookup enabled with secondary fallback + cache</p>
 <p><span class="ok">● Traveller intelligence:</span> route checklist, acceptance guidance, verification date and official-source links enabled</p>
 <p><span class="ok">● Traveller Decision Assistant:</span> route summary, QR/merchant guidance, cost-verification steps and quick navigation enabled</p>
