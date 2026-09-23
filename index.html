@@ -80,6 +80,7 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 .timing span{background:#f1f7fb;border-radius:16px;padding:5px 9px;font-size:11px;font-weight:700;color:#486581}
 @media(max-width:700px){.attractionGrid{grid-template-columns:1fr}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
 <div class="app">
@@ -260,8 +261,8 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <section id="scan" class="section">
 <div class="card">
 <h2>📷 Scan Merchant QR</h2>
-<p class="muted">Scan the merchant QR directly. No home-country or destination selection is required before scanning. SAFARQR reads the QR content first, then shows the merchant/payment information that can be identified.</p>
-<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="primary" onclick="startQRScanner()">📷 Start Camera Scanner</button><button class="secondary" onclick="stopQRScanner()">Stop Camera</button></div>
+<p class="muted">Scan the merchant QR directly. No home-country or destination selection is required before scanning. SAFARQR reads the QR content first, then shows merchant, amount, currency/FX reference and charges to check before payment.</p>
+<div style="display:flex;gap:10px;flex-wrap:wrap"><button class="primary" onclick="startQRScanner()">📷 Start Camera Scanner</button><button class="secondary" onclick="stopQRScanner()">Stop Camera</button></div><div style="margin-top:10px;display:flex;gap:10px;flex-wrap:wrap;align-items:center"><label class="secondary" style="display:inline-flex;align-items:center;cursor:pointer;padding:10px 14px;border-radius:10px">🖼️ Scan QR Image<input id="qrImageInput" type="file" accept="image/*" style="display:none" onchange="scanQRImage(event)"></label><span class="muted">Use this if camera scanning is unavailable.</span></div>
 <div id="scannerBox" class="card" style="margin-top:15px;text-align:center;background:#f7fbff">
 <video id="qrVideo" playsinline style="width:100%;max-width:520px;border-radius:14px;display:none"></video>
 <canvas id="qrCanvas" style="display:none"></canvas>
@@ -313,26 +314,53 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <div id="aboutSafarPanel" class="card" hidden>
 <h2 style="margin-top:0">ℹ️ About SAFARQR</h2>
-<p><strong>SAFARQR — Global QR &amp; Payment Decision Assistant</strong></p>
-<p class="muted">SAFARQR helps travellers understand payment options before they pay. It is an information and decision-support layer — not a bank, wallet, payment processor or payment network.</p>
-<div class="grid3">
-<div class="stat"><strong>🔎 Know</strong><span class="muted">Understand whether a documented payment route or QR option may be supported.</span></div>
-<div class="stat"><strong>📷 Identify</strong><span class="muted">Scan a QR and understand the payment information encoded in it.</span></div>
-<div class="stat"><strong>💱 Understand</strong><span class="muted">Review currency, exchange-rate information and possible charges before paying.</span></div>
+<div class="intelHero">
+<h3 style="margin-bottom:6px">SAFARQR — Know. Pay. Relax. Go.</h3>
+<p class="muted" style="font-size:15px;line-height:1.6;margin-bottom:0"><b>Global QR &amp; Payment Decision Assistant</b> — a traveller-focused information and navigation layer that helps you understand digital payment options before you pay.</p>
 </div>
-<div class="info" style="margin-top:16px"><b>Important:</b> SAFARQR provides information and guidance. The actual payment is completed only through the user's chosen payment app or provider.</div>
+<h3>🌍 The traveller problem</h3>
+<p class="muted" style="line-height:1.6">When you travel, the payment system may change from country to country. You may need to know whether your payment route is supported, which QR network is involved, where it can be used, what currency you will be charged in and what fees may apply.</p>
+<div class="grid3">
+<div class="stat"><strong style="font-size:18px">🔎 KNOW</strong><span class="muted">Can I pay here? Check documented payment availability for the selected route.</span></div>
+<div class="stat"><strong style="font-size:18px">📷 IDENTIFY</strong><span class="muted">What is this QR? Scan and understand the payment information encoded in the QR.</span></div>
+<div class="stat"><strong style="font-size:18px">💱 UNDERSTAND</strong><span class="muted">What will it cost? Review currency, reference FX information and possible charges.</span></div>
+</div>
+<h3 style="margin-top:20px">🧭 How SAFARQR works</h3>
+<div class="checklist">
+<div class="checkitem"><b>01 — Home Country</b><span class="muted">Identify the country of your payment account or payment route.</span></div>
+<div class="checkitem"><b>02 — Destination</b><span class="muted">Select the country where you want to pay.</span></div>
+<div class="checkitem"><b>03 — Payment Route</b><span class="muted">See documented UPI/QR network and partner information.</span></div>
+<div class="checkitem"><b>04 — Cost</b><span class="muted">Understand local currency, reference exchange information and possible charges.</span></div>
+<div class="checkitem"><b>05 — Scan &amp; Identify</b><span class="muted">Scan a merchant QR and review the information SAFARQR can read.</span></div>
+<div class="checkitem"><b>06 — Navigate</b><span class="muted">Continue to your chosen payment app or provider to complete the transaction.</span></div>
+</div>
+<div class="info" style="margin-top:16px"><b>What SAFARQR is:</b> traveller information, payment-route intelligence, QR identification and navigation.</div>
+<div class="warning" style="margin-top:10px"><b>What SAFARQR is not:</b> a bank, wallet, payment processor or payment network. SAFARQR does not hold funds or authorise transactions. The actual payment is completed through the user's selected regulated payment app or provider.</div>
+<h3 style="margin-top:20px">🚀 Beyond payments</h3>
+<p class="muted" style="line-height:1.6">The platform can also support traveller information such as destinations, currency information, connectivity, transport and travel preparation. The long-term direction is a broader <b>Global Digital Travel Companion</b>, while keeping payment execution with regulated providers.</p>
 </div>
 
 <div id="safetySafarPanel" class="card" hidden>
 <h2 style="margin-top:0">🛡️ SAFARQR Safety</h2>
-<p><strong>SAFARQR does not authorise or execute payments.</strong></p>
+<div class="warning"><b>SAFARQR does not authorise or execute payments.</b> It provides information and navigation. Always complete the final verification inside your actual payment app or provider.</div>
+<h3 style="margin-top:20px">Before you pay</h3>
+<div class="checklist">
+<div class="checkitem"><b>1. Confirm the payee</b><span class="muted">Check that the final merchant/payee name shown by your payment app matches the person or business you intend to pay.</span></div>
+<div class="checkitem"><b>2. Confirm the amount</b><span class="muted">Review the local amount, currency and final amount requested before authorising.</span></div>
+<div class="checkitem"><b>3. Review the exchange rate</b><span class="muted">Compare the displayed exchange information with the rate and conversion details provided by your payment provider.</span></div>
+<div class="checkitem"><b>4. Check charges</b><span class="muted">Look for provider fees, FX markup, conversion charges or other applicable charges.</span></div>
+<div class="checkitem"><b>5. Verify the QR context</b><span class="muted">A QR can contain payment information, but scanning it alone does not prove that the merchant owns or controls the destination account.</span></div>
+<div class="checkitem"><b>6. Use official sources</b><span class="muted">Visa, entry, payment-network and provider requirements can change. Use the relevant official authority or provider as the final source of truth.</span></div>
+</div>
+<h3 style="margin-top:20px">🔐 What SAFARQR can and cannot verify</h3>
 <div class="grid3">
-<div class="stat"><strong>1. Confirm the payee</strong><span class="muted">Always check the final merchant/payee name in your actual payment app.</span></div>
-<div class="stat"><strong>2. Confirm the amount</strong><span class="muted">Review the amount and currency before approving a transaction.</span></div>
-<div class="stat"><strong>3. Check charges</strong><span class="muted">Review any displayed provider, FX, conversion or other applicable charges.</span></div>
+<div class="stat"><strong style="font-size:18px">✓ Can identify</strong><span class="muted">Encoded QR/payment information such as scheme, payee information, amount or reference when available.</span></div>
+<div class="stat"><strong style="font-size:18px">⚠ Cannot prove</strong><span class="muted">Merchant ownership or that a QR is safe simply because it can be read.</span></div>
+<div class="stat"><strong style="font-size:18px">🔒 Final check</strong><span class="muted">The payment app/provider's final payee and amount screen is the last check before authorisation.</span></div>
 </div>
-<div class="warning" style="margin-top:16px"><b>Never rely on a QR scan alone.</b> A QR/UPI identification result does not independently prove merchant ownership or guarantee that a payment is safe.</div>
+<div class="info" style="margin-top:16px"><b>Simple rule:</b> Scan → Understand → Verify → Pay.</div>
 </div>
+
 </section>
 
 <section id="data" class="section">
@@ -351,13 +379,13 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 </section>
 </main>
-<footer>SAFARQR Research & Product Prototype • V16 Simplified Traveller Edition • Dynamic Global Database • Know. Pay. Relax. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+<footer>SAFARQR Research & Product Prototype • V39 Robust QR Scanner + Country + Merchant + FX + Charges Edition • Dynamic Global Database • Know. Pay. Relax. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
 </div>
 
 <script>
 let rows=[];
 const DB="data/SAFARQR_Global_Corridor_Database_V1.xlsx";
-const DB_VERSION="Global Corridor Database V1 • V16 Simplified Traveller Edition • Dynamic Global Database";
+const DB_VERSION="Global Corridor Database V1 • V39 Robust QR Scanner + Country + Merchant + FX + Charges Edition • Dynamic Global Database";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
  {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
@@ -1102,23 +1130,284 @@ function renderExplore(){
 async function startQRScanner(){
  const video=$("qrVideo"),msg=$("scanMessage"),out=$("qrResult"); if(!video)return;
  try{
-  if(!('BarcodeDetector' in window))throw new Error('QR detection is not supported by this browser.');
-  const detector=new BarcodeDetector({formats:['qr_code']});
-  const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}}});
-  video.srcObject=stream;video.style.display='block';await video.play();msg.textContent='Point the camera at the merchant QR. SAFARQR is looking for a QR code…';
-  const scan=async()=>{if(video.readyState<2){requestAnimationFrame(scan);return;}try{const codes=await detector.detect(video);if(codes.length){const raw=codes[0].rawValue||'';stream.getTracks().forEach(t=>t.stop());video.style.display='none';renderQRDecision(raw);return;}}catch(e){}requestAnimationFrame(scan)};scan();
- }catch(e){msg.textContent='Camera/QR scanning is unavailable in this browser. You can use a QR-capable phone browser or upload/enter the QR information manually.';out.innerHTML=`<div class="warning"><b>Scanner unavailable:</b> ${esc(e.message||'Camera permission or QR detection is unavailable.')}</div>`;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia)throw new Error('Camera access is unavailable in this browser or page. Open SAFARQR from its HTTPS GitHub Pages address and allow Camera permission.');
+  const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
+  video.srcObject=stream;video.style.display='block';await video.play();
+  msg.textContent='Point the camera at the merchant QR. SAFARQR is scanning…';
+
+  let detector=null;
+  if('BarcodeDetector' in window){
+   try{
+    const formats=await BarcodeDetector.getSupportedFormats();
+    if(formats.includes('qr_code')) detector=new BarcodeDetector({formats:['qr_code']});
+   }catch(e){ detector=null; }
+  }
+
+  const canvas=$("qrCanvas"),ctx=canvas.getContext('2d',{willReadFrequently:true});
+  let lastAttempt=0;
+  const scan=async(now=0)=>{
+   if(!video.srcObject)return;
+   if(video.readyState<2){requestAnimationFrame(scan);return;}
+   if(now-lastAttempt<120){requestAnimationFrame(scan);return;}
+   lastAttempt=now;
+   try{
+    let raw='';
+    if(detector){
+     const codes=await detector.detect(video);
+     if(codes.length)raw=codes[0].rawValue||'';
+    }
+    if(!raw && window.jsQR){
+     const w=video.videoWidth,h=video.videoHeight;
+     if(w&&h){
+      const max=900,scale=Math.min(1,max/w);canvas.width=Math.round(w*scale);canvas.height=Math.round(h*scale);
+      ctx.drawImage(video,0,0,canvas.width,canvas.height);
+      const img=ctx.getImageData(0,0,canvas.width,canvas.height);
+      const code=window.jsQR(img.data,img.width,img.height,{inversionAttempts:'attemptBoth'});
+      if(code)raw=code.data||'';
+     }
+    }
+    if(raw){
+     stream.getTracks().forEach(t=>t.stop());video.srcObject=null;video.style.display='none';
+     msg.textContent='QR detected successfully.';renderQRDecision(raw);return;
+    }
+   }catch(e){ /* keep scanning */ }
+   requestAnimationFrame(scan);
+  };
+  requestAnimationFrame(scan);
+ }catch(e){
+  msg.textContent='Camera scanner could not start.';
+  out.innerHTML=`<div class="warning"><b>Camera scanner:</b> ${esc(e.message||'Camera permission or QR scanning is unavailable.')}<br><br><b>Try:</b> open the SAFARQR GitHub Pages HTTPS site, allow Camera permission, then press Start Camera Scanner. You can also use <b>Scan QR Image</b> below.</div>`;
+ }
+}
+async function scanQRImage(event){
+ const file=event?.target?.files?.[0],out=$("qrResult"),msg=$("scanMessage");
+ if(!file)return;
+ try{
+  const img=new Image();img.onload=async()=>{
+   const canvas=$("qrCanvas"),ctx=canvas.getContext('2d',{willReadFrequently:true});
+   const max=1400,scale=Math.min(1,max/img.naturalWidth);canvas.width=Math.round(img.naturalWidth*scale);canvas.height=Math.round(img.naturalHeight*scale);
+   ctx.drawImage(img,0,0,canvas.width,canvas.height);
+   let raw='';
+   if(window.jsQR){const d=ctx.getImageData(0,0,canvas.width,canvas.height);const code=window.jsQR(d.data,d.width,d.height,{inversionAttempts:'attemptBoth'});if(code)raw=code.data||'';}
+   if(!raw && 'BarcodeDetector' in window){
+    try{const formats=await BarcodeDetector.getSupportedFormats();if(formats.includes('qr_code')){const det=new BarcodeDetector({formats:['qr_code']});const codes=await det.detect(img);if(codes.length)raw=codes[0].rawValue||'';}}catch(e){}
+   }
+   if(raw){msg.textContent='QR image detected successfully.';renderQRDecision(raw);}
+   else{msg.textContent='No QR code found in the selected image.';out.innerHTML='<div class="warning"><b>No QR detected.</b> Please upload a clear, well-lit image containing the full QR code.</div>';}
+  };img.onerror=()=>{msg.textContent='Could not read the selected image.';};img.src=URL.createObjectURL(file);
+ }catch(e){out.innerHTML=`<div class="warning">${esc(e.message||'Unable to scan image.')}</div>`;}
 }
 function stopQRScanner(){const v=$("qrVideo");if(v&&v.srcObject){v.srcObject.getTracks().forEach(t=>t.stop());v.srcObject=null;}if(v)v.style.display='none';const m=$("scanMessage");if(m)m.textContent='Scanner stopped. Press Start Camera Scanner to scan another merchant QR.';}
-function renderQRDecision(raw){
- const out=$("qrResult");let merchant='',app='',network='',amount='',currency='',upiId='',transactionRef='',merchantCode='';
- try{
-  const u=new URL(raw); merchant=u.searchParams.get('pn')||u.searchParams.get('merchant')||'';amount=u.searchParams.get('am')||'';currency=u.searchParams.get('cu')||'';upiId=u.searchParams.get('pa')||'';transactionRef=u.searchParams.get('tr')||'';merchantCode=u.searchParams.get('mc')||'';app=u.protocol==='upi:'?'UPI payment link':'';network=u.protocol.replace(':','').toUpperCase();
- }catch(e){network=/^upi:/i.test(raw)?'UPI':'QR content';}
- const isUPI=/^upi:/i.test(raw),safeRaw=esc(raw);
- const openAction=isUPI?`<button class="primary" style="margin-top:14px" onclick="openScannedUPI(${JSON.stringify(raw)})">Open UPI App →</button>`:'';
- out.innerHTML=`<div class="card" style="border-left:4px solid var(--teal)"><h3>🔎 Merchant QR Identified</h3><div class="grid3"><div class="stat"><span class="muted">QR / network</span><strong style="font-size:16px">${esc(network||'Detected')}</strong><span class="muted">${isUPI?'UPI QR / payment link detected':'QR content detected'}</span></div><div class="stat"><span class="muted">Merchant name</span><strong style="font-size:16px">${esc(merchant||'Not encoded')}</strong></div><div class="stat"><span class="muted">Amount</span><strong style="font-size:16px">${esc(amount?(amount+' '+currency):'Not encoded')}</strong></div></div><div class="grid3" style="margin-top:12px"><div class="stat"><span class="muted">UPI ID / payee</span><strong style="font-size:15px">${esc(upiId||'Not encoded')}</strong></div><div class="stat"><span class="muted">Merchant code</span><strong style="font-size:15px">${esc(merchantCode||'Not encoded')}</strong></div><div class="stat"><span class="muted">Reference</span><strong style="font-size:15px">${esc(transactionRef||'Not encoded')}</strong></div></div><div class="info" style="margin-top:12px"><b>Payment decision:</b> ${isUPI?'This QR contains a UPI payment address. SAFARQR can identify the QR details, but the final eligibility, FX rate and charges must be confirmed inside the payment app.':'The QR was detected, but SAFARQR could not establish a UPI payment address from the encoded content.'}</div><div class="checklist"><div class="checkitem"><b>1. Merchant</b><span class="muted">${esc(merchant||'Confirm the merchant name in your payment app.')}</span></div><div class="checkitem"><b>2. Payment app</b><span class="muted">${esc(app||'Payment app/network not encoded in a recognisable form.')}</span></div><div class="checkitem"><b>3. Charges</b><span class="muted">Check destination amount, FX conversion, provider fee, cross-border fee and any other applicable charge before authorising.</span></div></div>${openAction}<div class="source" style="margin-top:10px">Detected QR content: ${safeRaw}</div></div>`;
+function parseEMVQR(raw){
+ const s=String(raw||''); let i=0,fields={};
+ while(i+4<=s.length){
+  const id=s.slice(i,i+2),len=parseInt(s.slice(i+2,i+4),10); if(!/^\d{2}$/.test(id)||!Number.isFinite(len))break;
+  const value=s.slice(i+4,i+4+len); if(value.length!==len)break; fields[id]=value; i+=4+len;
+ }
+ return fields;
 }
+function enrichQRData(raw, data){
+ const f=parseEMVQR(raw); const country=f['58']||''; const merchant=f['59']||''; const city=f['60']||''; const cnum=f['53']||'';
+ const curMap={'356':'INR','702':'SGD','784':'AED','524':'NPR','144':'LKR','064':'BTN','978':'EUR','634':'QAR','116':'KHR','480':'MUR','860':'UZS','462':'MVR','764':'THB','458':'MYR','360':'IDR','704':'VND','410':'KRW','392':'JPY','156':'CNY','840':'USD','826':'GBP','036':'AUD','124':'CAD','554':'NZD'};
+ const countryMap={'IN':'India','SG':'Singapore','AE':'United Arab Emirates','NP':'Nepal','LK':'Sri Lanka','BT':'Bhutan','FR':'France','QA':'Qatar','KH':'Cambodia','MU':'Mauritius','UZ':'Uzbekistan','MV':'Maldives','TH':'Thailand','MY':'Malaysia','ID':'Indonesia','VN':'Vietnam','PH':'Philippines','KR':'South Korea','JP':'Japan','CN':'China','US':'United States','GB':'United Kingdom','AU':'Australia','CA':'Canada','NZ':'New Zealand'};
+ if(country) data.country=countryMap[country]||country;
+ if(!data.currency&&cnum) data.currency=curMap[cnum]||cnum;
+ if(!data.network&&Object.keys(f).some(k=>/^26$|^27$|^28$|^29$|^30$|^31$|^32$|^33$|^34$|^35$|^36$|^37$|^38$|^39$|^40$|^41$|^42$|^43$|^44$|^45$|^46$|^47$|^48$|^49$|^50$|^51$/.test(k))) data.network='EMV Merchant QR';
+ if(!data.merchant&&merchant) data.merchant=merchant;
+ data.merchantCity=city||data.merchantCity||'';
+ data.emvCountry=country;
+ return data;
+}
+
+function inferQRMarket(currency, network, raw){
+ const c=String(currency||'').toUpperCase();
+ const n=String(network||'').toUpperCase();
+ const s=String(raw||'').toUpperCase();
+
+ const currencyMap={
+  INR:'India', SGD:'Singapore', AED:'United Arab Emirates', NPR:'Nepal',
+  LKR:'Sri Lanka', BTN:'Bhutan', EUR:'Euro area / country not uniquely identifiable',
+  QAR:'Qatar', KHR:'Cambodia', MUR:'Mauritius', UZS:'Uzbekistan',
+  MVR:'Maldives', THB:'Thailand', MYR:'Malaysia', IDR:'Indonesia',
+  VND:'Vietnam', PHP:'Philippines', KRW:'South Korea', JPY:'Japan',
+  CNY:'China', USD:'United States / international', GBP:'United Kingdom',
+  AUD:'Australia', CAD:'Canada', NZD:'New Zealand'
+ };
+ // Indian UPI handles are a strong market signal when the QR contains a UPI payment address.
+ const upiHandle=String((String(raw||'').match(/[?&]pa=([^&]+)/i)||[])[1]||'').toLowerCase();
+ const indianUpiHandles=['okicici','oksbi','okaxis','okhdfcbank','ybl','ibl','axl','paytm','ptyes','sbi','hdfcbank','icici','axisbank','kotak','barodampay','boi','indianbank','upi'];
+ if(upiHandle && indianUpiHandles.some(h=>upiHandle===h || upiHandle.endsWith('@'+h))) return {name:'India',confidence:'network'};
+
+ const networkMap=[
+  [/NETS|SGQR/,'Singapore'],
+  [/FONEPAY/,'Nepal'],
+  [/LANKAPAY|LANKA PAY/,'Sri Lanka'],
+  [/RMA\s*BHUTAN|BHUTAN/,'Bhutan'],
+  [/KHQR|ACLEDA/,'Cambodia'],
+  [/UZQR|HUMO/,'Uzbekistan'],
+  [/QNB/,'Qatar'],
+  [/MASHREQ|NEOPAY|MAGNATI/,'United Arab Emirates'],
+  [/LYRA/,'France'],
+  [/BANK\s*OF\s*MAURITIUS/,'Mauritius'],
+  [/MALDIVES|MVR/,'Maldives'],
+  [/UPI/,'India']
+ ];
+ for(const [rx,name] of networkMap){ if(rx.test(n)||rx.test(s)) return {name,confidence:'network'}; }
+ if(currencyMap[c]) return {name:currencyMap[c],confidence:'currency'};
+ return {name:'Country not determinable from this QR',confidence:'unknown'};
+}
+
+function renderQRDecision(raw){
+ const out=$("qrResult");
+ let merchant='',app='',network='',amount='',currency='',upiId='',transactionRef='',merchantCode='';
+ try{
+  const u=new URL(raw);
+  merchant=u.searchParams.get('pn')||u.searchParams.get('merchant')||'';
+  amount=u.searchParams.get('am')||'';
+  currency=u.searchParams.get('cu')||'';
+  upiId=u.searchParams.get('pa')||'';
+  transactionRef=u.searchParams.get('tr')||'';
+  merchantCode=u.searchParams.get('mc')||'';
+  app=u.protocol==='upi:'?'UPI payment link':'';
+  network=u.protocol.replace(':','').toUpperCase();
+ }catch(e){network=/^upi:/i.test(raw)?'UPI':'QR content';}
+
+ let data={merchant,amount,currency,upiId,transactionRef,merchantCode,network};
+ data=enrichQRData(raw,{merchant,amount,currency,upiId,transactionRef,merchantCode,network}); merchant=data.merchant; amount=data.amount; currency=data.currency; upiId=data.upiId; transactionRef=data.transactionRef; merchantCode=data.merchantCode; network=data.network; const market0=inferQRMarket(currency,network,raw); const market=data.country?{name:data.country,confidence:'emv'}:market0; const countryLabel=market.name; const countryNote=market.confidence==='emv'?'Identified from the QR merchant-country field.':market0.confidence==='network'?'Identified from the QR/payment network information.':market0.confidence==='currency'?'Estimated from the encoded currency; currency alone may not uniquely identify the country.':'The QR does not contain enough reliable information to identify the country automatically.'; const isUPI=/^upi:/i.test(raw),safeRaw=esc(raw);
+ const openAction=isUPI?`<button class="primary" style="margin-top:14px" onclick="openScannedUPI(${JSON.stringify(raw)})">Open UPI App →</button>`:'';
+
+ out.innerHTML=`
+ <div class="card" style="border-left:4px solid var(--teal)">
+  <h3>🔎 Merchant QR Identified</h3>
+
+  <div class="grid3" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))">
+   <div class="stat">
+    <span class="muted">🌍 Country / market</span>
+    <strong style="font-size:16px">${esc(countryLabel)}</strong>
+    <span class="muted">${esc(countryNote)}</span>
+   </div>
+   <div class="stat">
+    <span class="muted">QR / network</span>
+    <strong style="font-size:16px">${esc(network||'Detected')}</strong>
+    <span class="muted">${isUPI?'UPI QR / payment link detected':'QR content detected'}</span>
+   </div>
+   <div class="stat">
+    <span class="muted">🏪 Merchant</span>
+    <strong style="font-size:16px">${esc(merchant||'Not encoded')}</strong>
+    <span class="muted">${merchant?'Confirm the payee name in your payment app.':'Merchant name not encoded in this QR.'}</span>
+   </div>
+   <div class="stat">
+    <span class="muted">💳 Amount</span>
+    <strong style="font-size:16px">${esc(amount?(amount+' '+currency):'Not encoded')}</strong>
+    <span class="muted">${currency?'Destination currency: '+esc(currency):'Currency not encoded'}</span>
+   </div>
+  </div>
+
+  <div class="grid3" style="margin-top:12px">
+   <div class="stat">
+    <span class="muted">UPI ID / payee</span>
+    <strong style="font-size:15px">${esc(upiId||'Not encoded')}</strong>
+   </div>
+   <div class="stat">
+    <span class="muted">Merchant code</span>
+    <strong style="font-size:15px">${esc(merchantCode||'Not encoded')}</strong>
+   </div>
+   <div class="stat">
+    <span class="muted">Reference</span>
+    <strong style="font-size:15px">${esc(transactionRef||'Not encoded')}</strong>
+   </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;background:#f7fbff">
+   <h3 style="margin-top:0">💱 Currency, FX &amp; Cost</h3>
+   <div id="qrFxResult">
+    <div class="muted">${amount&&currency?'Checking reference FX for '+esc(currency)+'…':'Currency/amount not encoded, so an INR estimate cannot be calculated.'}</div>
+   </div>
+  </div>
+
+  <div class="card" style="margin-top:14px;background:#fffaf0">
+   <h3 style="margin-top:0">💰 Final Cost — Confirm in Payment App</h3>
+   <div class="checklist">
+    <div class="checkitem"><b>FX rate / markup</b><span class="muted">Compare the provider's final exchange rate with the reference information.</span></div>
+    <div class="checkitem"><b>Bank / UPI fee</b><span class="muted">A bank or payment-provider fee may apply.</span></div>
+    <div class="checkitem"><b>Cross-border / processing fee</b><span class="muted">Check whether any international, network or processing charge applies.</span></div>
+    <div class="checkitem"><b>Final amount</b><span class="muted">Always confirm the final foreign amount and INR amount in the payment app before authorising.</span></div>
+   </div>
+  </div>
+
+  <div class="info" style="margin-top:12px">
+   <b>🌍 Country identification:</b> ${esc(countryLabel)} — ${esc(countryNote)}<br><br><b>Payment decision:</b>
+   ${isUPI
+     ?'This QR contains a UPI payment address. SAFARQR can identify the QR details, but final eligibility, FX and charges must be confirmed in the payment app.'
+     :'The QR was detected, but SAFARQR could not establish a UPI payment address from the encoded content.'}
+  </div>
+
+  <div class="checklist">
+   <div class="checkitem"><b>1. Merchant</b><span class="muted">${esc(merchant||'Confirm the merchant/payee name in your payment app.')}</span></div>
+   <div class="checkitem"><b>2. Payment app</b><span class="muted">${esc(app||'Payment app/network not encoded in a recognisable form.')}</span></div>
+   <div class="checkitem"><b>3. Verify before paying</b><span class="muted">Confirm merchant, amount, currency, exchange rate and applicable charges in the payment provider.</span></div>
+  </div>
+
+  ${openAction}
+  <div class="source" style="margin-top:10px">Detected QR content: ${safeRaw}</div>
+  <div class="source" style="margin-top:8px">SAFARQR reference FX and charge information is indicative only and is not a payment quote.</div>
+ </div>`;
+
+ if(amount&&currency) loadQRFX(currency,Number(amount));
+}
+
+async function loadQRFX(from,amount){
+ const box=$("qrFxResult");
+ if(!box||!amount||!from)return;
+ const to="INR";
+ if(from.toUpperCase()===to){
+  box.innerHTML=`<div class="grid3">
+   <div class="stat"><span class="muted">Local amount</span><div class="money">${amount.toFixed(2)} ${esc(from)}</div></div>
+   <div class="stat"><span class="muted">Approx. INR</span><div class="money">₹${amount.toFixed(2)}</div></div>
+   <div class="stat"><span class="muted">Reference FX</span><strong>1 ${esc(from)} = ₹1.0000</strong><span class="muted">Same currency</span></div>
+  </div>`;
+  return;
+ }
+ box.innerHTML=`<div class="muted">Fetching current reference rate for ${esc(from)} → INR…</div>`;
+ const cacheKey=`safarqr_qr_fx_${from}_INR`;
+ const render=(rate,date,source,warning='')=>{
+  const inr=amount*rate;
+  box.innerHTML=`<div class="grid3">
+   <div class="stat"><span class="muted">Local amount</span><div class="money">${amount.toFixed(2)} ${esc(from)}</div></div>
+   <div class="stat"><span class="muted">Approx. INR</span><div class="money">₹${inr.toFixed(2)}</div><span class="muted">Reference estimate</span></div>
+   <div class="stat"><span class="muted">Reference FX (${esc(date)})</span><strong>1 ${esc(from)} ≈ ₹${Number(rate).toFixed(4)}</strong><span class="muted">${esc(source)}</span></div>
+  </div>
+  <div class="source" style="margin-top:10px">This is a reference rate, not the final provider quote.${warning?` ${esc(warning)}`:''}</div>`;
+ };
+ try{
+  const res=await fetch(`https://api.frankfurter.dev/v2/rate/${encodeURIComponent(from)}/INR`,{cache:"no-store"});
+  if(!res.ok)throw new Error();
+  const d=await res.json(),rate=Number(d.rate);
+  if(!rate)throw new Error();
+  localStorage.setItem(cacheKey,JSON.stringify({rate,date:d.date,source:"Frankfurter"}));
+  render(rate,d.date,"Frankfurter");
+  return;
+ }catch(e){}
+ try{
+  const res=await fetch(`https://open.er-api.com/v6/latest/${encodeURIComponent(from)}`,{cache:"no-store"});
+  if(!res.ok)throw new Error();
+  const d=await res.json(),rate=Number(d?.rates?.INR);
+  if(!rate)throw new Error();
+  const date=d.time_last_update_utc||"latest available";
+  localStorage.setItem(cacheKey,JSON.stringify({rate,date,source:"Open ER-API"}));
+  render(rate,date,"Open ER-API");
+  return;
+ }catch(e){}
+ try{
+  const cached=JSON.parse(localStorage.getItem(cacheKey)||"null");
+  if(cached&&Number(cached.rate)>0){
+   render(Number(cached.rate),cached.date||"previous session",cached.source||"SAFARQR cache","Live FX was unavailable; cached reference rate shown.");
+   return;
+  }
+ }catch(e){}
+ box.innerHTML=`<div class="warning">Reference FX is temporarily unavailable for ${esc(from)} → INR. Please use the final exchange rate shown by your payment provider.</div>`;
+}
+
 function recogniseUPIHandle(id){
  const handle=(id.split('@')[1]||'').toLowerCase();
  const map={
