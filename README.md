@@ -1,408 +1,520 @@
-
-
-SAFARQR — Global Travel & Payment Intelligence
+SAFARQR
 
 Know. Pay. Relax. Go.
 
-SAFARQR is a global travel and payment intelligence platform designed to help travellers understand how, where and through which payment networks they may be able to pay while travelling internationally.
-
-The platform combines payment-corridor intelligence, QR/payment-network information, currency reference tools, traveller guidance and verification information in a single traveller-friendly interface.
+SAFARQR is a global QR and payment decision-support platform designed to help travellers understand international payment options before they pay.
 
 
----
+SAFARQR is not a bank, wallet, payment processor, payment network, or settlement service. It provides information, route intelligence, QR identification, currency guidance, merchant context, verification information, and practical traveller guidance before handing the user off to their payment provider.
 
-🌍 What is SAFARQR?
 
-International travellers often face questions such as:
 
-Can I use my home-country payment app abroad?
+Core Concept
 
-Can I pay using QR?
+Check → Understand → Verify → Pay
 
-Which payment network is supported?
+SAFARQR helps answer:
+
+
+
+Can I pay?
 
 Where can I pay?
 
-Which partner or acquirer enables the transaction?
+What QR/payment network is this?
 
-What currency will I be charged in?
+Who is the merchant/payee?
 
-What exchange rate or additional charges may apply?
+What currency will I pay in?
 
-Is the payment corridor actually documented and verified?
+What is the approximate INR value?
 
+What charges should I check?
 
-SAFARQR brings this information together before the traveller reaches the payment point.
-
-Core journey
-
-Home Country → Destination → Payment Option → QR / Network → Acceptance → Currency / Cost → Verify → Pay
+What official information supports this route?
 
 
----
-
-✈️ Key Features
-
-1. Can I Pay?
-
-Travellers can select their home country and destination to check documented payment availability.
-
-2. Where Can I Pay?
-
-Provides guidance on the types of merchants and payment environments where supported payment networks may be available.
-
-3. QR & Payment Network Intelligence
-
-Displays information related to:
-
-QR payment networks
-
-Payment rails
-
-P2M payment availability
-
-Payment partners
-
-Merchant acceptance information
-
-Directional payment corridors
-
-
-4. Traveller Decision Assistant
-
-Provides a simple route-based checklist:
-
-Check → Look → Verify → Pay
-
-The assistant helps travellers understand:
-
-Route status
-
-Payment network
-
-Merchant/QR guidance
-
-Verification information
-
-Cost verification
-
-
-5. Currency & Cost Intelligence
-
-The currency module provides a live reference FX lookup when internet connectivity is available.
-
-Travellers can estimate destination amounts in their home currency before making a payment.
-
-> The displayed exchange rate is a reference estimate. The final exchange rate and applicable charges are determined by the relevant bank, payment app, card issuer or regulated payment provider.
+The final payment is always completed and authorised in the traveller's chosen payment application.
 
 
 
-6. Directional Corridor Protection
+Main Navigation
 
-SAFARQR does not automatically assume that A → B means B → A.
+The current SAFARQR interface contains:
 
-Each payment direction requires its own evidence.
 
-This helps prevent misleading reverse-route assumptions.
 
-7. Verification Information
+🏠 Home
 
-Where available, SAFARQR provides:
+🔎 Pay Check
 
-Payment status
+📷 Scan QR
+
+💱 Currency
+
+⭐ Explore
+
+☰ More
+
+
+The Go Ready checklist is intentionally located under More.
+
+
+
+1. Home
+
+The Home screen introduces the SAFARQR payment journey.
+
+
+Users can select:
+
+
+
+Home country
+
+Destination country
+
+
+The Home screen then guides the traveller toward the relevant payment route.
+
+
+Account Interface
+
+The Home screen also provides:
+
+
+
+Register
+
+Sign In
+
+
+The current prototype provides the user interface for registration and login. A production authentication service must be connected before real accounts and passwords are stored.
+
+
+Security principle: SAFARQR must never request or store a UPI PIN, OTP, banking password, card PIN, or payment authorisation credential.
+
+
+
+2. Pay Check
+
+Pay Check is the central SAFARQR decision feature.
+
+
+It combines:
+
+
+Can I Pay?
+
+Checks whether a documented payment route exists for the selected origin and destination.
+
+
+Where Can I Pay?
+
+Provides evidence-supported merchant categories and acceptance information.
+
+
+Examples may include:
+
+
+
+Restaurants
+
+Shopping
+
+Food courts
+
+Supermarkets
+
+Hotels
+
+Tourism
+
+Transport
+
+Other participating merchants
+
+
+SAFARQR does not guarantee acceptance at every merchant or branch.
+
+
+Payment Network
+
+Displays documented information such as:
+
+
+
+Payment rail
 
 Partner/network
 
-Currency
+P2M or P2P
 
-Acceptance information
+Route status
+
+Currency
 
 Live-since information
 
 Verification date
 
-Official source information
-
-Traveller notes
+Official source
 
 
+Verification
 
----
-
-🗂️ Current Data Architecture
-
-SAFARQR V16.1 currently uses an Excel-based research/MVP database.
-
-SAFARQR
-│
-├── index.html
-│
-├── assets/
-│   ├── safarqr-logo.png
-│   └── safarqr-banner.png
-│
-└── data/
-    └── SAFARQR_Global_Corridor_Database_V1.xlsx
-
-Global Corridor Database
-
-The current database contains:
-
-14 spreadsheet records
-
-15 protected directional routes
-
-15 runtime route records
+Each route should be supported by an appropriate source and verification information.
 
 
-The website dynamically reads the:
-
-Corridor Database
-
-worksheet.
+SAFARQR avoids assuming that payment interoperability is automatically reciprocal. A documented route in one direction does not automatically establish the reverse route.
 
 
----
 
-🔐 Data Integrity Principles
+3. Scan QR
 
-SAFARQR follows several important principles.
+Scan QR provides transaction-level information.
 
-Direction matters
 
-A payment corridor is treated as directional.
+It can use:
 
-India → Singapore
 
-does not automatically mean:
 
-Singapore → India
+Camera scanning
 
-is available.
+QR image upload
 
-Documented ≠ Guaranteed
+QR decoding
 
-A documented payment corridor does not guarantee that every merchant accepts the payment method.
+EMV QR information
 
-Merchant-level acceptance may depend on:
+Manual UPI ID checking
 
-Merchant/acquirer
+
+Where information is encoded and readable, SAFARQR may identify:
+
+
+
+Country/market
+
+QR/payment network
+
+Merchant/payee information
+
+Payment type
+
+Amount
+
+Currency
+
+UPI/payment identifier
+
+Merchant/reference information
+
+
+Currency and Cost
+
+SAFARQR may display:
+
+
+
+Local amount
+
+Reference FX rate
+
+Approximate INR equivalent
+
+FX rate date/source
+
+Charges to check
+
+
+Possible charges to check include:
+
+
+
+FX markup
+
+Bank/UPI fee
+
+Cross-border/processing fee
+
+Final payable amount
+
+
+The SAFARQR FX value is a reference estimate, not the final provider quote.
+
+
+The final exchange rate, applicable fees and payable amount must be confirmed inside the actual payment application before authorisation.
+
+
+QR Safety
+
+A QR code or UPI ID can identify encoded information, but it does not independently prove that the merchant owns the payment destination.
+
+
+Always confirm:
+
+
+
+Payee name
+
+Amount
+
+Currency
+
+Payment details
+
+
+inside the payment application before authorising.
+
+
+
+4. Currency
+
+The Currency module provides broader currency information for travellers.
+
+
+It can help users understand:
+
+
+
+Local currency
+
+Reference conversion
+
+Approximate INR value
+
+FX information
+
+Date/source of the reference rate
+
+
+The module is intended for guidance and comparison rather than financial settlement.
+
+
+
+5. Countries
+
+SAFARQR maintains country/payment profiles for supported markets.
+
+
+Country information can include:
+
+
 
 Payment network
 
-Traveller's bank
+Currency
 
-Payment application
+P2M/P2P availability
 
-Account eligibility
+Merchant acceptance
 
-Regulatory conditions
+Live-since information
 
-Transaction limits
+Verification date
 
-Network availability
+Official source
 
-
-Final payment decision
-
-The final transaction is always subject to the relevant regulated payment provider, bank, card network, wallet or payment application.
+Traveller guidance
 
 
----
-
-🧭 SAFARQR Product Architecture
-
-SAFARQR
-                       │
-             Global Travel Intelligence
-                       │
-        ┌──────────────┼──────────────┐
-        │              │              │
-    PAYMENTS        TRAVEL          COST
-        │              │              │
-   QR / UPI        Hotels         Currency
-   Networks        Transport      FX
-   Wallets         Attractions    Fees
-   Cards           Merchants      Estimates
-        │              │              │
-        └──────────────┼──────────────┘
-                       │
-                Traveller Decision
-                       │
-                KNOW → VERIFY → GO
+Current research prototype countries include:
 
 
----
 
-🚀 Product Roadmap
+India
 
-V1 — Information & Navigation
+Singapore
 
-Payment corridor information
+UAE
 
-Country information
+Nepal
 
-QR/network guidance
+Sri Lanka
 
-Traveller navigation
+Bhutan
 
+France
 
-V2 — Currency & Cost Intelligence
+Qatar
 
-FX reference rates
+Cambodia
 
-Currency conversion
+Mauritius
 
-Cost estimation
+Greece
 
-Fee awareness
+Uzbekistan
 
-
-V3 — Payment Network Intelligence
-
-QR/network navigation
-
-Payment rail information
-
-Partner information
-
-Directional corridor intelligence
+Maldives
 
 
-V4 — Regulated Partner Integration
-
-Banks
-
-Payment providers
-
-Fintechs
-
-Acquirers
-
-Travel partners
+Coverage is subject to documented evidence and verification.
 
 
-V5 — Partner-Enabled Payments
 
-Integration with authorised payment partners to enable transaction journeys where commercially and regulatorily appropriate.
+6. Explore
 
-V6 — Global Travel Payment Intelligence Platform
+Explore keeps tourism and payment decision support separate.
 
-Expansion across:
 
-QR payments
+It can provide traveller information such as:
 
-UPI
 
-Cards
-
-Wallets
-
-Local payment networks
-
-Hotels
-
-Restaurants
 
 Attractions
 
-Transport
+Shopping
 
-eSIM
+Restaurants
 
-Travel insurance
+Tourist destinations
 
-Expense management
+Travel tips
 
-Merchant discovery
-
-Travel services
+Local information
 
 
-
----
-
-💼 Potential Business Model
-
-SAFARQR can support multiple revenue models:
-
-Partner Commissions
-
-Referral or transaction-related commercial arrangements with authorised partners.
-
-Premium Traveller Services
-
-Advanced travel and payment intelligence for frequent travellers.
-
-B2B APIs
-
-Data and intelligence services for:
-
-Banks
-
-Fintech companies
-
-Airlines
-
-Hotels
-
-Travel agencies
-
-Tourism organisations
-
-Payment providers
-
-
-Merchant Discovery
-
-Verified merchant visibility and promotional opportunities.
-
-Enterprise Intelligence
-
-Travel-payment intelligence for organisations managing international travellers, employees and delegations.
-
-
----
-
-🎯 Target Users
-
-SAFARQR is designed for:
-
-International leisure travellers
-
-Business travellers
-
-Students travelling abroad
-
-NRIs
-
-Digital nomads
-
-Tour groups
-
-Corporate travellers
-
-Travel agencies
-
-Airlines
-
-Hotels
-
-Banks
-
-Fintech companies
-
-Payment providers
-
-Tourism organisations
+Where practical, official tourism sources are preferred.
 
 
 
----
+7. More
 
-🛠️ Technology
+The More section contains additional tools and information.
 
-Current MVP architecture:
+
+Go Ready
+
+Country-specific travel preparation.
+
+
+The Go Ready checklist includes:
+
+
+
+Destination
+
+Trip purpose
+
+Visa/entry requirement
+
+Passport requirement
+
+Pre-travel documents
+
+Additional country-specific requirements
+
+Official immigration/visa sources
+
+Official-source review date
+
+
+Trip purposes include:
+
+
+
+Tourism/Holiday
+
+Business
+
+Study
+
+Family/Visit
+
+
+Travel and immigration rules can change. SAFARQR provides information and links to official sources; it does not make a visa decision.
+
+
+Data Status
+
+Provides information about the research database, verification status and prototype methodology.
+
+
+About SAFARQR
+
+Explains the purpose and positioning of the platform.
+
+
+Safety
+
+Explains payment and traveller safety principles.
+
+
+Sources / Methodology
+
+Documents the evidence and verification approach used by the research prototype.
+
+
+
+Data Architecture
+
+The research prototype uses a structured corridor database.
+
+
+Current research data architecture includes:
+
+
+
+Directional origin/destination
+
+Payment type
+
+P2M/P2P
+
+Payment rail
+
+Partner/network
+
+Merchant categories
+
+Currency
+
+Live-since information
+
+Verification date
+
+Official source
+
+Notes
+
+Traveller guidance
+
+
+The prototype uses a protected directional registry so that the reverse direction is not inferred automatically.
+
+
+This is important because international payment interoperability is not necessarily symmetric.
+
+
+
+Verification Philosophy
+
+SAFARQR follows a conservative information model.
+
+
+Supported
+
+A documented payment route has been identified from an appropriate source.
+
+
+Not Verified
+
+There is insufficient current evidence to present the route as confirmed.
+
+
+Not Supported / Future
+
+The available evidence indicates that the route is not currently available or is not yet enabled.
+
+
+SAFARQR should avoid converting uncertain information into a positive payment guarantee.
+
+
+
+Current Prototype Technology
+
 
 HTML5
 
@@ -410,123 +522,261 @@ CSS3
 
 JavaScript
 
-Excel-based data source
+SheetJS / XLSX
 
-SheetJS / XLSX browser processing
+QR decoding
+
+Browser camera access
+
+Image-based QR scanning
+
+Reference FX lookup
 
 GitHub Pages
 
-Dynamic client-side database loading
-
-Live reference FX lookup with fallback/cache
+Excel/XLSX research database
 
 
 
----
+Repository Structure
 
-📊 Current MVP Data Source
-
-data/SAFARQR_Global_Corridor_Database_V1.xlsx
-
-The database is loaded dynamically by the browser.
-
-The current architecture is intended for research, demonstration and MVP development.
-
-For a production-scale implementation, the Excel database should eventually be replaced with a controlled:
-
-Database → API → Verification Engine → SAFARQR Platform
-
-with scheduled data verification and appropriate access controls.
+safarqr/
+├── assets/
+│   ├── safarqr-banner.png
+│   ├── safarqr-logo.png
+│   └── .gitkeep
+├── data/
+│   ├── SAFARQR_Global_Corridor_Database_V1.xlsx
+│   └── .gitkeep
+├── README.md
+└── index.html
 
 
----
+Research Prototype
 
-⚠️ Important Disclaimer
-
-SAFARQR is a travel and payment intelligence platform.
-
-Information displayed by SAFARQR is intended to help travellers understand documented payment options and should not be treated as a guarantee that a particular payment will succeed.
-
-Payment availability, eligibility, merchant acceptance, exchange rates, transaction limits, fees and regulatory conditions may vary by:
-
-Country
-
-Merchant
-
-Bank
-
-Payment provider
-
-Payment application
-
-Account
-
-Network
-
-Transaction
+SAFARQR is being developed as an applied research and design-science prototype.
 
 
-Travellers should always verify the final payment amount, exchange rate, applicable charges and acceptance with the relevant payment provider before authorising a transaction.
-
-SAFARQR does not itself constitute a bank, payment network, payment service provider or financial institution.
+The research workflow is:
 
 
----
-
-🔎 Verification Philosophy
-
-SAFARQR prioritises information from official and authoritative sources wherever available, including:
-
-Payment network operators
-
-Central banks
-
-Government agencies
-
-Official payment partners
-
-Regulated financial institutions
-
-Official corporate announcements
+Problem Identification → Secondary Research → Official-Source Collection → Directional Corridor Database → Verification Rules → Prototype Development → QR/FX Testing → Scenario Evaluation → Refinement
 
 
-The platform is designed to distinguish between:
-
-Documented → Verified → Available → Merchant Acceptance
-
-rather than treating them as identical.
-
-
----
-
-🌐 Live Prototype
-
-SAFARQR V16.1
-
-[Open SAFARQR Live Prototype](https://omnavixglobal.github.io/omnavix/?utm_source=chatgpt.com)
-
-> The repository is currently named omnavix; the live product interface and branding are SAFARQR.
+Testing focuses on:
 
 
 
+Pay Check
 
----
+Scan QR
 
-📄 Version
+Currency
 
-Product: SAFARQR
-Version: V16.1
-Positioning: Global Travel & Payment Intelligence
-Tagline: Know. Pay. Relax. Go.
-Database: SAFARQR Global Corridor Database V1
-Platform: GitHub Pages
-Status: Working MVP / Research Prototype
+Country information
+
+Go Ready
+
+Directional route protection
+
+QR identification
+
+FX guidance
+
+Safety warnings
+
+Usability
 
 
----
 
-SAFARQR
+Innovation Positioning
+
+SAFARQR should not be described as the world's first QR payment technology.
+
+
+International payment providers, QR networks and payment applications already provide many individual capabilities.
+
+
+SAFARQR's proposed contribution is the integration of those information elements into a neutral traveller-facing payment decision layer.
+
+
+SAFARQR positioning
+
+
+Understand QR payments before you pay abroad.
+
+
+
+or
+
+
+
+A neutral travel payment intelligence layer.
+
+
+
+The intended workflow is:
+
+
+Traveller → SAFARQR → Check → Understand → Verify → Payment App → Pay
+
+
+
+What SAFARQR Does NOT Do
+
+SAFARQR does not:
+
+
+
+Hold user money
+
+Process payments
+
+Settle transactions
+
+Authorise payments
+
+Operate a payment network
+
+Acquire merchants
+
+Store UPI PINs
+
+Store OTPs
+
+Store banking passwords
+
+Guarantee merchant acceptance
+
+Guarantee final FX rates
+
+Guarantee final transaction fees
+
+Make visa decisions
+
+
+
+Payment Safety
+
+Before making any international payment, users should verify:
+
+
+
+Merchant/payee name
+
+Amount
+
+Currency
+
+Payment account
+
+Applicable fees
+
+Final amount shown by the payment provider
+
+
+The user must authorise the transaction only inside the trusted payment application.
+
+
+
+Authentication Roadmap
+
+The current Register / Sign In interface is a prototype UI.
+
+
+A future production authentication layer may include:
+
+
+
+Secure account registration
+
+Email verification
+
+Password hashing
+
+Secure sessions/tokens
+
+Password reset
+
+Optional social login
+
+Multi-factor authentication
+
+Account deletion
+
+Privacy controls
+
+
+Authentication credentials must never be implemented using plain-text browser storage.
+
+
+
+Future Roadmap
+
+V1
+
+Core payment route intelligence.
+
+
+V2
+
+Expanded international corridor database.
+
+
+V3
+
+Advanced QR recognition and transaction information.
+
+
+V4
+
+Country-specific traveller intelligence.
+
+
+V5
+
+Production backend, authentication and controlled data services.
+
+
+V6
+
+Expanded global payment intelligence and partner integrations.
+
+
+
+Deployment
+
+The intended public prototype is hosted through GitHub Pages.
+
+
+Repository:
+
+
+omnavixglobal/safarqr
+
+
+The production deployment should use HTTPS and a controlled backend for any real authentication or user data.
+
+
+
+Disclaimer
+
+SAFARQR is an information and decision-support platform.
+
+
+It does not process, hold, authorise or execute payments.
+
+
+Payment acceptance, exchange rates, fees, visa rules and travel requirements may change. Users should always verify important information with the relevant payment provider, immigration authority, government department or official source before acting.
+
+
+
+Version
+
+SAFARQR V42 — Country-Specific Go Ready + Register/Sign In Edition
+
+
+Tagline:  
+
 
 Know. Pay. Relax. Go.
-
-Travel Smart. Pay Anywhere.
