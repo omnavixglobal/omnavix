@@ -89,13 +89,12 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div><div class="brand">SAFARQR</div><div class="tag">Know. Pay. Relax. Go.</div></div>
 </div>
 <nav>
-<button class="active" data-tab="home">Home</button>
-<button data-tab="pay">💳 Pay with QR</button>
-<button data-tab="fx">💱 Currency</button>
-<button data-tab="countries">🌍 Countries</button>
-<button data-tab="explore">⭐ Explore</button>
-<button data-tab="scan">📷 Scan QR</button>
-<button data-tab="data">Data Status</button>
+<button type="button" class="active" data-tab="home">🏠 Home</button>
+<button type="button" data-tab="pay">🔎 Pay Check</button>
+<button type="button" data-tab="scan">📷 Scan QR</button>
+<button type="button" data-tab="fx">💱 Currency</button>
+<button type="button" data-tab="explore">⭐ Explore</button>
+<button type="button" data-tab="more">☰ More</button>
 </nav>
 <main>
 <section id="home" class="section active">
@@ -116,15 +115,27 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div id="dbStatus" class="source">Loading SAFARQR database…</div>
 </div>
 <div class="card">
-<h3>🌍 Travel Discovery</h3>
-<p class="muted">Payment and tourism are kept separate. Explore attractions, opening hours, recommended visit time and official information for your destination.</p>
-<button class="secondary" onclick="showTab('explore')">Explore Destination →</button>
+<h3>💡 What SAFARQR helps you understand</h3>
+<p class="muted">SAFARQR is an information and decision layer. It helps you understand a payment before you authorise it.</p>
+<div class="grid3" style="margin-top:12px">
+<div class="stat"><span class="muted">01 • KNOW</span><strong style="font-size:17px">Can I pay?</strong><span class="muted">Check whether your payment route is documented for the selected destination.</span></div>
+<div class="stat"><span class="muted">02 • IDENTIFY</span><strong style="font-size:17px">What is this QR?</strong><span class="muted">Scan a merchant QR and identify the payment information SAFARQR can read.</span></div>
+<div class="stat"><span class="muted">03 • UNDERSTAND</span><strong style="font-size:17px">What will it cost?</strong><span class="muted">Understand currency, reference FX and possible charges before payment.</span></div>
+</div>
 </div>
 <div class="grid">
-<div class="stat"><span class="muted">Database records</span><strong id="records">—</strong></div>
-<div class="stat"><span class="muted">P2M records</span><strong id="p2m">—</strong></div>
-<div class="stat"><span class="muted">Currencies</span><strong id="currencies">—</strong></div>
-<div class="stat"><span class="muted">Last verified</span><strong id="verified" style="font-size:17px">—</strong></div>
+<div class="stat"><span class="muted">Database records</span><strong id="records">—</strong><span class="muted">Documented payment information.</span></div>
+<div class="stat"><span class="muted">P2M records</span><strong id="p2m">—</strong><span class="muted">Merchant-payment routes.</span></div>
+<div class="stat"><span class="muted">Currencies</span><strong id="currencies">—</strong><span class="muted">Destination currencies covered.</span></div>
+<div class="stat"><span class="muted">Last verified</span><strong id="verified" style="font-size:17px">—</strong><span class="muted">Latest database verification field.</span></div>
+</div>
+<div class="card" style="background:linear-gradient(180deg,#f7fbff,#fff)">
+<h3>🛡️ Before you pay</h3>
+<div class="checklist">
+<div class="checkitem"><b>Confirm the payee</b><span class="muted">Always compare the merchant/payee name inside your payment app.</span></div>
+<div class="checkitem"><b>Review the amount</b><span class="muted">Check the foreign amount and the final amount shown by your provider.</span></div>
+<div class="checkitem"><b>Check the charges</b><span class="muted">Review FX rate, markup and any applicable payment or cross-border fees.</span></div>
+</div>
 </div>
 </section>
 
@@ -160,8 +171,8 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 
 <section id="pay" class="section">
 <div class="card">
-<h2>Pay &amp; Where Can I Pay?</h2>
-<p class="muted">Check whether your route is documented and where the payment network can be used. SAFARQR combines payment availability, merchant acceptance and verification information in one place.</p>
+<h2>🔎 Pay Check</h2>
+<p class="muted">Can I pay? Where can I pay? What will it cost? SAFARQR checks the documented route, payment network, merchant acceptance guidance and cost information before you pay.</p>
 <div class="grid3">
 <div><label>Home country</label><select id="payHomeCountry"></select></div>
 <div><label>Destination</label><select id="payDestination"></select></div>
@@ -270,6 +281,60 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div class="warning"><b>Important:</b> A QR/UPI check identifies information encoded or entered. It does not itself prove merchant ownership, authorise or execute a payment. Always confirm the payee name shown inside your UPI app before paying.</div>
 </section>
 
+
+
+<section id="more" class="section">
+<div class="card">
+<h2>☰ More</h2>
+<p class="muted">Additional SAFARQR tools and information.</p>
+<div class="grid3">
+<div class="stat"><strong>🧭 Go Ready Checklist</strong><span class="muted">Prepare the essentials for a first trip or family trip.</span><button type="button" class="secondary" onclick="document.getElementById('goReadyPanel').hidden=false; document.getElementById('goReadyPanel').scrollIntoView({behavior:'smooth',block:'start'});">🧭 Open Go Ready Checklist</button></div>
+<div class="stat"><strong>🌎 Countries</strong><span class="muted">Explore supported countries, payment corridors, currencies and verification information.</span><button type="button" class="secondary" onclick="openSection('countries')">🌎 Open Countries →</button></div>
+<div class="stat"><strong>📊 Data Status</strong><span class="muted">See the corridor database, verification information and data methodology.</span><button type="button" class="secondary" onclick="openSection('data')">Open Data Status →</button></div>
+<div class="stat"><strong>ℹ️ About SAFARQR</strong><span class="muted">Global QR &amp; Payment Decision Assistant — information before you pay.</span><button type="button" class="secondary" onclick="document.getElementById('aboutSafarPanel').hidden=false; document.getElementById('aboutSafarPanel').scrollIntoView({behavior:'smooth',block:'start'});">ℹ️ Open About SAFARQR</button></div>
+<div class="stat"><strong>🛡️ Safety</strong><span class="muted">SAFARQR does not authorise or execute payments. Always confirm the final payee and amount in your payment app.</span><button type="button" class="secondary" onclick="document.getElementById('safetySafarPanel').hidden=false; document.getElementById('safetySafarPanel').scrollIntoView({behavior:'smooth',block:'start'});">🛡️ Open Safety</button></div>
+</div>
+</div>
+<div id="goReadyPanel" class="card" hidden>
+<h2 style="margin-top:0">🧭 Go Ready Checklist</h2>
+<p class="muted">Use this quick checklist before travelling. Destination-specific entry and payment rules should always be confirmed with the relevant official authority or provider.</p>
+<div class="grid3">
+<div class="stat"><strong>🛂 01 — Entry & Documents</strong><span class="muted">Passport validity, visa/e-visa, entry rules, tickets and essential documents.</span></div>
+<div class="stat"><strong>💳 02 — Payment</strong><span class="muted">Check your payment route, QR/UPI acceptance and confirm the payee before paying.</span></div>
+<div class="stat"><strong>💱 03 — Money</strong><span class="muted">Check local currency, reference exchange rate and possible FX/provider charges.</span></div>
+<div class="stat"><strong>📱 04 — Connectivity</strong><span class="muted">Arrange SIM/eSIM or roaming and keep important travel information available offline.</span></div>
+<div class="stat"><strong>🚕 05 — Airport → Hotel</strong><span class="muted">Check official airport transport, public transport, taxi/ride options and journey time.</span></div>
+<div class="stat"><strong>🚨 06 — Emergency</strong><span class="muted">Save local emergency numbers, embassy/consulate details and copies of important documents.</span></div>
+<div class="stat"><strong>👨‍👩‍👧 07 — Family Check</strong><span class="muted">For family trips, check child-friendly facilities, ticket rules, accessibility and suitable visit duration.</span></div>
+<div class="stat"><strong>♿ 08 — Comfort Check</strong><span class="muted">For senior travellers, check walking distance, seating, accessibility, transport and visit duration.</span></div>
+</div>
+<div class="warning" style="margin-top:16px"><b>Important:</b> Visa, entry, transport, health and payment requirements can change. Check the relevant official source before departure.</div>
+</div>
+
+<div id="aboutSafarPanel" class="card" hidden>
+<h2 style="margin-top:0">ℹ️ About SAFARQR</h2>
+<p><strong>SAFARQR — Global QR &amp; Payment Decision Assistant</strong></p>
+<p class="muted">SAFARQR helps travellers understand payment options before they pay. It is an information and decision-support layer — not a bank, wallet, payment processor or payment network.</p>
+<div class="grid3">
+<div class="stat"><strong>🔎 Know</strong><span class="muted">Understand whether a documented payment route or QR option may be supported.</span></div>
+<div class="stat"><strong>📷 Identify</strong><span class="muted">Scan a QR and understand the payment information encoded in it.</span></div>
+<div class="stat"><strong>💱 Understand</strong><span class="muted">Review currency, exchange-rate information and possible charges before paying.</span></div>
+</div>
+<div class="info" style="margin-top:16px"><b>Important:</b> SAFARQR provides information and guidance. The actual payment is completed only through the user's chosen payment app or provider.</div>
+</div>
+
+<div id="safetySafarPanel" class="card" hidden>
+<h2 style="margin-top:0">🛡️ SAFARQR Safety</h2>
+<p><strong>SAFARQR does not authorise or execute payments.</strong></p>
+<div class="grid3">
+<div class="stat"><strong>1. Confirm the payee</strong><span class="muted">Always check the final merchant/payee name in your actual payment app.</span></div>
+<div class="stat"><strong>2. Confirm the amount</strong><span class="muted">Review the amount and currency before approving a transaction.</span></div>
+<div class="stat"><strong>3. Check charges</strong><span class="muted">Review any displayed provider, FX, conversion or other applicable charges.</span></div>
+</div>
+<div class="warning" style="margin-top:16px"><b>Never rely on a QR scan alone.</b> A QR/UPI identification result does not independently prove merchant ownership or guarantee that a payment is safe.</div>
+</div>
+</section>
+
 <section id="data" class="section">
 <div class="card">
 <h2>Live Data Status</h2>
@@ -335,17 +400,22 @@ function routeKey(home,dest){return `${home}|${dest}`}
 function corridor(home,dest){return CORRIDORS[routeKey(home,dest)]||null}
 
 function tabs(){
-document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
-document.querySelectorAll("nav button").forEach(x=>x.classList.remove("active"));
-b.classList.add("active");
-document.querySelectorAll(".section").forEach(s=>s.classList.remove("active"));
-$(b.dataset.tab).classList.add("active");
-if(b.dataset.tab==="countries"){renderCountries();populateCountryDetail();}
-if(b.dataset.tab==="data")renderStatus();
-if(b.dataset.tab==="intelligence")renderIntelligence();
-if(b.dataset.tab==="verification")renderVerification();
-});
+  document.querySelectorAll("nav button[data-tab]").forEach(b=>{
+    b.addEventListener("click",function(e){e.preventDefault();openSection(this.dataset.tab);});
+  });
 }
+function openSection(id){
+  document.querySelectorAll("nav button[data-tab]").forEach(b=>b.classList.toggle("active",b.dataset.tab===id));
+  document.querySelectorAll("main .section").forEach(s=>{s.classList.toggle("active",s.id===id);s.hidden=(s.id!==id);});
+  const target=$(id);
+  if(!target)return;
+  target.hidden=false;
+  if(id==="countries"){renderCountries();populateCountryDetail();}
+  if(id==="data")renderStatus();
+  if(id==="explore")initExplore();
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+function showTab(id){openSection(id);}
 function normalize(r){const o={};Object.keys(r).forEach(k=>o[k.trim().toLowerCase()]=r[k]);return o}
 function val(o,...keys){for(const k of keys){if(o[k]!==undefined&&o[k]!==null&&o[k]!=="")return String(o[k])}return ""}
 async function loadDB(){
@@ -1080,22 +1150,7 @@ function checkManualUPI(){
 }
 function openManualUPI(id){try{window.location.href='upi://pay?pa='+encodeURIComponent(id);}catch(e){alert('Your device could not open the UPI payment app. Please open your UPI app manually and enter the merchant ID.');}}
 
-function openScannedUPI(raw){
-  if(!/^upi:\/\/pay/i.test(String(raw||""))){alert("This QR does not contain a standard UPI payment link.");return;}
-  const a=document.createElement("a");
-  a.href=raw; a.target="_self"; a.rel="noopener";
-  a.style.display="none"; document.body.appendChild(a);
-  try{a.click();}catch(e){window.location.href=raw;}
-  setTimeout(()=>{try{document.body.removeChild(a);}catch(e){}},1500);
-}
-
-function openManualUPI(){
-  const el=$("manualUpiId"); if(!el)return;
-  const id=(el.value||"").trim();
-  if(!/^[A-Za-z0-9._-]{2,256}@[A-Za-z0-9.-]{2,64}$/.test(id)){alert("Please enter a valid UPI ID first.");return;}
-  const raw="upi://pay?pa="+encodeURIComponent(id);
-  openScannedUPI(raw);
-}
+function openScannedUPI(raw){try{window.location.href=raw;}catch(e){alert('Your device could not open the UPI payment link. Please use the payment app manually.');}}
 
 function renderStatus(){
 const protectedCount=Object.keys(VERIFIED_CORRIDORS).length;
@@ -1113,10 +1168,20 @@ $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.
 <p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
 <p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
 }
-function showTab(id){const b=document.querySelector(`nav button[data-tab="${id}"]`);if(b)b.click()}
+let goReadyInitialized=false;
+function populateGoReady(){
+ const c=$("readyCountry"); if(!c)return;
+ if(c.options.length>1)return;
+ const home=$("homeDestination");
+ const preferred=home&&home.value?home.value:"";
+ c.innerHTML='<option value="">Select a destination</option>'+COUNTRY_LIST.map(x=>`<option value="${esc(x.name)}">${x.flag} ${esc(x.name)}</option>`).join('');
+ if(preferred && [...c.options].some(o=>o.value===preferred)) c.value=preferred;
+}
+
 function flag(n){return countryObj(n).flag||"🌍"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-tabs();buildAllSelectors();buildAssistantSelectors();initExplore();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();
+tabs();buildAllSelectors();buildAssistantSelectors();initExplore();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();populateMoreReady();
+openSection("home");
 </script>
 
 
