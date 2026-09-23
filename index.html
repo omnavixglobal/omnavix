@@ -79,7 +79,8 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 .timing{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
 .timing span{background:#f1f7fb;border-radius:16px;padding:5px 9px;font-size:11px;font-weight:700;color:#486581}
 @media(max-width:700px){.attractionGrid{grid-template-columns:1fr}}
-</style>
+
+.authActions{margin-left:auto;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.authBtn{border:1px solid var(--blue);border-radius:10px;padding:9px 13px;font-weight:800;cursor:pointer;background:#fff;color:var(--blue)}.authBtn.primaryAuth{background:var(--blue);color:#fff}.authPanel{border:1px solid var(--line);border-radius:14px;padding:18px;background:#fff;margin-top:14px}.authTabs{display:flex;gap:8px;margin-bottom:14px}.authTab{border:1px solid var(--line);background:#f7fafc;color:var(--ink);border-radius:9px;padding:9px 14px;font-weight:800;cursor:pointer}.authTab.active{background:#eaf4ff;color:#075a9d;border-color:#b9dcf7}.authForm{display:grid;gap:10px;max-width:520px}.authNote{font-size:11px;color:var(--muted);margin-top:8px}.authWelcome{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}</style>
 <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
 </head>
 <body>
@@ -88,6 +89,10 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 <div class="brandbar">
 <img src="assets/safarqr-logo.png" alt="SAFARQR logo">
 <div><div class="brand">SAFARQR</div><div class="tag">Know. Pay. Relax. Go.</div></div>
+<div class="authActions">
+<button type="button" class="authBtn" onclick="showAuth('signin')">Sign In</button>
+<button type="button" class="authBtn primaryAuth" onclick="showAuth('register')">Register</button>
+</div>
 </div>
 <nav>
 <button type="button" class="active" data-tab="home">🏠 Home</button>
@@ -114,6 +119,29 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 <div class="info" style="margin-top:14px"><b>Payment journey:</b> Home Country → Destination → Supported UPI/QR → Currency → Scan QR → Identify Merchant → App → Charges → Open Payment App.</div>
 <div id="dbStatus" class="source">Loading SAFARQR database…</div>
+</div>
+<div id="authPanel" class="authPanel" hidden>
+<div class="authWelcome">
+<div><h3 style="margin:0">🔐 SAFARQR Account</h3><p class="muted" style="margin:5px 0 0">Sign in or create an account to save your travel preferences and checklist.</p></div>
+<button type="button" class="secondary" onclick="closeAuth()">✕ Close</button>
+</div>
+<div class="authTabs" style="margin-top:15px">
+<button type="button" id="signInTab" class="authTab active" onclick="showAuth('signin')">Sign In</button>
+<button type="button" id="registerTab" class="authTab" onclick="showAuth('register')">Register</button>
+</div>
+<div id="signInForm" class="authForm">
+<label>Email</label><input id="signInEmail" type="email" placeholder="you@example.com" autocomplete="email">
+<label>Password</label><input id="signInPassword" type="password" placeholder="Enter password" autocomplete="current-password">
+<button type="button" class="primary" onclick="demoAuth('signin')">Sign In →</button>
+</div>
+<div id="registerForm" class="authForm" hidden>
+<label>Full name</label><input id="registerName" type="text" placeholder="Your name" autocomplete="name">
+<label>Email</label><input id="registerEmail" type="email" placeholder="you@example.com" autocomplete="email">
+<label>Password</label><input id="registerPassword" type="password" placeholder="Create password" autocomplete="new-password">
+<button type="button" class="primary" onclick="demoAuth('register')">Create Account →</button>
+</div>
+<div class="authNote">Prototype account interface only. No payment credentials, UPI PINs or OTPs should ever be entered into SAFARQR. Production authentication should use a secure authentication service/backend.</div>
+<div id="authMessage" style="margin-top:10px"></div>
 </div>
 <div class="card">
 <h3>💡 What SAFARQR helps you understand</h3>
@@ -297,19 +325,15 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 </div>
 <div id="goReadyPanel" class="card" hidden>
-<h2 style="margin-top:0">🧭 Go Ready Checklist</h2>
-<p class="muted">Use this quick checklist before travelling. Destination-specific entry and payment rules should always be confirmed with the relevant official authority or provider.</p>
-<div class="grid3">
-<div class="stat"><strong>🛂 01 — Entry & Documents</strong><span class="muted">Passport validity, visa/e-visa, entry rules, tickets and essential documents.</span></div>
-<div class="stat"><strong>💳 02 — Payment</strong><span class="muted">Check your payment route, QR/UPI acceptance and confirm the payee before paying.</span></div>
-<div class="stat"><strong>💱 03 — Money</strong><span class="muted">Check local currency, reference exchange rate and possible FX/provider charges.</span></div>
-<div class="stat"><strong>📱 04 — Connectivity</strong><span class="muted">Arrange SIM/eSIM or roaming and keep important travel information available offline.</span></div>
-<div class="stat"><strong>🚕 05 — Airport → Hotel</strong><span class="muted">Check official airport transport, public transport, taxi/ride options and journey time.</span></div>
-<div class="stat"><strong>🚨 06 — Emergency</strong><span class="muted">Save local emergency numbers, embassy/consulate details and copies of important documents.</span></div>
-<div class="stat"><strong>👨‍👩‍👧 07 — Family Check</strong><span class="muted">For family trips, check child-friendly facilities, ticket rules, accessibility and suitable visit duration.</span></div>
-<div class="stat"><strong>♿ 08 — Comfort Check</strong><span class="muted">For senior travellers, check walking distance, seating, accessibility, transport and visit duration.</span></div>
+<h2 style="margin-top:0">🧭 Go Ready — Country-Specific Checklist</h2>
+<p class="muted">Select your destination. SAFARQR shows a country-specific pre-travel checklist based on official immigration, visa and government sources checked on <b>23 September 2026</b>.</p>
+<div class="grid3" style="align-items:end">
+<div><label>Destination</label><select id="readyCountry" onchange="renderGoReady()"></select></div>
+<div><label>Trip purpose</label><select id="readyPurpose" onchange="renderGoReady()"><option value="tourism">Tourism / Holiday</option><option value="business">Business</option><option value="student">Study</option><option value="family">Family / Visit</option></select></div>
+<div><button type="button" class="secondary" onclick="renderGoReady()">Refresh Checklist</button></div>
 </div>
-<div class="warning" style="margin-top:16px"><b>Important:</b> Visa, entry, transport, health and payment requirements can change. Check the relevant official source before departure.</div>
+<div id="goReadyResult" style="margin-top:16px"></div>
+<div class="warning" style="margin-top:16px"><b>Important:</b> Entry rules, visa requirements, passport validity, health requirements and border procedures can change. SAFARQR provides a preparation checklist, not a visa decision. Always open the official source before departure and use the same passport/document details in the application and at the border.</div>
 </div>
 
 <div id="aboutSafarPanel" class="card" hidden>
@@ -379,13 +403,13 @@ footer{padding:24px;text-align:center;color:#829ab1;font-size:11px;border-top:1p
 </div>
 </section>
 </main>
-<footer>SAFARQR Research & Product Prototype • V39 Robust QR Scanner + Country + Merchant + FX + Charges Edition • Dynamic Global Database • Know. Pay. Relax. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
+<footer>SAFARQR Research & Product Prototype • V42 Country-Specific Go Ready + Official Entry Checklist Edition • Dynamic Global Database • Know. Pay. Relax. Go. • Payment availability, eligibility, merchant acceptance, exchange rates and fees must be independently verified before a real transaction.</footer>
 </div>
 
 <script>
 let rows=[];
 const DB="data/SAFARQR_Global_Corridor_Database_V1.xlsx";
-const DB_VERSION="Global Corridor Database V1 • V39 Robust QR Scanner + Country + Merchant + FX + Charges Edition • Dynamic Global Database";
+const DB_VERSION="Global Corridor Database V1 • V42 Country-Specific Go Ready + Official Entry Checklist Edition • Dynamic Global Database";
 const $=id=>document.getElementById(id);
 const COUNTRY_LIST=[
  {name:"India",flag:"🇮🇳",currency:"INR"},{name:"Singapore",flag:"🇸🇬",currency:"SGD"},{name:"UAE",flag:"🇦🇪",currency:"AED"},
@@ -1457,20 +1481,169 @@ $("statusBox").innerHTML=`<p><span class="ok">● Excel database:</span> ${rows.
 <p><span class="ok">● Official corridor source:</span> NPCI / Government of India</p>
 <p><span class="ok">● Last verified field:</span> ${rows[0]?esc(val(rows[0],"last verified")):"—"}</p>`;
 }
+const GO_READY={
+ "India":{
+  visa:"Domestic travel: no foreign visa. Carry a valid government-issued identity document appropriate for the journey.",
+  passport:"For domestic travel, passport is not normally required; for international onward travel, carry the passport required by the destination.",
+  must:["Government-issued ID / passport as applicable","Flight/train ticket and accommodation details if relevant","Payment method and emergency contacts"],
+  extra:["Check airline/rail operator identification rules","For children, carry appropriate age/guardian documents"],
+  official:[["Passport Seva","https://www.passportindia.gov.in/"]]
+ },
+ "Singapore":{
+  visa:"Indian ordinary passport holders require a Singapore entry visa unless a specific exemption/transit facility applies.",
+  passport:"Passport must have at least 6 months validity.",
+  must:["Singapore entry visa, if required","SG Arrival Card with Electronic Health Declaration — submit within 3 days before arrival","Confirmed onward/return travel and accommodation details","Passport and visa application/approval records"],
+  extra:["Keep a valid email address for the SG Arrival Card/e-Pass process","Check the exact stay period granted at immigration"],
+  official:[["Singapore ICA — Entry Requirements","https://www.ica.gov.sg/enter-transit-depart/entering-singapore"],["Singapore ICA — Visa Requirements","https://www.ica.gov.sg/enter-transit-depart/entering-singapore/visa_requirements"],["SG Arrival Card","https://www.ica.gov.sg/enter-transit-depart/entering-singapore/sg-arrival-card"]]
+ },
+ "UAE":{
+  visa:"Indian passport holders should check the UAE's current nationality-specific visa rule and any visa-on-arrival eligibility before travel. Eligibility lists can change.",
+  passport:"Passport must be valid for at least 6 months from entry.",
+  must:["UAE visa / entry permit or confirmed visa-on-arrival eligibility","Passport with required validity","Return/onward ticket and accommodation details","Travel insurance if required by the visa/provider"],
+  extra:["If relying on a special visa-on-arrival category, carry the qualifying supporting visa/residence document","Check the relevant UAE authority or airline before departure"],
+  official:[["UAE Government — Visa Check","https://u.ae/en/information-and-services/visa-and-emirates-id/Visa-information/do-you-need-an-entry-permit-or-a-visa-to-enter-the-uae"],["UAE Government — Tourist Visa","https://u.ae/en/information-and-services/visa-and-emirates-id/residence-visas/tourist-visa"]]
+ },
+ "Nepal":{
+  visa:"Indian citizens do not need a visa to enter Nepal.",
+  passport:"A valid Indian passport may be used. Indian citizens without a passport may use an Indian voter ID card under Nepal immigration rules. For minors, Nepal immigration specifies additional birth/identity documentation.",
+  must:["Indian passport or accepted Indian voter ID","For minors without passport: required birth/identity documentation and guardian arrangements","Travel and accommodation details","Keep original identity document available"],
+  extra:["Check the Nepal immigration page before departure for current accepted documents","Carry copies of key documents"],
+  official:[["Nepal Immigration — TIA FAQ","https://tia.immigration.gov.np/faq"],["Nepal Immigration — Arrival Information","https://gbia.immigration.gov.np/arrival-information"]]
+ },
+ "Sri Lanka":{
+  visa:"Indian ordinary passport holders are currently eligible for a tourist ETA free of charge for 30 days under the Sri Lanka scheme effective 25 May 2026, but the ETA must still be obtained before arrival.",
+  passport:"Passport should be valid for at least 6 months from the date of arrival.",
+  must:["Sri Lanka ETA before arrival","Confirmed return ticket","Sufficient funds for the stay","Passport used for the ETA application","Accommodation details"],
+  extra:["Keep a copy of ETA approval","Check health/vaccination requirements applicable to your route","Do not use a different passport at entry from the one used for the ETA"],
+  official:[["Sri Lanka Immigration — ETA","https://eta.gov.lk/slvisa/"],["Sri Lanka ETA — Entry Requirements","https://eta.gov.lk/slvisa/visainfo/apply.jsp?locale=en_US"]]
+ },
+ "Bhutan":{
+  visa:"Indian citizens do not need a visa but require an entry permit. An Indian passport or Indian voter ID card is accepted for adults; minors have additional document rules.",
+  passport:"Carry the original Indian passport or accepted voter ID. For Indian minors, check the passport/birth-certificate and guardian requirements.",
+  must:["Bhutan entry permit","Indian passport or accepted voter ID","Accommodation/itinerary information","Sustainable Development Fee (SDF) planning — current Indian rate is Nu. 1,200 per adult per night according to Bhutan's official FAQ"],
+  extra:["Travel insurance is not currently mandatory according to Bhutan Tourism's FAQ","Arrange the permit before travel when practical to reduce waiting at entry points","Check route-specific entry point requirements"],
+  official:[["Bhutan Travel — FAQ","https://bhutan.travel/faqs"]]
+ },
+ "France":{
+  visa:"Indian ordinary passport holders generally need a Schengen visa for short tourist visits to France. Apply through the official France-Visas process.",
+  passport:"For entry, passport should have been issued less than 10 years before and remain valid for at least 3 months after the planned departure from the Schengen area.",
+  must:["Valid Schengen visa, where required","Passport meeting Schengen validity conditions","Accommodation proof for the stay","Proof of sufficient financial means","Return/onward ticket or means to obtain one","Travel purpose/supporting documents"],
+  extra:["Apply through France-Visas and the designated visa process in India","If France is not the main destination in a multi-country Schengen trip, check which country should receive the application"],
+  official:[["France-Visas — India","https://www.france-visas.gouv.fr/en/inde"],["France-Visas — Arrival in France","https://france-visas.gouv.fr/en/votre-arrivee-en-france"]]
+ },
+ "Qatar":{
+  visa:"Indian nationals are listed by Qatar's Ministry of Interior as eligible for a free tourist visa on arrival for up to 30 days, subject to the stated conditions.",
+  passport:"Qatar's official sources specify at least 3 months passport validity for the relevant Indian visa-on-arrival route; verify before departure because rules can change.",
+  must:["Passport with required validity","Confirmed round-trip ticket","Confirmed hotel reservation through Discover Qatar for the relevant visa-on-arrival route","Required health insurance from an accredited insurer"],
+  extra:["Check the current Hayya/Visit Qatar visa workflow before departure","Carry hotel confirmation and return ticket"],
+  official:[["Qatar Ministry of Interior — Tourist Visa","https://portal.moi.gov.qa/wps/portal/MOIInternet/departmentcommittees/ganationalborderexpatriateaffairs/%21ut/p/z1/rZTNcpswEMefpQeOshaQ-ciNuJ46_ohrY9eBi0eAwGqRwELxR5-nT9InK3F96EwTM5lWJ2lm9_ffXe0ujvETjiU98IJqXklatu8odraPPgSmP4fJfOAP22swWc1Hn60wsPDmYvAQeGRkgjnxRuBBEK7Gq_v5wAIwcXzb_wuO7nFU6UDo4AqDN04AXbBNV7TxbfwGxxeT8ejjA9ghTD5NHbtNZzobWIMFgNe_GtzKt0tkjOOirJLfx1kYnsFjhXLmWKqt6sajZ_qSmla9kTFe0V16O3pa6bPqiXstK6bOwMM-MvHgD3VVB14QxuqDMBRWx33reosXILDl-DrlGc4gsxzTDdxkMdohggFhnyT5AgymueUkH7udgLN_w103w0c3-qYxdLCIZPbdXhbOFwQvDlwdsRrWSnRftwfYdg0Sc3McRE4CFiEYL8xLYQcYifUz9JMt_HI-hSMP9RoQPvvobfDGbbXH3NTJx__tA40uqZvVN63DWVbe_yr_t9HOA4raRmp7bDj6koeYJ4-1SSacSkAQ1FGaup0oJJnVZCcK0ZM6Bgkila0kxwyRutLrupyuV1R3F9TiqVMdVQmbFTTbXiVLOXLuCqMeAyAAaklkt8G9diLc8cfVt6Z7s8CLF9fEQ08YrjKt8VYjsbnvqH79Pgwy-49M9T/?1dmy=&urile=wcm%3Apath%3A%2Fwcmlib-internet-en%2Fsa-departmentcommittee%2Fgeneraladministrationofnationalitybordersandexpatriateaffairs%2Fvisas%2Fsad"],["Visit Qatar — Visas","https://visitqatar.com/intl-en/plan-your-trip/visas"]]
+ },
+ "Cambodia":{
+  visa:"Indian travellers generally need a visa for tourism; Cambodia's official e-Visa portal offers the Tourist Visa (Visa T).",
+  passport:"Tourist e-Visa requires more than 6 months passport validity remaining at entry.",
+  must:["Cambodia Tourist e-Visa (Visa T) or other valid entry visa","Digital passport photo and required application details","Passport with required validity","Cambodia e-Arrival Card — required for all travellers, including visa holders, within 7 days before arrival"],
+  extra:["Carry the e-Visa approval and e-Arrival QR code","Check the entry port because not all land checkpoints support e-Visa","Use only the official Cambodia government e-Visa/e-Arrival websites"],
+  official:[["Cambodia e-Visa — Official Government","https://www.evisa.gov.kh/"],["Cambodia e-Arrival — Official","https://arrival.gov.kh/"]]
+ },
+ "Mauritius":{
+  visa:"Mauritius uses nationality-specific visa rules. Do not assume visa-free entry from a general travel website; check the official Mauritius Passport & Immigration Office country-wise visa requirement for an Indian passport before booking.",
+  passport:"Passport must be valid beyond the intended period of stay.",
+  must:["Confirm India-specific visa/entry requirement with Mauritius Immigration","Return ticket","Confirmed accommodation or sponsorship","Adequate funds for the stay","Proof of eligibility to re-enter the country of residence/origin where applicable"],
+  extra:["For work/study/residence, obtain the appropriate permit before travel","Keep accommodation and financial documents available at immigration"],
+  official:[["Mauritius Passport & Immigration Office — Visa Requirements","https://passport.govmu.org/passport/?page_id=605"],["Mauritius Passport & Immigration Office — Travel Requirements","https://passport.govmu.org/passport/?page_id=587"]]
+ },
+ "Greece":{
+  visa:"Indian ordinary passport holders require a Schengen visa for short tourist travel to Greece. Check the Greek Ministry of Foreign Affairs and the authorised visa application process in India.",
+  passport:"For Schengen entry, passport validity must satisfy the Schengen rules; verify the current requirement in the visa documentation before travel.",
+  must:["Valid Schengen visa, where required","Passport meeting Schengen requirements","Accommodation proof","Sufficient funds","Return/onward travel evidence","Travel insurance and supporting documents required by the visa application"],
+  extra:["Use the Greek MFA/authorised visa centre information for India","For multi-country Schengen trips, confirm which country is responsible for the visa application"],
+  official:[["Greece MFA — Visa Requirements by Country","https://www.mfa.gr/en/services/visas-for-foreigners-traveling-to-greece/countries-requiring-or-not-requiring-a-visa/"],["Greece MFA — Visas in India","https://www.mfa.gr/missionsabroad/en/india-en/visas"]]
+ },
+ "Uzbekistan":{
+  visa:"Indian citizens are eligible for the Uzbekistan e-Visa system. India is listed among the countries eligible for simplified e-Visa processing. Indian citizens are also listed for a short transit visa-free procedure subject to its conditions.",
+  passport:"For the e-Visa route, use the same valid passport/travel document used in the application; Uzbekistan's official guidance specifies passport validity conditions and requires the e-Visa to match the travel document.",
+  must:["Uzbekistan e-Visa for tourism unless a separate visa-free/transit rule applies","Passport used for the e-Visa application","Printed or electronic e-Visa for border presentation","Passport copy/photo and application details"],
+  extra:["For 5-day visa-free transit, verify all conditions including the qualifying itinerary and Uzbekistan Airways ticket requirement","Register your stay when required by local rules/accommodation provider"],
+  official:[["Uzbekistan Official e-Visa Portal","https://www.e-visa.gov.uz/what-you-need-to-know"],["Uzbekistan MFA — Visa Regulations","https://iran.mfa.uz/page/525?language=en"]]
+ },
+ "Maldives":{
+  visa:"Tourist visa is granted on arrival; no pre-approval is required for ordinary tourist entry, subject to Maldives Immigration entry requirements.",
+  passport:"Passport/travel document must have an MRZ and at least 1 month validity. Extended passport validity is not accepted for this requirement.",
+  must:["Confirmed return/onward ticket","Prepaid confirmed booking at a registered tourist facility or approved sponsorship","Sufficient funds for the stay","Traveller Declaration submitted through IMUGA within 96 hours before arrival","Yellow Fever certificate if arriving from/recently travelling through a risk country"],
+  extra:["Each traveller, including minors, submits an individual Traveller Declaration","Minors must have their own passport","Keep accommodation and return-ticket proof accessible"],
+  official:[["Maldives Immigration — Tourist Visa","https://www.immigration.gov.mv/visa/tourist-visa"]]
+ }
+};
 let goReadyInitialized=false;
 function populateGoReady(){
  const c=$("readyCountry"); if(!c)return;
- if(c.options.length>1)return;
- const home=$("homeDestination");
- const preferred=home&&home.value?home.value:"";
+ const current=c.value;
  c.innerHTML='<option value="">Select a destination</option>'+COUNTRY_LIST.map(x=>`<option value="${esc(x.name)}">${x.flag} ${esc(x.name)}</option>`).join('');
+ const home=$("homeDestination");
+ const preferred=current || (home&&home.value?home.value:"");
  if(preferred && [...c.options].some(o=>o.value===preferred)) c.value=preferred;
+ if(!c.value && COUNTRY_LIST.some(x=>x.name==="Singapore")) c.value="Singapore";
+ renderGoReady();
+}
+function renderGoReady(){
+ const c=$("readyCountry"), out=$("goReadyResult"); if(!c||!out)return;
+ const name=c.value;
+ if(!name){out.innerHTML='<div class="info">Select a destination to see the country-specific checklist.</div>';return;}
+ const d=GO_READY[name]; if(!d){out.innerHTML='<div class="warning">Country-specific checklist is not yet configured for this destination. Check the official immigration authority before travel.</div>';return;}
+ const purpose=$("readyPurpose")?.value||"tourism";
+ const purposeNote=purpose==="business"?"Business travellers should additionally verify business-visa/work-permit rules and invitation requirements.":purpose==="student"?"Students should verify the correct study/education visa and institution documents before travel.":purpose==="family"?"Family/visit travellers should verify invitation, sponsorship and relationship documents where applicable.":"For tourism, use the checklist below and confirm the official entry rules immediately before departure.";
+ const links=(d.official||[]).map(([label,url])=>`<a class="secondary" style="display:inline-block;text-decoration:none;margin:4px 6px 4px 0" href="${url}" target="_blank" rel="noopener">🔗 ${esc(label)}</a>`).join('');
+ out.innerHTML=`<div class="card" style="margin:0;background:#fbfdff">
+ <h3 style="margin-top:0">${flag(name)} ${esc(name)} — Ready Check</h3>
+ <div class="grid3">
+  <div class="stat"><strong>🛂 Visa / Entry</strong><span class="muted">${esc(d.visa)}</span></div>
+  <div class="stat"><strong>📘 Passport</strong><span class="muted">${esc(d.passport)}</span></div>
+  <div class="stat"><strong>🧭 Trip purpose</strong><span class="muted">${esc(purposeNote)}</span></div>
+ </div>
+ <h4 style="margin:18px 0 8px">☑ Before you leave</h4>
+ <div class="checklist">${d.must.map((x,i)=>`<label class="checkitem" style="cursor:pointer"><input type="checkbox" style="margin-right:8px;width:auto"> <b>${i+1}. ${esc(x)}</b></label>`).join('')}</div>
+ <h4 style="margin:18px 0 8px">🔎 Additional checks</h4>
+ <div class="checklist">${d.extra.map((x,i)=>`<label class="checkitem" style="cursor:pointer"><input type="checkbox" style="margin-right:8px;width:auto"> <span>${esc(x)}</span></label>`).join('')}</div>
+ <h4 style="margin:18px 0 8px">🌐 Official sources</h4>
+ <div>${links}</div>
+ <div class="source" style="margin-top:10px">Official-source review: 23 September 2026. Rules are informational and may change after this date.</div>
+ </div>`;
 }
 
 function flag(n){return countryObj(n).flag||"🌍"}
 function esc(s){return String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]))}
-tabs();buildAllSelectors();buildAssistantSelectors();initExplore();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();populateMoreReady();
+tabs();buildAllSelectors();buildAssistantSelectors();initExplore();loadDB();$("whereDestination").onchange=renderWhere;renderAssistant();populateGoReady();
 openSection("home");
+
+function showAuth(mode){
+  const panel=document.getElementById('authPanel');
+  if(!panel)return;
+  panel.hidden=false;
+  const si=document.getElementById('signInForm');
+  const rg=document.getElementById('registerForm');
+  const sit=document.getElementById('signInTab');
+  const rgt=document.getElementById('registerTab');
+  const msg=document.getElementById('authMessage');
+  si.hidden=mode!=='signin'; rg.hidden=mode!=='register';
+  sit.classList.toggle('active',mode==='signin'); rgt.classList.toggle('active',mode==='register');
+  if(msg)msg.innerHTML='';
+  panel.scrollIntoView({behavior:'smooth',block:'start'});
+}
+function closeAuth(){const p=document.getElementById('authPanel');if(p)p.hidden=true;}
+function demoAuth(mode){
+  const msg=document.getElementById('authMessage');
+  if(!msg)return;
+  if(mode==='signin'){
+    const email=(document.getElementById('signInEmail')||{}).value||'';
+    if(!email.trim()){msg.innerHTML='<div class="warning"><b>Enter your email.</b></div>';return;}
+    msg.innerHTML='<div class="info"><b>Sign-in interface ready.</b> Connect SAFARQR to a secure authentication service/backend for real account access.</div>';
+  }else{
+    const name=(document.getElementById('registerName')||{}).value||'';
+    const email=(document.getElementById('registerEmail')||{}).value||'';
+    if(!name.trim()||!email.trim()){msg.innerHTML='<div class="warning"><b>Please enter your name and email.</b></div>';return;}
+    msg.innerHTML='<div class="info"><b>Registration interface ready.</b> Connect SAFARQR to a secure authentication service/backend to create the account.</div>';
+  }
+}
 </script>
 
 
